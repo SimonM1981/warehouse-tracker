@@ -2,14 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MG Warehouse - Traceability V6</title>
+    <title>Petra Warehouse - Multi-User Traceability</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
-        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; --info: #0288d1; }
+        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
         
-        .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* Fixed Header for Staff Name */
+        .staff-header { background: #2196f3; color: white; padding: 10px; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .staff-header label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .staff-input-container { display: flex; gap: 8px; }
+        #staff-name { flex: 1; padding: 10px; border-radius: 4px; border: none; font-size: 1rem; font-weight: bold; }
+        #lock-btn { width: 80px; padding: 10px; background: #0d47a1; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        #lock-btn.locked { background: #d32f2f; }
+
+        .tabs { display: flex; background: #fff; position: sticky; top: 72px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
         
@@ -20,7 +28,6 @@
         .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
         .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
         .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
-        .active-scan { border: 2px solid var(--success) !important; background: #e8f5e9 !important; }
         
         label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
@@ -31,7 +38,6 @@
         .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
         .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
         .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
-        .timeline-item.active::before { background: var(--success); box-shadow: 0 0 5px var(--success); }
         .timeline-item.done::before { background: var(--primary); }
         .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
@@ -42,86 +48,88 @@
 </head>
 <body>
 
+<div class="staff-header">
+    <label>Current Worker (Please Lock Your Name)</label>
+    <div class="staff-input-container">
+        <input id="staff-name" type="text" placeholder="Type your name...">
+        <button id="lock-btn" onclick="toggleLock()">LOCK</button>
+    </div>
+</div>
+
 <div class="tabs">
-    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN & ADD</button>
+    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
     <button class="tab-btn" onclick="showPage('list-page', this)">DATABASE</button>
-    <button class="tab-btn" onclick="showPage('search-page', this)">SEARCH TRACE</button>
+    <button class="tab-btn" onclick="showPage('search-page', this)">TRACE</button>
 </div>
 
 <div id="scan-page" class="page active">
-    <div class="card" style="background: #e3f2fd; border: 1px solid #2196f3;">
-        <label style="color: #1565c0;">Current Staff Name (Who is working now?)</label>
-        <input id="staff-name" type="text" class="input-field" placeholder="Enter your name..." 
-               style="border: 2px solid var(--primary); background: #fff;"
-               oninput="localStorage.setItem('staff_memory', this.value)">
-    </div>
-
     <div class="card">
-        <h3 id="scan-status" style="margin-top:0">New Batch</h3>
+        <h3>New Entry</h3>
         <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
         <div id="reader"></div>
         <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
 
         <label>Customer</label>
-        <div class="input-group">
-            <input id="customer" class="input-field" placeholder="Customer">
-            <button class="scan-inline-btn" onclick="startScanner('customer')">📷</button>
-        </div>
-
-        <label>P/I Number</label>
-        <div class="input-group">
-            <input id="pi" class="input-field" placeholder="PI">
-            <button class="scan-inline-btn" onclick="startScanner('pi')">📷</button>
-        </div>
-
+        <div class="input-group"><input id="customer" class="input-field"><button class="scan-inline-btn" onclick="startScanner('customer')">📷</button></div>
+        <label>PI</label>
+        <div class="input-group"><input id="pi" class="input-field"><button class="scan-inline-btn" onclick="startScanner('pi')">📷</button></div>
         <label>Part Number</label>
-        <div class="input-group">
-            <input id="part" class="input-field" placeholder="Part #">
-            <button class="scan-inline-btn" onclick="startScanner('part')">📷</button>
-        </div>
-
-        <label>Quantity</label>
-        <input id="qty" type="number" class="input-field" placeholder="Qty">
-
+        <div class="input-group"><input id="part" class="input-field"><button class="scan-inline-btn" onclick="startScanner('part')">📷</button></div>
+        <label>Qty</label>
+        <input id="qty" type="number" class="input-field">
         <label>Box ID</label>
-        <div class="input-group">
-            <input id="ppbox" class="input-field" readonly style="background:#eee" placeholder="Scan Box ID">
-            <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
-        </div>
-
+        <div class="input-group"><input id="ppbox" class="input-field" readonly style="background:#eee"><button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button></div>
         <label>Initial Stage</label>
         <select id="status" class="input-field">
             <option value="Store">Store</option>
             <option value="Laser">Laser</option>
             <option value="Packing">Packing</option>
         </select>
-        
-        <button class="save-btn" onclick="saveRecord()">SAVE TO SYSTEM</button>
+        <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
     </div>
 </div>
 
 <div id="list-page" class="page">
-    <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 DOWNLOAD FULL EXCEL</button>
+    <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
     <div id="full-database"></div>
 </div>
 
 <div id="search-page" class="page">
-    <div class="card" style="border-top: 5px solid var(--info)">
-        <label>Search Part History</label>
-        <input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Type Part # to trace staff...">
-    </div>
+    <div class="card"><label>Search Part Trace</label><input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Part #..."></div>
     <div id="search-results"></div>
 </div>
 
 <script>
     let html5QrCode;
-    // Updated database key to ensure a fresh start with the name fix
-    let records = JSON.parse(localStorage.getItem("warehouse_db_v6") || "[]");
+    let records = JSON.parse(localStorage.getItem("warehouse_db_v7") || "[]");
+    let isLocked = false;
     const scanSequence = ['customer', 'pi', 'part', 'ppbox'];
+
+    // Handle Lock Feature
+    function toggleLock() {
+        const nameInput = document.getElementById("staff-name");
+        const lockBtn = document.getElementById("lock-btn");
+        if (!isLocked) {
+            if (!nameInput.value.trim()) return alert("Type your name first!");
+            isLocked = true;
+            nameInput.disabled = true;
+            lockBtn.innerText = "UNLOCK";
+            lockBtn.classList.add("locked");
+            localStorage.setItem("staff_memory", nameInput.value);
+        } else {
+            isLocked = false;
+            nameInput.disabled = false;
+            lockBtn.innerText = "LOCK";
+            lockBtn.classList.remove("locked");
+        }
+    }
 
     window.onload = () => {
         const saved = localStorage.getItem("staff_memory");
-        if(saved) document.getElementById("staff-name").value = saved;
+        if(saved) {
+            document.getElementById("staff-name").value = saved;
+            toggleLock(); // Automatically lock on load
+        }
     };
 
     function showPage(pageId, btn) {
@@ -133,14 +141,12 @@
     }
 
     async function startScanner(targetId) {
-        document.querySelectorAll('.input-field').forEach(el => el.classList.remove('active-scan'));
-        document.getElementById(targetId).classList.add('active-scan');
         document.getElementById("reader").style.display = "block";
         document.getElementById("stopBtn").style.display = "block";
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
         try {
             if (html5QrCode.isScanning) await html5QrCode.stop();
-            await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: { width: 250, height: 150 } }, (text) => {
+            await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (text) => {
                 document.getElementById(targetId).value = text;
                 const nextIdx = scanSequence.indexOf(targetId) + 1;
                 if(nextIdx < scanSequence.length) setTimeout(() => startScanner(scanSequence[nextIdx]), 300);
@@ -159,11 +165,10 @@
     }
 
     function saveRecord() {
-        const currentStaff = document.getElementById("staff-name").value.trim();
-        if(!currentStaff) return alert("Please enter YOUR name at the top of the Scan tab!");
-
+        if (!isLocked) return alert("Please LOCK your name at the top first!");
+        const staff = document.getElementById("staff-name").value;
         const initStatus = document.getElementById("status").value;
-        const now = new Date().toLocaleString('en-GB', { hour12: false });
+        const now = new Date().toLocaleString('en-GB');
 
         const item = {
             id: Date.now(),
@@ -174,118 +179,87 @@
             box: document.getElementById("ppbox").value,
             status: initStatus,
             date: now,
-            history: {
-                [initStatus]: { staff: currentStaff, time: now }
-            }
+            history: { [initStatus]: { staff: staff, time: now } }
         };
 
-        if(!item.part || !item.box) return alert("Part # and Box ID required!");
-        
+        if(!item.part || !item.box) return alert("Missing Part # or Box ID");
         records.unshift(item);
-        localStorage.setItem("warehouse_db_v6", JSON.stringify(records));
+        localStorage.setItem("warehouse_db_v7", JSON.stringify(records));
         ['part', 'ppbox', 'qty'].forEach(id => document.getElementById(id).value = "");
-        alert("Batch Saved by " + currentStaff);
+        alert("Saved by " + staff);
     }
 
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
-        if(dataArray.length === 0) { container.innerHTML = "<p style='text-align:center'>No records.</p>"; return; }
-        
         container.innerHTML = dataArray.map(r => {
             const stages = ['Store', 'Laser', 'Packing', 'Shipped'];
-            let timelineHtml = stages.map(s => {
-                const log = r.history && r.history[s];
-                return `
-                    <div class="timeline-item ${log ? 'done' : ''} ${r.status === s ? 'active' : ''}">
-                        <strong>${s}</strong>: ${log ? `<span class="staff-badge">${log.staff}</span>` : '<span style="color:#ccc">Waiting</span>'}
-                        <br><span class="log-meta">${log ? log.time : ''}</span>
-                    </div>`;
+            let timeline = stages.map(s => {
+                const log = r.history[s];
+                return `<div class="timeline-item ${log?'done':''}"><strong>${s}</strong>: ${log?`<span class="staff-badge">${log.staff}</span><br><span class="log-meta">${log.time}</span>`:'Waiting'}</div>`;
             }).join('');
 
-            return `
-                <div class="item-card">
-                    <div style="display:flex; justify-content:space-between">
-                        <span style="font-weight:bold; color:var(--primary)">${r.part}</span>
-                        <span class="delete-link" onclick="deleteItem(${r.id})">Delete</span>
-                    </div>
-                    <div style="font-size:0.75rem; margin:5px 0">Box: ${r.box} | PI: ${r.pi}</div>
-                    <div class="timeline">${timelineHtml}</div>
-                    <div class="edit-row">
-                        <select onchange="updateStatus(${r.id}, this.value)" class="input-field" style="margin-top:0">
-                            <option value="Store" ${r.status==='Store'?'selected':''}>Store</option>
-                            <option value="Laser" ${r.status==='Laser'?'selected':''}>Laser</option>
-                            <option value="Packing" ${r.status==='Packing'?'selected':''}>Packing</option>
-                            <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Shipped</option>
-                        </select>
-                        <input type="number" value="${r.qty}" class="input-field" style="margin-top:0" onchange="updateQty(${r.id}, this.value)">
-                    </div>
-                </div>`;
+            return `<div class="item-card">
+                <strong>${r.part}</strong><span class="delete-link" onclick="deleteItem(${r.id})">Delete</span>
+                <div style="font-size:0.7rem">Box: ${r.box} | PI: ${r.pi}</div>
+                <div class="timeline">${timeline}</div>
+                <div class="edit-row">
+                    <select onchange="updateStatus(${r.id}, this.value)" class="input-field">
+                        <option value="Store" ${r.status==='Store'?'selected':''}>Store</option>
+                        <option value="Laser" ${r.status==='Laser'?'selected':''}>Laser</option>
+                        <option value="Packing" ${r.status==='Packing'?'selected':''}>Packing</option>
+                        <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Shipped</option>
+                    </select>
+                    <input type="number" value="${r.qty}" class="input-field" onchange="updateQty(${r.id}, this.value)">
+                </div>
+            </div>`;
         }).join('');
     }
 
-    // THIS IS THE KEY FIX: It grabs the CURRENT name from the top box
     function updateStatus(id, newStatus) {
-        const currentStaff = document.getElementById("staff-name").value.trim();
-        
-        if(!currentStaff) {
-            alert("To update status, go to 'SCAN & ADD' tab and enter YOUR name first!");
-            renderList(records, "full-database"); // Reset the dropdown visual
-            return;
-        }
-        
+        if (!isLocked) return alert("LOCK your name at the top first!");
+        const staff = document.getElementById("staff-name").value;
         records = records.map(r => {
             if (r.id === id) {
-                const now = new Date().toLocaleString('en-GB', { hour12: false });
-                let h = r.history || {};
-                // Only overwrite or add the name of the person doing THIS step
-                h[newStatus] = { staff: currentStaff, time: now };
-                return {...r, status: newStatus, history: h};
+                const now = new Date().toLocaleString('en-GB');
+                r.history[newStatus] = { staff: staff, time: now };
+                r.status = newStatus;
             }
             return r;
         });
-        localStorage.setItem("warehouse_db_v6", JSON.stringify(records));
+        localStorage.setItem("warehouse_db_v7", JSON.stringify(records));
         renderList(records, "full-database");
     }
 
     function updateQty(id, val) {
         records = records.map(r => r.id === id ? {...r, qty: val} : r);
-        localStorage.setItem("warehouse_db_v6", JSON.stringify(records));
+        localStorage.setItem("warehouse_db_v7", JSON.stringify(records));
     }
 
     function deleteItem(id) {
-        if(confirm("Permanently delete?")) {
+        if(confirm("Delete?")) {
             records = records.filter(r => r.id !== id);
-            localStorage.setItem("warehouse_db_v6", JSON.stringify(records));
+            localStorage.setItem("warehouse_db_v7", JSON.stringify(records));
             renderList(records, "full-database");
-            searchByPart();
         }
     }
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
-        if(query === "") { document.getElementById("search-results").innerHTML = ""; return; }
-        const filtered = records.filter(r => r.part.toLowerCase().includes(query));
-        renderList(filtered, "search-results");
+        renderList(records.filter(r => r.part.toLowerCase().includes(query)), "search-results");
     }
 
-    function resetFields() {
-        ['customer', 'pi', 'part', 'qty', 'ppbox'].forEach(id => document.getElementById(id).value = "");
-    }
+    function resetFields() { ['customer', 'pi', 'part', 'qty', 'ppbox'].forEach(id => document.getElementById(id).value = ""); }
 
     function exportToExcel() {
-        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Status,Store_By,Store_Time,Laser_By,Laser_Time,Packing_By,Packing_Time,Shipped_By,Shipped_Time\n";
+        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Status,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Shipped_Staff,Shipped_Time\n";
         records.forEach(r => {
-            const h = r.history || {};
-            csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}",` +
-                   `"${h.Store?h.Store.staff:''}","${h.Store?h.Store.time:''}",` +
-                   `"${h.Laser?h.Laser.staff:''}","${h.Laser?h.Laser.time:''}",` +
-                   `"${h.Packing?h.Packing.staff:''}","${h.Packing?h.Packing.time:''}",` +
-                   `"${h.Shipped?h.Shipped.staff:''}","${h.Shipped?h.Shipped.time:''}"\n`;
+            const h = r.history;
+            csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}","${h.Store?h.Store.staff:''}","${h.Store?h.Store.time:''}","${h.Laser?h.Laser.staff:''}","${h.Laser?h.Laser.time:''}","${h.Packing?h.Packing.staff:''}","${h.Packing?h.Packing.time:''}","${h.Shipped?h.Shipped.staff:''}","${h.Shipped?h.Shipped.time:''}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Petra_Report_${new Date().toISOString().slice(0,10)}.csv`;
+        link.download = `Petra_Warehouse_Trace.csv`;
         link.click();
     }
 </script>
