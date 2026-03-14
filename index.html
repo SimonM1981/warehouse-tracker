@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Warehouse Pro Manager</title>
+    <title>Petra Warehouse Fast-Scan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
@@ -17,24 +17,21 @@
         .page.active { display: block; }
 
         .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        label { display: block; margin-top: 10px; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; }
+        
+        .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
+        .input-field { flex: 1; }
+        .scan-inline-btn { width: 50px !important; height: 45px; padding: 0 !important; background: #eee !important; color: #333 !important; border: 1px solid #ccc !important; font-size: 20px !important; }
+        .active-scan { border: 2px solid var(--success) !important; background: #e8f5e9 !important; }
+
+        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; }
         input, select, button { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         
-        button { background: var(--primary); color: white; border: none; font-weight: bold; transition: 0.2s; cursor: pointer; }
-        button:active { opacity: 0.8; }
-        .save-btn { background: var(--success); margin-top: 20px; font-size: 1.1rem; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
         .excel-btn { background: var(--excel); margin-bottom: 15px; }
         
-        #reader { width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; background: #000; }
-        
-        .item-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 6px solid var(--primary); position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-details { font-size: 0.9rem; line-height: 1.4; color: #333; }
-        .qty-badge { background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        
-        .edit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .edit-input { padding: 8px; font-size: 0.85rem; border: 1px solid #ccc; background: #fffde7; border-radius: 4px; }
-        
+        #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
+        .item-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 6px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; margin-top: 10px; }
     </style>
 </head>
@@ -48,21 +45,46 @@
 
 <div id="scan-page" class="page active">
     <div class="card">
-        <h3>New Entry</h3>
-        <label>Customer</label><input id="customer" placeholder="Customer Name">
-        <label>P/I Number</label><input id="pi" placeholder="PI-XXXX">
-        <label>Part Number</label><input id="part" placeholder="Part identifier">
-        <label>Quantity</label><input id="qty" type="number" placeholder="0">
-        <label>Box ID (Scan)</label><input id="ppbox" readonly style="background:#eee">
+        <h3 id="scan-status">Ready</h3>
         
         <div id="reader"></div>
-        <button id="startBtn" onclick="startScanner()" style="margin-top:10px">Open Camera</button>
-        <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin-top:10px">Stop Camera</button>
+        <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
+
+        <label>Customer</label>
+        <div class="input-group">
+            <input id="customer" class="input-field" placeholder="Scan Customer">
+            <button class="scan-inline-btn" id="btn-customer" onclick="startScanner('customer')">📷</button>
+        </div>
+
+        <label>P/I Number</label>
+        <div class="input-group">
+            <input id="pi" class="input-field" placeholder="Scan PI">
+            <button class="scan-inline-btn" id="btn-pi" onclick="startScanner('pi')">📷</button>
+        </div>
+
+        <label>Part Number</label>
+        <div class="input-group">
+            <input id="part" class="input-field" placeholder="Scan Part">
+            <button class="scan-inline-btn" id="btn-part" onclick="startScanner('part')">📷</button>
+        </div>
+
+        <label>Quantity</label>
+        <input id="qty" type="number" placeholder="Enter Qty">
+
+        <label>Box ID</label>
+        <div class="input-group">
+            <input id="ppbox" class="input-field" readonly style="background:#eee">
+            <button class="scan-inline-btn" id="btn-ppbox" onclick="startScanner('ppbox')">📷</button>
+        </div>
 
         <label>Status</label>
         <select id="status">
-            <option>Store</option><option>Laser</option><option>Packing</option><option>Shipped</option>
+            <option value="Store">Store</option>
+            <option value="Laser">Laser</option>
+            <option value="Packing">Packing</option>
+            <option value="Shipped">Shipped</option>
         </select>
+
         <button class="save-btn" onclick="saveRecord()">SAVE DATA</button>
     </div>
 </div>
@@ -83,36 +105,70 @@
 <script>
     let html5QrCode;
     let records = JSON.parse(localStorage.getItem("warehouse_db_v3") || "[]");
+    let activeTargetField = '';
+    
+    // Sequence for Fast Mode
+    const scanSequence = ['customer', 'pi', 'part', 'ppbox'];
 
     function showPage(pageId, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         btn.classList.add('active');
-        
         if(pageId === 'list-page') renderList(records, "full-database");
     }
 
-    async function startScanner() {
+    async function startScanner(targetId) {
+        activeTargetField = targetId;
+        
+        // Highlight active field
+        document.querySelectorAll('.input-field').forEach(el => el.classList.remove('active-scan'));
+        document.getElementById(targetId).classList.add('active-scan');
+        document.getElementById("scan-status").innerText = "Scanning: " + targetId.toUpperCase();
+
+        const readerDiv = document.getElementById("reader");
+        const stopBtn = document.getElementById("stopBtn");
+        
+        readerDiv.style.display = "block";
+        stopBtn.style.display = "block";
+
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-        document.getElementById("startBtn").style.display = "none";
-        document.getElementById("stopBtn").style.display = "block";
+        
         try {
+            if (html5QrCode.isScanning) await html5QrCode.stop();
+            
             await html5QrCode.start({ facingMode: "environment" }, 
-            { fps: 15, qrbox: { width: 280, height: 160 } },
+            { fps: 20, qrbox: { width: 280, height: 160 } },
             (text) => {
-                document.getElementById("ppbox").value = text;
+                document.getElementById(activeTargetField).value = text;
                 if (navigator.vibrate) navigator.vibrate(70);
-                stopScanner();
+                
+                // Fast Mode Logic: Move to next field
+                moveToNext(targetId);
             });
-        } catch (err) { stopScanner(); }
+        } catch (err) { console.error(err); }
+    }
+
+    function moveToNext(currentId) {
+        const currentIndex = scanSequence.indexOf(currentId);
+        if (currentIndex !== -1 && currentIndex < scanSequence.length - 1) {
+            const nextField = scanSequence[currentIndex + 1];
+            // Small delay to ensure smooth transition
+            setTimeout(() => startScanner(nextField), 300);
+        } else {
+            // End of sequence
+            stopScanner();
+            document.getElementById("scan-status").innerText = "All Scanned - Ready to Save";
+            document.getElementById("qty").focus(); // Focus on qty since it's manual
+        }
     }
 
     function stopScanner() {
         if (html5QrCode && html5QrCode.isScanning) {
             html5QrCode.stop().then(() => {
-                document.getElementById("startBtn").style.display = "block";
+                document.getElementById("reader").style.display = "none";
                 document.getElementById("stopBtn").style.display = "none";
+                document.querySelectorAll('.input-field').forEach(el => el.classList.remove('active-scan'));
             });
         }
     }
@@ -128,105 +184,51 @@
             status: document.getElementById("status").value,
             date: new Date().toLocaleString()
         };
-
-        if(!item.part || !item.box) { alert("Part # and Scan are required!"); return; }
-
-        if(records.some(r => r.pi === item.pi && r.part === item.part && r.box === item.box)) {
-            alert("Duplicate Entry Found!");
-            return;
-        }
-
+        if(!item.part || !item.box) { alert("Missing Part or Box ID!"); return; }
         records.unshift(item);
         localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-        alert("Saved!");
-        document.getElementById("ppbox").value = "";
+        
+        // Clear fields for next pallet
+        ['part', 'ppbox', 'qty'].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("scan-status").innerText = "Saved!";
+        alert("Record Saved");
     }
 
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
-        if(dataArray.length === 0) {
-            container.innerHTML = "<p style='text-align:center'>No records found.</p>";
-            return;
-        }
-
+        if(dataArray.length === 0) { container.innerHTML = "<p style='text-align:center'>Empty</p>"; return; }
         container.innerHTML = dataArray.map(r => `
             <div class="item-card">
-                <div class="item-header">
-                    <div class="item-details">
-                        <strong>${r.cust}</strong> | PI: <b>${r.pi}</b><br>
-                        Part: <span style="color:var(--primary); font-weight:bold">${r.part}</span><br>
-                        Box: ${r.box}
-                    </div>
-                    <span class="qty-badge">QTY: ${r.qty}</span>
-                </div>
-                <div class="edit-row">
-                    <div>
-                        <label style="margin:0; font-size:0.6rem">Status</label>
-                        <select class="edit-input" onchange="updateRecord(${r.id}, 'status', this.value)">
-                            <option value="Store" ${r.status==='Store'?'selected':''}>Store</option>
-                            <option value="Laser" ${r.status==='Laser'?'selected':''}>Laser</option>
-                            <option value="Packing" ${r.status==='Packing'?'selected':''}>Packing</option>
-                            <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Shipped</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="margin:0; font-size:0.6rem">Change Qty</label>
-                        <input type="number" class="edit-input" value="${r.qty}" 
-                            onchange="updateRecord(${r.id}, 'qty', this.value)">
-                    </div>
-                </div>
-                <div class="delete-link" onclick="deleteItem(${r.id})">Delete Entry</div>
-                <div style="font-size:0.65rem; color:#999; margin-top:5px">Saved: ${r.date}</div>
+                <strong>${r.cust}</strong> | PI: ${r.pi} | QTY: ${r.qty}<br>
+                Part: ${r.part} | Box: ${r.box}<br>
+                <div style="margin-top:5px">Status: <b>${r.status}</b></div>
+                <div class="delete-link" onclick="deleteItem(${r.id})">Delete</div>
             </div>
         `).join('');
     }
 
-    function updateRecord(id, field, value) {
-        // Find the record and update it in the array
-        records = records.map(r => {
-            if (r.id === id) {
-                return { ...r, [field]: value };
-            }
-            return r;
-        });
-        
-        // Save back to local storage immediately
-        localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-        
-        // Brief visual confirmation for mobile users
-        console.log(`Updated ${field} to ${value}`);
-    }
-
     function deleteItem(id) {
-        if(confirm("Delete this record?")) {
+        if(confirm("Delete?")) {
             records = records.filter(r => r.id !== id);
             localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
             renderList(records, "full-database");
-            searchByPart();
         }
     }
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
-        const resultsDiv = document.getElementById("search-results");
-        if(!query) {
-            resultsDiv.innerHTML = "";
-            return;
-        }
+        if(!query) { document.getElementById("search-results").innerHTML = ""; return; }
         const filtered = records.filter(r => r.part.toLowerCase().includes(query));
         renderList(filtered, "search-results");
     }
 
     function exportToExcel() {
-        if (records.length === 0) return alert("No data!");
         let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Status\n";
-        records.forEach(r => {
-            csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}"\n`;
-        });
+        records.forEach(r => { csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}"\n`; });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Warehouse_Export_${new Date().toISOString().slice(0,10)}.csv`;
+        link.download = `Warehouse_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
     }
 </script>
