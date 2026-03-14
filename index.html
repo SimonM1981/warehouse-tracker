@@ -2,122 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Warehouse Tracker Pro</title>
+    <title>Warehouse Manager Pro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
-        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; }
-        body { font-family: -apple-system, sans-serif; padding: 15px; background: #f0f2f5; margin: 0; }
-        .container { background: white; padding: 20px; border-radius: 12px; max-width: 450px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { margin-top: 0; color: #333; text-align: center; }
+        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --gray: #666; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 50px; }
         
-        label { display: block; margin-top: 12px; font-weight: 600; color: #555; font-size: 0.85rem; }
+        /* Tabs Navigation */
+        .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: var(--gray); cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        
+        .page { display: none; padding: 15px; max-width: 500px; margin: auto; }
+        .page.active { display: block; }
+
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        label { display: block; margin-top: 10px; font-weight: 600; color: #555; font-size: 0.8rem; }
         input, select, button { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         
-        button { background: var(--primary); color: white; border: none; font-weight: bold; transition: opacity 0.2s; cursor: pointer; }
-        button:active { opacity: 0.8; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .save-btn { background: var(--success); margin-top: 20px; }
         
-        /* Scanner UI */
-        #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; min-height: 250px; }
+        #reader { width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; background: #000; }
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        #stopBtn { background: var(--danger); display: none; }
-        #torchBtn { background: #ffa000; display: none; }
         
-        .save-btn { background: var(--success); margin-top: 20px; height: 50px; font-size: 1.1rem; }
-        .result { background: #f8f9fa; padding: 15px; margin-top: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
-        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+        /* Table/List Styles */
+        .record-item { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid var(--primary); position: relative; font-size: 0.9rem; }
+        .record-info { margin-bottom: 8px; line-height: 1.4; }
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: #eee; }
+        .edit-select { width: auto; padding: 5px; font-size: 0.8rem; margin-top: 5px; background: #fff9c4; }
+        .delete-btn { color: var(--danger); font-size: 0.8rem; background: none; width: auto; padding: 0; float: right; margin: 0; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Warehouse Tracker</h2>
+<div class="tabs">
+    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN & INPUT</button>
+    <button class="tab-btn" onclick="showPage('list-page', this)">ALL RECORDS</button>
+</div>
 
-    <label>Customer Name</label>
-    <input id="customer" placeholder="e.g. Acme Corp">
+<div id="scan-page" class="page active">
+    <div class="card">
+        <label>Customer Name</label>
+        <input id="customer" placeholder="Customer name">
+        
+        <label>P/I Number</label>
+        <input id="pi" placeholder="PI-12345">
 
-    <label>P/I Number</label>
-    <input id="pi" placeholder="Proforma Invoice #">
+        <label>Part Number</label>
+        <input id="part" placeholder="Part ID">
 
-    <label>Part Number</label>
-    <input id="part" placeholder="Part identifier">
+        <label>Quantity</label>
+        <input id="qty" type="number" placeholder="0">
 
-    <label>Quantity</label>
-    <input id="qty" type="number" placeholder="0">
+        <label>Box ID (Scan QR/Barcode)</label>
+        <input id="ppbox" readonly style="background: #eee;">
+        
+        <div id="reader"></div>
+        <div class="controls">
+            <button id="startBtn" onclick="startScanner()">Start Camera</button>
+            <button id="stopBtn" style="display:none; background:var(--danger)" onclick="stopScanner()">Stop</button>
+        </div>
 
-    <label>Box ID (QR/Barcode)</label>
-    <input id="ppbox" readonly placeholder="Tap scan button below...">
+        <label>Initial Status</label>
+        <select id="status">
+            <option>Store</option>
+            <option>Laser</option>
+            <option>Packing</option>
+            <option>Shipped</option>
+        </select>
 
-    <div id="reader"></div>
-    
-    <div class="controls">
-        <button id="startBtn" onclick="startScanner()">Start Camera</button>
-        <button id="stopBtn" onclick="stopScanner()">Close Camera</button>
-        <button id="torchBtn" onclick="toggleTorch()">Flashlight</button>
+        <button class="save-btn" onclick="saveRecord()">SAVE NEW ENTRY</button>
     </div>
+</div>
 
-    <label>Status</label>
-    <select id="status">
-        <option>Store</option>
-        <option>Laser</option>
-        <option>Packing</option>
-        <option>Shipped</option>
-    </select>
-
-    <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
-
-    <hr>
-    <h3>Inventory Search</h3>
-    <input id="searchPart" placeholder="Enter Part Number">
-    <button onclick="searchPart()">Search History</button>
-    <div id="result" class="result">Search results will appear here...</div>
+<div id="list-page" class="page">
+    <div id="record-list">
+        </div>
 </div>
 
 <script>
     let html5QrCode;
-    let isTorchOn = false;
-    let records = JSON.parse(localStorage.getItem("warehouse_records") || "[]");
+    let records = JSON.parse(localStorage.getItem("warehouse_pro_data") || "[]");
+
+    function showPage(pageId, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        btn.classList.add('active');
+        if(pageId === 'list-page') renderRecords();
+    }
 
     async function startScanner() {
-        const startBtn = document.getElementById("startBtn");
-        const stopBtn = document.getElementById("stopBtn");
-        const torchBtn = document.getElementById("torchBtn");
-
-        if (!html5QrCode) {
-            html5QrCode = new Html5Qrcode("reader");
-        }
-
-        startBtn.style.display = "none";
-        stopBtn.style.display = "block";
-
-        // Configuration for wide barcodes and QR
-        const config = { 
-            fps: 20, 
-            qrbox: { width: 300, height: 200 }, // Better for 1D Barcodes
-            aspectRatio: 1.0
-        };
-
+        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("stopBtn").style.display = "block";
+        
         try {
-            await html5QrCode.start(
-                { facingMode: "environment" }, 
-                config,
-                (decodedText) => {
-                    document.getElementById("ppbox").value = decodedText;
-                    if (navigator.vibrate) navigator.vibrate(100); // Feedback
-                    stopScanner();
-                }
-            );
-            
-            // Check if flashlight is supported
-            const capabilities = html5QrCode.getRunningTrackCapabilities();
-            if (capabilities.torch) {
-                torchBtn.style.display = "block";
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Error: Ensure you are on HTTPS and allowed camera access.");
-            stopScanner();
-        }
+            await html5QrCode.start({ facingMode: "environment" }, 
+            { fps: 15, qrbox: { width: 280, height: 180 } },
+            (text) => {
+                document.getElementById("ppbox").value = text;
+                if (navigator.vibrate) navigator.vibrate(70);
+                stopScanner();
+            });
+        } catch (err) { alert("Camera failed."); stopScanner(); }
     }
 
     function stopScanner() {
@@ -125,64 +115,83 @@
             html5QrCode.stop().then(() => {
                 document.getElementById("startBtn").style.display = "block";
                 document.getElementById("stopBtn").style.display = "none";
-                document.getElementById("torchBtn").style.display = "none";
-                isTorchOn = false;
             });
-        }
-    }
-
-    async function toggleTorch() {
-        isTorchOn = !isTorchOn;
-        try {
-            await html5QrCode.applyVideoConstraints({
-                advanced: [{ torch: isTorchOn }]
-            });
-        } catch (e) {
-            console.log("Torch error", e);
         }
     }
 
     function saveRecord() {
-        const data = {
-            customer: document.getElementById("customer").value,
-            pi: document.getElementById("pi").value,
-            part: document.getElementById("part").value,
+        const newRecord = {
+            id: Date.now(),
+            customer: document.getElementById("customer").value.trim(),
+            pi: document.getElementById("pi").value.trim(),
+            part: document.getElementById("part").value.trim(),
             qty: document.getElementById("qty").value,
             ppbox: document.getElementById("ppbox").value,
             status: document.getElementById("status").value,
             time: new Date().toLocaleString()
         };
 
-        if(!data.ppbox) {
-            alert("Please scan a code first!");
+        if(!newRecord.pi || !newRecord.ppbox || !newRecord.part) {
+            alert("Error: PI, Part, and Box ID are required!");
             return;
         }
 
-        records.push(data);
-        localStorage.setItem("warehouse_records", JSON.stringify(records));
+        // DUPLICATE CHECK: PI + Part + Box ID combo must be unique
+        const isDuplicate = records.some(r => 
+            r.pi === newRecord.pi && 
+            r.part === newRecord.part && 
+            r.ppbox === newRecord.ppbox
+        );
+
+        if(isDuplicate) {
+            alert("Entry already exists for this PI, Part, and Box combination!");
+            return;
+        }
+
+        records.unshift(newRecord); // Add to top
+        localStorage.setItem("warehouse_pro_data", JSON.stringify(records));
         alert("Record Saved!");
-        
-        // Clear scan field for next use
-        document.getElementById("ppbox").value = "";
+        document.getElementById("ppbox").value = ""; // Reset scan field
     }
 
-    function searchPart() {
-        let p = document.getElementById("searchPart").value.trim();
-        let r = records.reverse().find(x => x.part === p); // Find most recent
-        let resDiv = document.getElementById("result");
-
-        if (!r) {
-            resDiv.innerHTML = "No record found for this Part Number.";
+    function renderRecords() {
+        const listDiv = document.getElementById("record-list");
+        if(records.length === 0) {
+            listDiv.innerHTML = "<p style='text-align:center'>No records yet.</p>";
             return;
         }
 
-        resDiv.innerHTML = `
-            <strong>Last Status:</strong> ${r.status}<br>
-            <strong>Customer:</strong> ${r.customer}<br>
-            <strong>PI #:</strong> ${r.pi}<br>
-            <strong>Box ID:</strong> ${r.ppbox}<br>
-            <strong>Saved:</strong> ${r.time}
-        `;
+        listDiv.innerHTML = records.map((r, index) => `
+            <div class="record-item">
+                <button class="delete-btn" onclick="deleteRecord(${r.id})">Delete</button>
+                <div class="record-info">
+                    <strong>${r.customer || 'No Name'}</strong> | PI: ${r.pi}<br>
+                    Part: ${r.part} | Qty: ${r.qty}<br>
+                    <small>Box ID: ${r.ppbox}</small><br>
+                    <small style="color:#888">${r.time}</small>
+                </div>
+                <label style="margin:0; font-size:0.7rem">Update Status:</label>
+                <select class="edit-select" onchange="updateStatus(${r.id}, this.value)">
+                    <option ${r.status === 'Store' ? 'selected' : ''}>Store</option>
+                    <option ${r.status === 'Laser' ? 'selected' : ''}>Laser</option>
+                    <option ${r.status === 'Packing' ? 'selected' : ''}>Packing</option>
+                    <option ${r.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                </select>
+            </div>
+        `).join('');
+    }
+
+    function updateStatus(id, newStatus) {
+        records = records.map(r => r.id === id ? {...r, status: newStatus} : r);
+        localStorage.setItem("warehouse_pro_data", JSON.stringify(records));
+    }
+
+    function deleteRecord(id) {
+        if(confirm("Delete this entry?")) {
+            records = records.filter(r => r.id !== id);
+            localStorage.setItem("warehouse_pro_data", JSON.stringify(records));
+            renderRecords();
+        }
     }
 </script>
 
