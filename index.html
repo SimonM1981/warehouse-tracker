@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Warehouse Manager - Fixed Edits</title>
+    <title>Petra Warehouse - Pro Traceability</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
-        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
+        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; --info: #0288d1; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
         .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
@@ -22,12 +22,20 @@
         input, select, button { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
-        .excel-btn { background: var(--excel); margin-bottom: 15px; }
         #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
-        .item-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 6px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .edit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .edit-input { padding: 8px; font-size: 0.85rem; border: 1px solid #ccc; background: #fffde7; }
-        .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; margin-top: 10px; }
+        
+        /* Timeline UI Styles */
+        .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .timeline { margin-top: 15px; padding-left: 10px; border-left: 2px dashed #ddd; }
+        .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
+        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
+        .timeline-item.active::before { background: var(--success); box-shadow: 0 0 5px var(--success); }
+        .timeline-item.done::before { background: var(--primary); }
+        .log-meta { color: #888; font-style: italic; }
+        .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        
+        .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+        .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
     </style>
 </head>
 <body>
@@ -39,27 +47,37 @@
 </div>
 
 <div id="scan-page" class="page active">
+    <div class="card" style="background: #fff9c4; border: 1px solid #fbc02d;">
+        <label>Current Staff / Operator</label>
+        <select id="staff-name" style="border: 2px solid var(--primary)">
+            <option value="">-- Select Your Name --</option>
+            <option value="Staff A">Staff A</option>
+            <option value="Staff B">Staff B</option>
+            <option value="Manager">Manager</option>
+        </select>
+    </div>
+
     <div class="card">
-        <h3 id="scan-status">Ready</h3>
+        <h3 id="scan-status" style="margin-top:0">Ready to Scan</h3>
         <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear All Fields</button>
         <div id="reader"></div>
         <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
 
         <label>Customer</label>
         <div class="input-group">
-            <input id="customer" class="input-field" placeholder="Scan/Type Customer">
+            <input id="customer" class="input-field" placeholder="Customer Name">
             <button class="scan-inline-btn" onclick="startScanner('customer')">📷</button>
         </div>
 
         <label>P/I Number</label>
         <div class="input-group">
-            <input id="pi" class="input-field" placeholder="Scan/Type PI">
+            <input id="pi" class="input-field" placeholder="PI Number">
             <button class="scan-inline-btn" onclick="startScanner('pi')">📷</button>
         </div>
 
         <label>Part Number</label>
         <div class="input-group">
-            <input id="part" class="input-field" placeholder="Scan/Type Part">
+            <input id="part" class="input-field" placeholder="Part Number">
             <button class="scan-inline-btn" onclick="startScanner('part')">📷</button>
         </div>
 
@@ -72,13 +90,13 @@
             <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
         </div>
 
-        <label>Status</label>
+        <label>Initial Status</label>
         <select id="status">
             <option value="Store">Store</option>
             <option value="Laser">Laser</option>
             <option value="Packing">Packing</option>
-            <option value="Shipped">Shipped</option>
         </select>
+        
         <button class="save-btn" onclick="saveRecord()">SAVE DATA</button>
     </div>
 </div>
@@ -98,7 +116,8 @@
 
 <script>
     let html5QrCode;
-    let records = JSON.parse(localStorage.getItem("warehouse_db_v3") || "[]");
+    // v4 adds the history object
+    let records = JSON.parse(localStorage.getItem("warehouse_db_v4") || "[]");
     const scanSequence = ['customer', 'pi', 'part', 'ppbox'];
 
     function showPage(pageId, btn) {
@@ -138,6 +157,12 @@
     }
 
     function saveRecord() {
+        const staff = document.getElementById("staff-name").value;
+        if(!staff) return alert("Please select Staff Name first!");
+
+        const initStatus = document.getElementById("status").value;
+        const now = new Date().toLocaleString('en-GB', { hour12: false });
+
         const item = {
             id: Date.now(),
             cust: document.getElementById("customer").value || "N/A",
@@ -145,55 +170,103 @@
             part: document.getElementById("part").value.trim(),
             qty: document.getElementById("qty").value || 0,
             box: document.getElementById("ppbox").value,
-            status: document.getElementById("status").value,
-            date: new Date().toLocaleString()
+            status: initStatus,
+            date: now,
+            history: {
+                [initStatus]: { staff: staff, time: now }
+            }
         };
-        if(!item.part || !item.box) return alert("Part # and Box ID required!");
-        records.unshift(item);
-        localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-        ['part', 'ppbox', 'qty'].forEach(id => document.getElementById(id).value = "");
-        alert("Saved!");
-    }
 
-    function resetFields() {
-        ['customer', 'pi', 'part', 'qty', 'ppbox'].forEach(id => document.getElementById(id).value = "");
+        if(!item.part || !item.box) return alert("Part # and Box ID required!");
+        
+        records.unshift(item);
+        localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
+        ['part', 'ppbox', 'qty'].forEach(id => document.getElementById(id).value = "");
+        alert("Saved to Database!");
     }
 
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
-        if(dataArray.length === 0) { container.innerHTML = "<p>No records.</p>"; return; }
-        container.innerHTML = dataArray.map(r => `
-            <div class="item-card">
-                <strong>${r.cust}</strong> | PI: ${r.pi} | Qty: ${r.qty}<br>
-                Part: ${r.part} | Box: ${r.box}
-                <div class="edit-row">
-                    <select onchange="updateRecord(${r.id}, 'status', this.value)" class="edit-input">
-                        <option value="Store" ${r.status==='Store'?'selected':''}>Store</option>
-                        <option value="Laser" ${r.status==='Laser'?'selected':''}>Laser</option>
-                        <option value="Packing" ${r.status==='Packing'?'selected':''}>Packing</option>
-                        <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Shipped</option>
-                    </select>
-                    <input type="number" value="${r.qty}" class="edit-input" onchange="updateRecord(${r.id}, 'qty', this.value)">
+        if(dataArray.length === 0) { container.innerHTML = "<p style='text-align:center'>No records found.</p>"; return; }
+        
+        container.innerHTML = dataArray.map(r => {
+            const stages = ['Store', 'Laser', 'Packing', 'Shipped'];
+            
+            let timelineHtml = stages.map(s => {
+                const log = r.history && r.history[s];
+                const isDone = !!log;
+                const isActive = r.status === s;
+                return `
+                    <div class="timeline-item ${isDone ? 'done' : ''} ${isActive ? 'active' : ''}">
+                        <strong>${s}</strong>: ${isDone ? `<span class="staff-badge">${log.staff}</span>` : '<span style="color:#ccc">Pending</span>'}
+                        <br><span class="log-meta">${isDone ? log.time : ''}</span>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="item-card">
+                    <div style="display:flex; justify-content:space-between">
+                        <span style="font-size:1.1rem; font-weight:bold; color:var(--primary)">${r.part}</span>
+                        <span class="delete-link" onclick="deleteItem(${r.id})">Delete</span>
+                    </div>
+                    <div style="font-size:0.8rem; margin:5px 0">
+                        <b>Customer:</b> ${r.cust} | <b>PI:</b> ${r.pi} | <b>Box:</b> ${r.box}
+                    </div>
+
+                    <div class="timeline">
+                        ${timelineHtml}
+                    </div>
+
+                    <div class="edit-row">
+                        <select onchange="updateRecord(${r.id}, 'status', this.value)" class="input-field" style="margin-top:0; padding:8px">
+                            <option value="Store" ${r.status==='Store'?'selected':''}>Move to Store</option>
+                            <option value="Laser" ${r.status==='Laser'?'selected':''}>Move to Laser</option>
+                            <option value="Packing" ${r.status==='Packing'?'selected':''}>Move to Packing</option>
+                            <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Mark Shipped</option>
+                        </select>
+                        <input type="number" value="${r.qty}" class="input-field" style="margin-top:0; padding:8px" onchange="updateRecord(${r.id}, 'qty', this.value)">
+                    </div>
                 </div>
-                <div class="delete-link" onclick="deleteItem(${r.id})">Delete</div>
-                <div style="font-size:0.6rem; color:#999; margin-top:5px">${r.date}</div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     function updateRecord(id, field, value) {
-        records = records.map(r => r.id === id ? {...r, [field]: value} : r);
-        localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-        // Visual cue that it saved
-        console.log("Updated " + field);
+        const staff = document.getElementById("staff-name").value;
+        if(field === 'status' && !staff) {
+            alert("Select staff name at the top first!");
+            renderList(records, "full-database"); // Reset UI
+            return;
+        }
+
+        records = records.map(r => {
+            if (r.id === id) {
+                let updated = {...r, [field]: value};
+                if (field === 'status') {
+                    const now = new Date().toLocaleString('en-GB', { hour12: false });
+                    if (!updated.history) updated.history = {};
+                    updated.history[value] = { staff: staff, time: now };
+                }
+                return updated;
+            }
+            return r;
+        });
+
+        localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
+        renderList(records, "full-database");
     }
 
     function deleteItem(id) {
-        if(confirm("Delete?")) {
+        if(confirm("Permanently delete this record?")) {
             records = records.filter(r => r.id !== id);
-            localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
+            localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
             renderList(records, "full-database");
         }
+    }
+
+    function resetFields() {
+        ['customer', 'pi', 'part', 'qty', 'ppbox'].forEach(id => document.getElementById(id).value = "");
     }
 
     function searchByPart() {
@@ -203,12 +276,16 @@
     }
 
     function exportToExcel() {
-        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Status\n";
-        records.forEach(r => { csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}"\n`; });
+        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Status,Store_By,Laser_By,Packing_By,Shipped_By\n";
+        records.forEach(r => {
+            const h = r.history || {};
+            csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}",` +
+                   `"${h.Store?h.Store.staff:''}","${h.Laser?h.Laser.staff:''}","${h.Packing?h.Packing.staff:''}","${h.Shipped?h.Shipped.staff:''}"\n`;
+        });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Warehouse_Export.csv`;
+        link.download = `Warehouse_Traceability_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
     }
 </script>
