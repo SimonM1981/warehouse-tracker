@@ -2,36 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Petra Warehouse Fast-Scan</title>
+    <title>Warehouse Manager - Fixed Edits</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
-        
         .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-        
         .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
         .page.active { display: block; }
-
         .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        
         .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
         .input-field { flex: 1; }
-        .scan-inline-btn { width: 50px !important; height: 45px; padding: 0 !important; background: #eee !important; color: #333 !important; border: 1px solid #ccc !important; font-size: 20px !important; }
+        .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
         .active-scan { border: 2px solid var(--success) !important; background: #e8f5e9 !important; }
-
-        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; }
+        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
         input, select, button { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
         .excel-btn { background: var(--excel); margin-bottom: 15px; }
-        
         #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
         .item-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 6px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .edit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .edit-input { padding: 8px; font-size: 0.85rem; border: 1px solid #ccc; background: #fffde7; }
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; margin-top: 10px; }
     </style>
 </head>
@@ -46,26 +41,26 @@
 <div id="scan-page" class="page active">
     <div class="card">
         <h3 id="scan-status">Ready</h3>
-        
+        <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear All Fields</button>
         <div id="reader"></div>
         <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
 
         <label>Customer</label>
         <div class="input-group">
-            <input id="customer" class="input-field" placeholder="Scan Customer">
-            <button class="scan-inline-btn" id="btn-customer" onclick="startScanner('customer')">📷</button>
+            <input id="customer" class="input-field" placeholder="Scan/Type Customer">
+            <button class="scan-inline-btn" onclick="startScanner('customer')">📷</button>
         </div>
 
         <label>P/I Number</label>
         <div class="input-group">
-            <input id="pi" class="input-field" placeholder="Scan PI">
-            <button class="scan-inline-btn" id="btn-pi" onclick="startScanner('pi')">📷</button>
+            <input id="pi" class="input-field" placeholder="Scan/Type PI">
+            <button class="scan-inline-btn" onclick="startScanner('pi')">📷</button>
         </div>
 
         <label>Part Number</label>
         <div class="input-group">
-            <input id="part" class="input-field" placeholder="Scan Part">
-            <button class="scan-inline-btn" id="btn-part" onclick="startScanner('part')">📷</button>
+            <input id="part" class="input-field" placeholder="Scan/Type Part">
+            <button class="scan-inline-btn" onclick="startScanner('part')">📷</button>
         </div>
 
         <label>Quantity</label>
@@ -74,7 +69,7 @@
         <label>Box ID</label>
         <div class="input-group">
             <input id="ppbox" class="input-field" readonly style="background:#eee">
-            <button class="scan-inline-btn" id="btn-ppbox" onclick="startScanner('ppbox')">📷</button>
+            <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
         </div>
 
         <label>Status</label>
@@ -84,7 +79,6 @@
             <option value="Packing">Packing</option>
             <option value="Shipped">Shipped</option>
         </select>
-
         <button class="save-btn" onclick="saveRecord()">SAVE DATA</button>
     </div>
 </div>
@@ -105,9 +99,6 @@
 <script>
     let html5QrCode;
     let records = JSON.parse(localStorage.getItem("warehouse_db_v3") || "[]");
-    let activeTargetField = '';
-    
-    // Sequence for Fast Mode
     const scanSequence = ['customer', 'pi', 'part', 'ppbox'];
 
     function showPage(pageId, btn) {
@@ -119,48 +110,21 @@
     }
 
     async function startScanner(targetId) {
-        activeTargetField = targetId;
-        
-        // Highlight active field
         document.querySelectorAll('.input-field').forEach(el => el.classList.remove('active-scan'));
         document.getElementById(targetId).classList.add('active-scan');
-        document.getElementById("scan-status").innerText = "Scanning: " + targetId.toUpperCase();
-
-        const readerDiv = document.getElementById("reader");
-        const stopBtn = document.getElementById("stopBtn");
-        
-        readerDiv.style.display = "block";
-        stopBtn.style.display = "block";
-
+        document.getElementById("reader").style.display = "block";
+        document.getElementById("stopBtn").style.display = "block";
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-        
         try {
             if (html5QrCode.isScanning) await html5QrCode.stop();
-            
-            await html5QrCode.start({ facingMode: "environment" }, 
-            { fps: 20, qrbox: { width: 280, height: 160 } },
-            (text) => {
-                document.getElementById(activeTargetField).value = text;
-                if (navigator.vibrate) navigator.vibrate(70);
-                
-                // Fast Mode Logic: Move to next field
-                moveToNext(targetId);
+            await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: { width: 250, height: 150 } }, (text) => {
+                document.getElementById(targetId).value = text;
+                if (navigator.vibrate) navigator.vibrate(50);
+                const nextIdx = scanSequence.indexOf(targetId) + 1;
+                if(nextIdx < scanSequence.length) setTimeout(() => startScanner(scanSequence[nextIdx]), 300);
+                else { stopScanner(); document.getElementById("qty").focus(); }
             });
-        } catch (err) { console.error(err); }
-    }
-
-    function moveToNext(currentId) {
-        const currentIndex = scanSequence.indexOf(currentId);
-        if (currentIndex !== -1 && currentIndex < scanSequence.length - 1) {
-            const nextField = scanSequence[currentIndex + 1];
-            // Small delay to ensure smooth transition
-            setTimeout(() => startScanner(nextField), 300);
-        } else {
-            // End of sequence
-            stopScanner();
-            document.getElementById("scan-status").innerText = "All Scanned - Ready to Save";
-            document.getElementById("qty").focus(); // Focus on qty since it's manual
-        }
+        } catch (err) {}
     }
 
     function stopScanner() {
@@ -184,27 +148,44 @@
             status: document.getElementById("status").value,
             date: new Date().toLocaleString()
         };
-        if(!item.part || !item.box) { alert("Missing Part or Box ID!"); return; }
+        if(!item.part || !item.box) return alert("Part # and Box ID required!");
         records.unshift(item);
         localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-        
-        // Clear fields for next pallet
         ['part', 'ppbox', 'qty'].forEach(id => document.getElementById(id).value = "");
-        document.getElementById("scan-status").innerText = "Saved!";
-        alert("Record Saved");
+        alert("Saved!");
+    }
+
+    function resetFields() {
+        ['customer', 'pi', 'part', 'qty', 'ppbox'].forEach(id => document.getElementById(id).value = "");
     }
 
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
-        if(dataArray.length === 0) { container.innerHTML = "<p style='text-align:center'>Empty</p>"; return; }
+        if(dataArray.length === 0) { container.innerHTML = "<p>No records.</p>"; return; }
         container.innerHTML = dataArray.map(r => `
             <div class="item-card">
-                <strong>${r.cust}</strong> | PI: ${r.pi} | QTY: ${r.qty}<br>
-                Part: ${r.part} | Box: ${r.box}<br>
-                <div style="margin-top:5px">Status: <b>${r.status}</b></div>
+                <strong>${r.cust}</strong> | PI: ${r.pi} | Qty: ${r.qty}<br>
+                Part: ${r.part} | Box: ${r.box}
+                <div class="edit-row">
+                    <select onchange="updateRecord(${r.id}, 'status', this.value)" class="edit-input">
+                        <option value="Store" ${r.status==='Store'?'selected':''}>Store</option>
+                        <option value="Laser" ${r.status==='Laser'?'selected':''}>Laser</option>
+                        <option value="Packing" ${r.status==='Packing'?'selected':''}>Packing</option>
+                        <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Shipped</option>
+                    </select>
+                    <input type="number" value="${r.qty}" class="edit-input" onchange="updateRecord(${r.id}, 'qty', this.value)">
+                </div>
                 <div class="delete-link" onclick="deleteItem(${r.id})">Delete</div>
+                <div style="font-size:0.6rem; color:#999; margin-top:5px">${r.date}</div>
             </div>
         `).join('');
+    }
+
+    function updateRecord(id, field, value) {
+        records = records.map(r => r.id === id ? {...r, [field]: value} : r);
+        localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
+        // Visual cue that it saved
+        console.log("Updated " + field);
     }
 
     function deleteItem(id) {
@@ -217,7 +198,6 @@
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
-        if(!query) { document.getElementById("search-results").innerHTML = ""; return; }
         const filtered = records.filter(r => r.part.toLowerCase().includes(query));
         renderList(filtered, "search-results");
     }
@@ -228,7 +208,7 @@
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Warehouse_${new Date().toISOString().slice(0,10)}.csv`;
+        link.download = `Warehouse_Export.csv`;
         link.click();
     }
 </script>
