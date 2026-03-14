@@ -8,31 +8,36 @@
     <style>
         :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; --info: #0288d1; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
+        
+        /* Tabs Navigation */
         .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        
         .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
         .page.active { display: block; }
+
+        /* UI Components */
         .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
-        .input-field { flex: 1; }
+        .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
         .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
         .active-scan { border: 2px solid var(--success) !important; background: #e8f5e9 !important; }
+        
         label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
-        input, select, button { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
         #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
         
-        /* Timeline UI Styles */
+        /* Timeline List UI */
         .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .timeline { margin-top: 15px; padding-left: 10px; border-left: 2px dashed #ddd; }
+        .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
         .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
         .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
         .timeline-item.active::before { background: var(--success); box-shadow: 0 0 5px var(--success); }
         .timeline-item.done::before { background: var(--primary); }
-        .log-meta { color: #888; font-style: italic; }
         .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .log-meta { color: #888; font-style: italic; }
         
         .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
@@ -47,51 +52,48 @@
 </div>
 
 <div id="scan-page" class="page active">
-    <div class="card" style="background: #fff9c4; border: 1px solid #fbc02d;">
-        <label>Current Staff / Operator</label>
-        <select id="staff-name" style="border: 2px solid var(--primary)">
-            <option value="">-- Select Your Name --</option>
-            <option value="Staff A">Staff A</option>
-            <option value="Staff B">Staff B</option>
-            <option value="Manager">Manager</option>
-        </select>
+    <div class="card" style="background: #e3f2fd; border: 1px solid #2196f3;">
+        <label style="color: #1565c0;">Staff Name / Operator ID</label>
+        <input id="staff-name" type="text" class="input-field" placeholder="Type your name here..." 
+               style="border: 2px solid var(--primary); background: #fff;">
+        <p style="font-size: 0.6rem; color: #666; margin-top: 5px;">* Phone will remember your name for all scans.</p>
     </div>
 
     <div class="card">
-        <h3 id="scan-status" style="margin-top:0">Ready to Scan</h3>
+        <h3 id="scan-status" style="margin-top:0">Scan Box</h3>
         <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear All Fields</button>
         <div id="reader"></div>
         <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
 
         <label>Customer</label>
         <div class="input-group">
-            <input id="customer" class="input-field" placeholder="Customer Name">
+            <input id="customer" class="input-field" placeholder="Scan/Type Customer">
             <button class="scan-inline-btn" onclick="startScanner('customer')">📷</button>
         </div>
 
         <label>P/I Number</label>
         <div class="input-group">
-            <input id="pi" class="input-field" placeholder="PI Number">
+            <input id="pi" class="input-field" placeholder="Scan/Type PI">
             <button class="scan-inline-btn" onclick="startScanner('pi')">📷</button>
         </div>
 
         <label>Part Number</label>
         <div class="input-group">
-            <input id="part" class="input-field" placeholder="Part Number">
+            <input id="part" class="input-field" placeholder="Scan/Type Part">
             <button class="scan-inline-btn" onclick="startScanner('part')">📷</button>
         </div>
 
         <label>Quantity</label>
-        <input id="qty" type="number" placeholder="Enter Qty">
+        <input id="qty" type="number" class="input-field" placeholder="Enter Qty">
 
         <label>Box ID</label>
         <div class="input-group">
-            <input id="ppbox" class="input-field" readonly style="background:#eee">
+            <input id="ppbox" class="input-field" readonly style="background:#eee" placeholder="Scan Box Barcode">
             <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
         </div>
 
         <label>Initial Status</label>
-        <select id="status">
+        <select id="status" class="input-field">
             <option value="Store">Store</option>
             <option value="Laser">Laser</option>
             <option value="Packing">Packing</option>
@@ -102,23 +104,34 @@
 </div>
 
 <div id="list-page" class="page">
-    <button class="excel-btn" onclick="exportToExcel()">📥 DOWNLOAD EXCEL (CSV)</button>
+    <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 DOWNLOAD EXCEL (CSV)</button>
     <div id="full-database"></div>
 </div>
 
 <div id="search-page" class="page">
     <div class="card">
         <label>Search by Part Number</label>
-        <input id="searchInput" onkeyup="searchByPart()" placeholder="Type part number here...">
+        <input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Type part number here...">
     </div>
     <div id="search-results"></div>
 </div>
 
 <script>
+    // GitHub Cloud Config (Use Method 2 to sync)
+    const GITHUB_USER = 'YOUR_USER';
+    const GITHUB_REPO = 'YOUR_REPO';
+    const GITHUB_TOKEN = 'YOUR_TOKEN'; 
+    const FILE_PATH = 'data.json';
+
     let html5QrCode;
-    // v4 adds the history object
     let records = JSON.parse(localStorage.getItem("warehouse_db_v4") || "[]");
     const scanSequence = ['customer', 'pi', 'part', 'ppbox'];
+
+    // Load Staff Name from memory
+    window.onload = () => {
+        const saved = localStorage.getItem("staff_memory");
+        if(saved) document.getElementById("staff-name").value = saved;
+    };
 
     function showPage(pageId, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -138,7 +151,6 @@
             if (html5QrCode.isScanning) await html5QrCode.stop();
             await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: { width: 250, height: 150 } }, (text) => {
                 document.getElementById(targetId).value = text;
-                if (navigator.vibrate) navigator.vibrate(50);
                 const nextIdx = scanSequence.indexOf(targetId) + 1;
                 if(nextIdx < scanSequence.length) setTimeout(() => startScanner(scanSequence[nextIdx]), 300);
                 else { stopScanner(); document.getElementById("qty").focus(); }
@@ -151,14 +163,14 @@
             html5QrCode.stop().then(() => {
                 document.getElementById("reader").style.display = "none";
                 document.getElementById("stopBtn").style.display = "none";
-                document.querySelectorAll('.input-field').forEach(el => el.classList.remove('active-scan'));
             });
         }
     }
 
-    function saveRecord() {
-        const staff = document.getElementById("staff-name").value;
-        if(!staff) return alert("Please select Staff Name first!");
+    async function saveRecord() {
+        const staff = document.getElementById("staff-name").value.trim();
+        if(!staff) return alert("Please type your Staff Name at the top!");
+        localStorage.setItem("staff_memory", staff);
 
         const initStatus = document.getElementById("status").value;
         const now = new Date().toLocaleString('en-GB', { hour12: false });
@@ -182,91 +194,74 @@
         records.unshift(item);
         localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
         ['part', 'ppbox', 'qty'].forEach(id => document.getElementById(id).value = "");
-        alert("Saved to Database!");
+        alert("Saved! Logged by " + staff);
+        // Optional: Call sync to GitHub here if configured
     }
 
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
-        if(dataArray.length === 0) { container.innerHTML = "<p style='text-align:center'>No records found.</p>"; return; }
+        if(dataArray.length === 0) { container.innerHTML = "<p style='text-align:center'>Empty.</p>"; return; }
         
         container.innerHTML = dataArray.map(r => {
             const stages = ['Store', 'Laser', 'Packing', 'Shipped'];
-            
             let timelineHtml = stages.map(s => {
                 const log = r.history && r.history[s];
-                const isDone = !!log;
-                const isActive = r.status === s;
                 return `
-                    <div class="timeline-item ${isDone ? 'done' : ''} ${isActive ? 'active' : ''}">
-                        <strong>${s}</strong>: ${isDone ? `<span class="staff-badge">${log.staff}</span>` : '<span style="color:#ccc">Pending</span>'}
-                        <br><span class="log-meta">${isDone ? log.time : ''}</span>
-                    </div>
-                `;
+                    <div class="timeline-item ${log ? 'done' : ''} ${r.status === s ? 'active' : ''}">
+                        <strong>${s}</strong>: ${log ? `<span class="staff-badge">${log.staff}</span>` : '<span style="color:#ccc">---</span>'}
+                        <br><span class="log-meta">${log ? log.time : ''}</span>
+                    </div>`;
             }).join('');
 
             return `
-                <div class="item-card">
+                <div class="item-card" style="border-left-color: ${r.status==='Shipped'?'#2e7d32':'#1976d2'}">
                     <div style="display:flex; justify-content:space-between">
-                        <span style="font-size:1.1rem; font-weight:bold; color:var(--primary)">${r.part}</span>
+                        <span style="font-weight:bold; color:var(--primary)">${r.part}</span>
                         <span class="delete-link" onclick="deleteItem(${r.id})">Delete</span>
                     </div>
-                    <div style="font-size:0.8rem; margin:5px 0">
-                        <b>Customer:</b> ${r.cust} | <b>PI:</b> ${r.pi} | <b>Box:</b> ${r.box}
-                    </div>
-
-                    <div class="timeline">
-                        ${timelineHtml}
-                    </div>
-
+                    <div style="font-size:0.75rem; margin:5px 0">Box: ${r.box} | PI: ${r.pi} | Customer: ${r.cust}</div>
+                    <div class="timeline">${timelineHtml}</div>
                     <div class="edit-row">
-                        <select onchange="updateRecord(${r.id}, 'status', this.value)" class="input-field" style="margin-top:0; padding:8px">
-                            <option value="Store" ${r.status==='Store'?'selected':''}>Move to Store</option>
-                            <option value="Laser" ${r.status==='Laser'?'selected':''}>Move to Laser</option>
-                            <option value="Packing" ${r.status==='Packing'?'selected':''}>Move to Packing</option>
+                        <select onchange="updateStatus(${r.id}, this.value)" class="input-field" style="margin-top:0">
+                            <option value="Store" ${r.status==='Store'?'selected':''}>To Store</option>
+                            <option value="Laser" ${r.status==='Laser'?'selected':''}>To Laser</option>
+                            <option value="Packing" ${r.status==='Packing'?'selected':''}>To Packing</option>
                             <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Mark Shipped</option>
                         </select>
-                        <input type="number" value="${r.qty}" class="input-field" style="margin-top:0; padding:8px" onchange="updateRecord(${r.id}, 'qty', this.value)">
+                        <input type="number" value="${r.qty}" class="input-field" style="margin-top:0" onchange="updateQty(${r.id}, this.value)">
                     </div>
-                </div>
-            `;
+                </div>`;
         }).join('');
     }
 
-    function updateRecord(id, field, value) {
-        const staff = document.getElementById("staff-name").value;
-        if(field === 'status' && !staff) {
-            alert("Select staff name at the top first!");
-            renderList(records, "full-database"); // Reset UI
-            return;
-        }
-
+    function updateStatus(id, newStatus) {
+        const staff = document.getElementById("staff-name").value.trim();
+        if(!staff) return alert("Type staff name first!");
+        
         records = records.map(r => {
             if (r.id === id) {
-                let updated = {...r, [field]: value};
-                if (field === 'status') {
-                    const now = new Date().toLocaleString('en-GB', { hour12: false });
-                    if (!updated.history) updated.history = {};
-                    updated.history[value] = { staff: staff, time: now };
-                }
-                return updated;
+                const now = new Date().toLocaleString('en-GB', { hour12: false });
+                let h = r.history || {};
+                h[newStatus] = { staff: staff, time: now };
+                return {...r, status: newStatus, history: h};
             }
             return r;
         });
-
         localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
         renderList(records, "full-database");
     }
 
+    function updateQty(id, val) {
+        records = records.map(r => r.id === id ? {...r, qty: val} : r);
+        localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
+    }
+
     function deleteItem(id) {
-        if(confirm("Permanently delete this record?")) {
+        if(confirm("Delete this part?")) {
             records = records.filter(r => r.id !== id);
             localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
             renderList(records, "full-database");
         }
-    }
-
-    function resetFields() {
-        ['customer', 'pi', 'part', 'qty', 'ppbox'].forEach(id => document.getElementById(id).value = "");
     }
 
     function searchByPart() {
@@ -275,17 +270,24 @@
         renderList(filtered, "search-results");
     }
 
+    function resetFields() {
+        ['customer', 'pi', 'part', 'qty', 'ppbox'].forEach(id => document.getElementById(id).value = "");
+    }
+
     function exportToExcel() {
-        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Status,Store_By,Laser_By,Packing_By,Shipped_By\n";
+        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Current_Status,Store_By,Store_Time,Laser_By,Laser_Time,Packing_By,Packing_Time,Shipped_By,Shipped_Time\n";
         records.forEach(r => {
             const h = r.history || {};
             csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}",` +
-                   `"${h.Store?h.Store.staff:''}","${h.Laser?h.Laser.staff:''}","${h.Packing?h.Packing.staff:''}","${h.Shipped?h.Shipped.staff:''}"\n`;
+                   `"${h.Store?h.Store.staff:''}","${h.Store?h.Store.time:''}",` +
+                   `"${h.Laser?h.Laser.staff:''}","${h.Laser?h.Laser.time:''}",` +
+                   `"${h.Packing?h.Packing.staff:''}","${h.Packing?h.Packing.time:''}",` +
+                   `"${h.Shipped?h.Shipped.staff:''}","${h.Shipped?h.Shipped.time:''}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Warehouse_Traceability_${new Date().toISOString().slice(0,10)}.csv`;
+        link.download = `Petra_Logistics_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
     }
 </script>
