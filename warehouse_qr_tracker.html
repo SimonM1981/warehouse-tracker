@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Warehouse Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<style>
+body{font-family:Arial;padding:20px;background:#f2f2f2}
+.container{background:white;padding:15px;border-radius:8px;max-width:420px;margin:auto}
+input,select,button{width:100%;padding:10px;margin-top:8px;border:1px solid #ccc;border-radius:6px}
+button{background:#1976d2;color:white;border:none}
+#reader{margin-top:10px}
+.result{background:#eef;padding:10px;margin-top:10px;border-radius:6px}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Warehouse Tracker</h2>
+
+<label>Customer Name</label>
+<input id="customer">
+
+<label>P/I Number</label>
+<input id="pi">
+
+<label>Part Number</label>
+<input id="part">
+
+<label>Quantity</label>
+<input id="qty" type="number">
+
+<label>PP Box QR</label>
+<input id="ppbox">
+
+<button onclick="startScanner()">Scan PP Box QR</button>
+
+<div id="reader"></div>
+
+<label>Status</label>
+<select id="status">
+<option>Store</option>
+<option>Laser</option>
+<option>Packing</option>
+<option>Shipped</option>
+</select>
+
+<button onclick="saveRecord()">Save Record</button>
+
+<hr>
+
+<h3>Search Part Number</h3>
+
+<input id="searchPart" placeholder="Enter Part Number">
+<button onclick="searchPart()">Search</button>
+
+<div id="result" class="result"></div>
+
+</div>
+
+<script>
+
+let records = JSON.parse(localStorage.getItem("warehouse_records") || "[]");
+
+function startScanner(){
+
+document.getElementById("reader").innerHTML="";
+
+let scanner = new Html5Qrcode("reader");
+
+scanner.start(
+{ facingMode: "environment" },
+{ fps: 10, qrbox: 250 },
+qrCodeMessage => {
+
+document.getElementById("ppbox").value = qrCodeMessage;
+scanner.stop();
+
+},
+errorMessage => {}
+);
+
+}
+
+function saveRecord(){
+
+let record={
+customer:customer.value,
+pi:pi.value,
+part:part.value,
+qty:qty.value,
+ppbox:ppbox.value,
+status:status.value,
+time:new Date().toLocaleString()
+};
+
+records.push(record);
+
+localStorage.setItem("warehouse_records",JSON.stringify(records));
+
+alert("Record Saved");
+
+}
+
+function searchPart(){
+
+let p=document.getElementById("searchPart").value;
+
+let r=records.find(x=>x.part===p);
+
+if(!r){
+
+result.innerHTML="Not found";
+return;
+
+}
+
+result.innerHTML=`
+Customer: ${r.customer}<br>
+PI: ${r.pi}<br>
+Part: ${r.part}<br>
+Qty: ${r.qty}<br>
+PP Box: ${r.ppbox}<br>
+Status: ${r.status}<br>
+Saved: ${r.time}
+`;
+
+}
+
+</script>
+
+</body>
+</html>
