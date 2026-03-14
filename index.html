@@ -2,213 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Warehouse Pro Manager</title>
+    <title>Warehouse Manager Pro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
-        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
-        
-        /* Navigation Tabs */
-        .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-        
+        :root { --primary: #1976d2; --excel: #1d6f42; --bg: #f4f7f6; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
+        .tabs { display: flex; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top:0; z-index:10; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; cursor: pointer; }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
         .page.active { display: block; }
-
         .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        label { display: block; margin-top: 10px; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; }
         input, select, button { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        
-        button { background: var(--primary); color: white; border: none; font-weight: bold; transition: 0.2s; }
-        button:active { opacity: 0.8; }
-        .save-btn { background: var(--success); margin-top: 20px; font-size: 1.1rem; }
-        
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .excel-btn { background: var(--excel); margin-bottom: 15px; }
         #reader { width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; background: #000; }
-        
-        /* Data List Display */
-        .item-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 6px solid var(--primary); position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-details { font-size: 0.9rem; line-height: 1.5; color: #333; }
-        .qty-badge { background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        
-        .edit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .edit-input { padding: 5px; font-size: 0.8rem; border: 1px solid #ccc; background: #fffde7; }
-        
-        .search-box { margin-bottom: 15px; border: 2px solid var(--primary); }
-        .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; margin-top: 10px; }
+        .item-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 6px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
 <div class="tabs">
-    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN & ADD</button>
-    <button class="tab-btn" onclick="showPage('list-page', this)">ALL DATABASE</button>
-    <button class="tab-btn" onclick="showPage('search-page', this)">SEARCH PART</button>
+    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
+    <button class="tab-btn" onclick="showPage('list-page', this)">DATABASE</button>
 </div>
 
 <div id="scan-page" class="page active">
     <div class="card">
-        <h3>New Entry</h3>
-        <label>Customer</label><input id="customer" placeholder="Customer Name">
-        <label>P/I Number</label><input id="pi" placeholder="PI-XXXX">
-        <label>Part Number</label><input id="part" placeholder="Part identifier">
-        <label>Quantity</label><input id="qty" type="number" placeholder="0">
+        <label>Customer</label><input id="customer">
+        <label>P/I Number</label><input id="pi">
+        <label>Part Number</label><input id="part">
+        <label>Quantity</label><input id="qty" type="number">
         <label>Box ID (Scan)</label><input id="ppbox" readonly style="background:#eee">
-        
         <div id="reader"></div>
-        <button id="startBtn" onclick="startScanner()" style="margin-top:10px">Open Camera</button>
-        <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin-top:10px">Stop Camera</button>
-
+        <button onclick="startScanner()" style="margin-top:10px">Open Scanner</button>
         <label>Status</label>
         <select id="status">
             <option>Store</option><option>Laser</option><option>Packing</option><option>Shipped</option>
         </select>
-        <button class="save-btn" onclick="saveRecord()">SAVE DATA</button>
+        <button onclick="saveRecord()" style="background:#2e7d32; margin-top:20px;">SAVE RECORD</button>
     </div>
 </div>
 
 <div id="list-page" class="page">
+    <button class="excel-btn" onclick="exportToExcel()">📥 DOWNLOAD EXCEL (CSV)</button>
     <div id="full-database"></div>
-</div>
-
-<div id="search-page" class="page">
-    <div class="card">
-        <label>Search by Part Number</label>
-        <input id="searchInput" onkeyup="searchByPart()" placeholder="Type part number here...">
-    </div>
-    <div id="search-results"></div>
 </div>
 
 <script>
     let html5QrCode;
-    let records = JSON.parse(localStorage.getItem("warehouse_db_v3") || "[]");
+    let records = JSON.parse(localStorage.getItem("warehouse_v4") || "[]");
 
     function showPage(pageId, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         btn.classList.add('active');
-        if(pageId === 'list-page') renderList(records, "full-database");
+        if(pageId === 'list-page') renderList();
     }
 
-    // --- SCANNER LOGIC ---
     async function startScanner() {
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-        document.getElementById("startBtn").style.display = "none";
-        document.getElementById("stopBtn").style.display = "block";
         try {
             await html5QrCode.start({ facingMode: "environment" }, 
-            { fps: 15, qrbox: { width: 280, height: 160 } },
-            (text) => {
-                document.getElementById("ppbox").value = text;
-                if (navigator.vibrate) navigator.vibrate(70);
-                stopScanner();
-            });
-        } catch (err) { stopScanner(); }
+            { fps: 15, qrbox: { width: 250, height: 150 } },
+            (text) => { document.getElementById("ppbox").value = text; html5QrCode.stop(); });
+        } catch (err) { alert("Camera Error"); }
     }
 
-    function stopScanner() {
-        if (html5QrCode && html5QrCode.isScanning) {
-            html5QrCode.stop().then(() => {
-                document.getElementById("startBtn").style.display = "block";
-                document.getElementById("stopBtn").style.display = "none";
-            });
-        }
-    }
-
-    // --- DATA LOGIC ---
     function saveRecord() {
         const item = {
             id: Date.now(),
-            cust: document.getElementById("customer").value || "N/A",
-            pi: document.getElementById("pi").value || "N/A",
-            part: document.getElementById("part").value.trim(),
-            qty: document.getElementById("qty").value || 0,
+            cust: document.getElementById("customer").value,
+            pi: document.getElementById("pi").value,
+            part: document.getElementById("part").value,
+            qty: document.getElementById("qty").value,
             box: document.getElementById("ppbox").value,
             status: document.getElementById("status").value,
             date: new Date().toLocaleString()
         };
-
-        if(!item.part || !item.box) { alert("Part # and Scan are required!"); return; }
-
-        // Dupe check
-        if(records.some(r => r.pi === item.pi && r.part === item.part && r.box === item.box)) {
-            alert("Duplicate Entry: This box is already registered under this PI!");
-            return;
-        }
-
+        if(!item.part || !item.box) return alert("Missing Part or Scan!");
         records.unshift(item);
-        localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-        alert("Saved Successfully!");
-        document.getElementById("ppbox").value = "";
+        localStorage.setItem("warehouse_v4", JSON.stringify(records));
+        alert("Saved!");
     }
 
-    function renderList(dataArray, targetId) {
-        const container = document.getElementById(targetId);
-        if(dataArray.length === 0) {
-            container.innerHTML = "<p style='text-align:center'>No records found.</p>";
-            return;
-        }
-
-        container.innerHTML = dataArray.map(r => `
+    function renderList() {
+        const container = document.getElementById("full-database");
+        container.innerHTML = records.map(r => `
             <div class="item-card">
-                <div class="item-header">
-                    <div class="item-details">
-                        <strong>${r.cust}</strong> | PI: <b>${r.pi}</b><br>
-                        Part: <span style="color:var(--primary); font-weight:bold">${r.part}</span><br>
-                        Box ID: ${r.box}
-                    </div>
-                    <span class="qty-badge">QTY: ${r.qty}</span>
-                </div>
-                
-                <div class="edit-row">
-                    <div>
-                        <label style="margin:0; font-size:0.6rem">Status</label>
-                        <select class="edit-input" onchange="updateRecord(${r.id}, 'status', this.value)">
-                            <option ${r.status==='Store'?'selected':''}>Store</option>
-                            <option ${r.status==='Laser'?'selected':''}>Laser</option>
-                            <option ${r.status==='Packing'?'selected':''}>Packing</option>
-                            <option ${r.status==='Shipped'?'selected':''}>Shipped</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="margin:0; font-size:0.6rem">Change Qty</label>
-                        <input type="number" class="edit-input" value="${r.qty}" 
-                            onchange="updateRecord(${r.id}, 'qty', this.value)">
-                    </div>
-                </div>
-                <div class="delete-link" onclick="deleteItem(${r.id})">Delete Entry</div>
-                <div style="font-size:0.65rem; color:#999; margin-top:5px">Recorded: ${r.date}</div>
+                <strong>${r.part}</strong> (Qty: ${r.qty})<br>
+                <small>PI: ${r.pi} | Box: ${r.box} | Status: ${r.status}</small>
             </div>
         `).join('');
     }
 
-    function updateRecord(id, field, value) {
-        records = records.map(r => r.id === id ? {...r, [field]: value} : r);
-        localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-    }
+    // THIS FUNCTION CREATES THE EXCEL-COMPATIBLE FILE
+    function exportToExcel() {
+        if (records.length === 0) return alert("No data!");
+        
+        let csvContent = "\uFEFF"; // Byte Order Mark for Excel to read UTF-8 correctly
+        csvContent += "Date,Customer,PI,Part,Quantity,BoxID,Status\n";
+        
+        records.forEach(r => {
+            csvContent += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}"\n`;
+        });
 
-    function deleteItem(id) {
-        if(confirm("Delete this record permanently?")) {
-            records = records.filter(r => r.id !== id);
-            localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-            renderList(records, "full-database");
-            searchByPart(); // Update search view if open
-        }
-    }
-
-    function searchByPart() {
-        const query = document.getElementById("searchInput").value.trim().toLowerCase();
-        if(!query) {
-            document.getElementById("search-results").innerHTML = "";
-            return;
-        }
-        const filtered = records.filter(r => r.part.toLowerCase().includes(query));
-        renderList(filtered, "search-results");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Warehouse_Report_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
-
 </body>
 </html>
