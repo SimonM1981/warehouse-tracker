@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Petra Warehouse - Pro Traceability</title>
+    <title>MG Warehouse - Pro Traceability</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; --info: #0288d1; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
         
-        /* Tabs Navigation */
         .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
@@ -17,7 +16,6 @@
         .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
         .page.active { display: block; }
 
-        /* UI Components */
         .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
         .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
@@ -29,7 +27,6 @@
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
         #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
         
-        /* Timeline List UI */
         .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
         .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
@@ -37,7 +34,7 @@
         .timeline-item.active::before { background: var(--success); box-shadow: 0 0 5px var(--success); }
         .timeline-item.done::before { background: var(--primary); }
         .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .log-meta { color: #888; font-style: italic; }
+        .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
         
         .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
@@ -47,87 +44,79 @@
 
 <div class="tabs">
     <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN & ADD</button>
-    <button class="tab-btn" onclick="showPage('list-page', this)">ALL DATABASE</button>
-    <button class="tab-btn" onclick="showPage('search-page', this)">SEARCH PART</button>
+    <button class="tab-btn" onclick="showPage('list-page', this)">DATABASE</button>
+    <button class="tab-btn" onclick="showPage('search-page', this)">SEARCH TRACE</button>
 </div>
 
 <div id="scan-page" class="page active">
     <div class="card" style="background: #e3f2fd; border: 1px solid #2196f3;">
-        <label style="color: #1565c0;">Staff Name / Operator ID</label>
-        <input id="staff-name" type="text" class="input-field" placeholder="Type your name here..." 
+        <label style="color: #1565c0;">Staff Name (Typing records who is scanning)</label>
+        <input id="staff-name" type="text" class="input-field" placeholder="Enter your name..." 
                style="border: 2px solid var(--primary); background: #fff;">
-        <p style="font-size: 0.6rem; color: #666; margin-top: 5px;">* Phone will remember your name for all scans.</p>
     </div>
 
     <div class="card">
-        <h3 id="scan-status" style="margin-top:0">Scan Box</h3>
-        <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear All Fields</button>
+        <h3 id="scan-status" style="margin-top:0">Register New Batch</h3>
+        <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
         <div id="reader"></div>
         <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
 
         <label>Customer</label>
         <div class="input-group">
-            <input id="customer" class="input-field" placeholder="Scan/Type Customer">
+            <input id="customer" class="input-field" placeholder="Customer">
             <button class="scan-inline-btn" onclick="startScanner('customer')">📷</button>
         </div>
 
         <label>P/I Number</label>
         <div class="input-group">
-            <input id="pi" class="input-field" placeholder="Scan/Type PI">
+            <input id="pi" class="input-field" placeholder="PI">
             <button class="scan-inline-btn" onclick="startScanner('pi')">📷</button>
         </div>
 
         <label>Part Number</label>
         <div class="input-group">
-            <input id="part" class="input-field" placeholder="Scan/Type Part">
+            <input id="part" class="input-field" placeholder="Part #">
             <button class="scan-inline-btn" onclick="startScanner('part')">📷</button>
         </div>
 
         <label>Quantity</label>
-        <input id="qty" type="number" class="input-field" placeholder="Enter Qty">
+        <input id="qty" type="number" class="input-field" placeholder="Qty">
 
         <label>Box ID</label>
         <div class="input-group">
-            <input id="ppbox" class="input-field" readonly style="background:#eee" placeholder="Scan Box Barcode">
+            <input id="ppbox" class="input-field" readonly style="background:#eee" placeholder="Scan Box ID">
             <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
         </div>
 
-        <label>Initial Status</label>
+        <label>Stage</label>
         <select id="status" class="input-field">
             <option value="Store">Store</option>
             <option value="Laser">Laser</option>
             <option value="Packing">Packing</option>
         </select>
         
-        <button class="save-btn" onclick="saveRecord()">SAVE DATA</button>
+        <button class="save-btn" onclick="saveRecord()">SAVE TO SYSTEM</button>
     </div>
 </div>
 
 <div id="list-page" class="page">
-    <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 DOWNLOAD EXCEL (CSV)</button>
+    <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 DOWNLOAD FULL EXCEL</button>
     <div id="full-database"></div>
 </div>
 
 <div id="search-page" class="page">
-    <div class="card">
-        <label>Search by Part Number</label>
-        <input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Type part number here...">
+    <div class="card" style="border-top: 5px solid var(--info)">
+        <label>Search Part (Trace Who Lasered/Packed)</label>
+        <input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Type Part # to see history...">
     </div>
     <div id="search-results"></div>
 </div>
 
 <script>
-    // GitHub Cloud Config (Use Method 2 to sync)
-    const GITHUB_USER = 'YOUR_USER';
-    const GITHUB_REPO = 'YOUR_REPO';
-    const GITHUB_TOKEN = 'YOUR_TOKEN'; 
-    const FILE_PATH = 'data.json';
-
     let html5QrCode;
-    let records = JSON.parse(localStorage.getItem("warehouse_db_v4") || "[]");
+    let records = JSON.parse(localStorage.getItem("warehouse_db_v5") || "[]");
     const scanSequence = ['customer', 'pi', 'part', 'ppbox'];
 
-    // Load Staff Name from memory
     window.onload = () => {
         const saved = localStorage.getItem("staff_memory");
         if(saved) document.getElementById("staff-name").value = saved;
@@ -167,9 +156,9 @@
         }
     }
 
-    async function saveRecord() {
+    function saveRecord() {
         const staff = document.getElementById("staff-name").value.trim();
-        if(!staff) return alert("Please type your Staff Name at the top!");
+        if(!staff) return alert("Please enter Staff Name first!");
         localStorage.setItem("staff_memory", staff);
 
         const initStatus = document.getElementById("status").value;
@@ -189,18 +178,17 @@
             }
         };
 
-        if(!item.part || !item.box) return alert("Part # and Box ID required!");
+        if(!item.part || !item.box) return alert("Error: Part # and Box ID required!");
         
         records.unshift(item);
-        localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
+        localStorage.setItem("warehouse_db_v5", JSON.stringify(records));
         ['part', 'ppbox', 'qty'].forEach(id => document.getElementById(id).value = "");
-        alert("Saved! Logged by " + staff);
-        // Optional: Call sync to GitHub here if configured
+        alert("Batch Saved!");
     }
 
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
-        if(dataArray.length === 0) { container.innerHTML = "<p style='text-align:center'>Empty.</p>"; return; }
+        if(dataArray.length === 0) { container.innerHTML = "<p style='text-align:center'>No results found.</p>"; return; }
         
         container.innerHTML = dataArray.map(r => {
             const stages = ['Store', 'Laser', 'Packing', 'Shipped'];
@@ -208,25 +196,25 @@
                 const log = r.history && r.history[s];
                 return `
                     <div class="timeline-item ${log ? 'done' : ''} ${r.status === s ? 'active' : ''}">
-                        <strong>${s}</strong>: ${log ? `<span class="staff-badge">${log.staff}</span>` : '<span style="color:#ccc">---</span>'}
+                        <strong>${s}</strong>: ${log ? `<span class="staff-badge">${log.staff}</span>` : '<span style="color:#ccc">Waiting</span>'}
                         <br><span class="log-meta">${log ? log.time : ''}</span>
                     </div>`;
             }).join('');
 
             return `
-                <div class="item-card" style="border-left-color: ${r.status==='Shipped'?'#2e7d32':'#1976d2'}">
+                <div class="item-card">
                     <div style="display:flex; justify-content:space-between">
                         <span style="font-weight:bold; color:var(--primary)">${r.part}</span>
                         <span class="delete-link" onclick="deleteItem(${r.id})">Delete</span>
                     </div>
-                    <div style="font-size:0.75rem; margin:5px 0">Box: ${r.box} | PI: ${r.pi} | Customer: ${r.cust}</div>
+                    <div style="font-size:0.75rem; margin:5px 0"><b>Box:</b> ${r.box} | <b>PI:</b> ${r.pi}</div>
                     <div class="timeline">${timelineHtml}</div>
                     <div class="edit-row">
                         <select onchange="updateStatus(${r.id}, this.value)" class="input-field" style="margin-top:0">
-                            <option value="Store" ${r.status==='Store'?'selected':''}>To Store</option>
-                            <option value="Laser" ${r.status==='Laser'?'selected':''}>To Laser</option>
-                            <option value="Packing" ${r.status==='Packing'?'selected':''}>To Packing</option>
-                            <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Mark Shipped</option>
+                            <option value="Store" ${r.status==='Store'?'selected':''}>Store</option>
+                            <option value="Laser" ${r.status==='Laser'?'selected':''}>Laser</option>
+                            <option value="Packing" ${r.status==='Packing'?'selected':''}>Packing</option>
+                            <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Shipped</option>
                         </select>
                         <input type="number" value="${r.qty}" class="input-field" style="margin-top:0" onchange="updateQty(${r.id}, this.value)">
                     </div>
@@ -236,7 +224,7 @@
 
     function updateStatus(id, newStatus) {
         const staff = document.getElementById("staff-name").value.trim();
-        if(!staff) return alert("Type staff name first!");
+        if(!staff) return alert("Who is making this change? Enter name in Scan tab!");
         
         records = records.map(r => {
             if (r.id === id) {
@@ -247,25 +235,27 @@
             }
             return r;
         });
-        localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
+        localStorage.setItem("warehouse_db_v5", JSON.stringify(records));
         renderList(records, "full-database");
     }
 
     function updateQty(id, val) {
         records = records.map(r => r.id === id ? {...r, qty: val} : r);
-        localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
+        localStorage.setItem("warehouse_db_v5", JSON.stringify(records));
     }
 
     function deleteItem(id) {
-        if(confirm("Delete this part?")) {
+        if(confirm("Permanently delete this part from history?")) {
             records = records.filter(r => r.id !== id);
-            localStorage.setItem("warehouse_db_v4", JSON.stringify(records));
+            localStorage.setItem("warehouse_db_v5", JSON.stringify(records));
             renderList(records, "full-database");
+            searchByPart(); // Update search results if deleting from search
         }
     }
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        if(query === "") { document.getElementById("search-results").innerHTML = ""; return; }
         const filtered = records.filter(r => r.part.toLowerCase().includes(query));
         renderList(filtered, "search-results");
     }
@@ -275,7 +265,7 @@
     }
 
     function exportToExcel() {
-        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Current_Status,Store_By,Store_Time,Laser_By,Laser_Time,Packing_By,Packing_Time,Shipped_By,Shipped_Time\n";
+        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Status,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Shipped_Staff,Shipped_Time\n";
         records.forEach(r => {
             const h = r.history || {};
             csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}",` +
@@ -287,7 +277,7 @@
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Petra_Logistics_${new Date().toISOString().slice(0,10)}.csv`;
+        link.download = `Petra_Traceability_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
     }
 </script>
