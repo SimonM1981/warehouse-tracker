@@ -9,7 +9,6 @@
         :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
         
-        /* Navigation Tabs */
         .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
@@ -21,21 +20,20 @@
         label { display: block; margin-top: 10px; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; }
         input, select, button { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         
-        button { background: var(--primary); color: white; border: none; font-weight: bold; transition: 0.2s; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; transition: 0.2s; cursor: pointer; }
         button:active { opacity: 0.8; }
         .save-btn { background: var(--success); margin-top: 20px; font-size: 1.1rem; }
-        .excel-btn { background: var(--excel); margin-bottom: 15px; display: block; }
+        .excel-btn { background: var(--excel); margin-bottom: 15px; }
         
         #reader { width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; background: #000; }
         
-        /* Data List Display */
         .item-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 6px solid var(--primary); position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-details { font-size: 0.9rem; line-height: 1.5; color: #333; }
+        .item-details { font-size: 0.9rem; line-height: 1.4; color: #333; }
         .qty-badge { background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         
         .edit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .edit-input { padding: 5px; font-size: 0.8rem; border: 1px solid #ccc; background: #fffde7; }
+        .edit-input { padding: 8px; font-size: 0.85rem; border: 1px solid #ccc; background: #fffde7; border-radius: 4px; }
         
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; margin-top: 10px; }
     </style>
@@ -84,7 +82,6 @@
 
 <script>
     let html5QrCode;
-    // Keeping your original storage key so your data is still there
     let records = JSON.parse(localStorage.getItem("warehouse_db_v3") || "[]");
 
     function showPage(pageId, btn) {
@@ -92,6 +89,7 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         btn.classList.add('active');
+        
         if(pageId === 'list-page') renderList(records, "full-database");
     }
 
@@ -134,13 +132,13 @@
         if(!item.part || !item.box) { alert("Part # and Scan are required!"); return; }
 
         if(records.some(r => r.pi === item.pi && r.part === item.part && r.box === item.box)) {
-            alert("Duplicate Entry: This box is already registered under this PI!");
+            alert("Duplicate Entry Found!");
             return;
         }
 
         records.unshift(item);
         localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
-        alert("Saved Successfully!");
+        alert("Saved!");
         document.getElementById("ppbox").value = "";
     }
 
@@ -157,7 +155,7 @@
                     <div class="item-details">
                         <strong>${r.cust}</strong> | PI: <b>${r.pi}</b><br>
                         Part: <span style="color:var(--primary); font-weight:bold">${r.part}</span><br>
-                        Box ID: ${r.box}
+                        Box: ${r.box}
                     </div>
                     <span class="qty-badge">QTY: ${r.qty}</span>
                 </div>
@@ -165,10 +163,10 @@
                     <div>
                         <label style="margin:0; font-size:0.6rem">Status</label>
                         <select class="edit-input" onchange="updateRecord(${r.id}, 'status', this.value)">
-                            <option ${r.status==='Store'?'selected':''}>Store</option>
-                            <option ${r.status==='Laser'?'selected':''}>Laser</option>
-                            <option ${r.status==='Packing'?'selected':''}>Packing</option>
-                            <option ${r.status==='Shipped'?'selected':''}>Shipped</option>
+                            <option value="Store" ${r.status==='Store'?'selected':''}>Store</option>
+                            <option value="Laser" ${r.status==='Laser'?'selected':''}>Laser</option>
+                            <option value="Packing" ${r.status==='Packing'?'selected':''}>Packing</option>
+                            <option value="Shipped" ${r.status==='Shipped'?'selected':''}>Shipped</option>
                         </select>
                     </div>
                     <div>
@@ -178,18 +176,29 @@
                     </div>
                 </div>
                 <div class="delete-link" onclick="deleteItem(${r.id})">Delete Entry</div>
-                <div style="font-size:0.65rem; color:#999; margin-top:5px">Recorded: ${r.date}</div>
+                <div style="font-size:0.65rem; color:#999; margin-top:5px">Saved: ${r.date}</div>
             </div>
         `).join('');
     }
 
     function updateRecord(id, field, value) {
-        records = records.map(r => r.id === id ? {...r, [field]: value} : r);
+        // Find the record and update it in the array
+        records = records.map(r => {
+            if (r.id === id) {
+                return { ...r, [field]: value };
+            }
+            return r;
+        });
+        
+        // Save back to local storage immediately
         localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
+        
+        // Brief visual confirmation for mobile users
+        console.log(`Updated ${field} to ${value}`);
     }
 
     function deleteItem(id) {
-        if(confirm("Delete this record permanently?")) {
+        if(confirm("Delete this record?")) {
             records = records.filter(r => r.id !== id);
             localStorage.setItem("warehouse_db_v3", JSON.stringify(records));
             renderList(records, "full-database");
@@ -199,35 +208,27 @@
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        const resultsDiv = document.getElementById("search-results");
         if(!query) {
-            document.getElementById("search-results").innerHTML = "";
+            resultsDiv.innerHTML = "";
             return;
         }
         const filtered = records.filter(r => r.part.toLowerCase().includes(query));
         renderList(filtered, "search-results");
     }
 
-    // NEW EXCEL EXPORT LOGIC
     function exportToExcel() {
-        if (records.length === 0) return alert("No data to export!");
-        
-        let csvContent = "\uFEFF"; // BOM for Excel UTF-8 compatibility
-        csvContent += "Date,Customer,PI Number,Part Number,Quantity,Box ID,Status\n";
-        
+        if (records.length === 0) return alert("No data!");
+        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Status\n";
         records.forEach(r => {
-            csvContent += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}"\n`;
+            csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.status}"\n`;
         });
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Warehouse_Report_${new Date().toISOString().slice(0,10)}.csv`);
-        document.body.appendChild(link);
+        link.href = URL.createObjectURL(blob);
+        link.download = `Warehouse_Export_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
-        document.body.removeChild(link);
     }
 </script>
-
 </body>
 </html>
