@@ -72,7 +72,7 @@
      
         <label>Box ID</label>
         <div class="input-group">
-            <input id="ppbox" class="input-field" readonly style="background:#eee">
+            <input id="ppbox" class="input-field">  <!-- removed readonly & gray background -->
             <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
         </div>
         <label>Pallet No.</label>
@@ -198,7 +198,6 @@
         }
 
         container.innerHTML = dataArray.map(r => {
-            // Updated stages: Shipped → Packed
             const stages = ['Store', 'Laser', 'Packing', 'Packed'];
             let timeline = stages.map(s => {
                 const staffKey = s === 'Packed' ? 'Packed_Staff' : `${s}_Staff`;
@@ -216,6 +215,7 @@
                 <strong>${r["Part Number"] || '—'}</strong>
                 <span class="delete-link" onclick="alert('Delete not yet implemented')">Delete</span>
                 <div style="font-size:0.75rem; margin:4px 0 8px;">
+                    Customer: ${r["Customer Name"] || '—'}<br>
                     Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No"] || '—'} • PI: ${r["PI"] || '—'}
                 </div>
                 <div class="timeline">${timeline}</div>
