@@ -1,321 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>MG Warehouse - Multi-User Traceability</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <style>
-        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
-     
-        .staff-header { background: #2196f3; color: white; padding: 10px; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .staff-header label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        #staff-name { width: 100%; padding: 10px; border-radius: 4px; border: none; font-size: 1rem; font-weight: bold; box-sizing: border-box; }
-        .tabs { display: flex; background: #fff; position: sticky; top: 72px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-     
-        .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
-        .page.active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
-        .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
-        .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
-     
-        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
-        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
-        .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
-        #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
-     
-        .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
-        .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
-        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
-        .timeline-item.done::before { background: var(--primary); }
-        .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
-     
-        .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
-    </style>
+<meta charset="UTF-8">
+<title>MG Warehouse - Multi-User Traceability</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+:root { --primary:#1976d2; --success:#2e7d32; --danger:#d32f2f; --bg:#f4f7f6; }
+body { font-family:Arial; background:var(--bg); margin:0; }
+
+.staff-header { background:#2196f3; color:white; padding:10px; position:sticky; top:0; }
+#staff-name { width:100%; padding:10px; font-size:16px; }
+
+.tabs { display:flex; background:#fff; }
+.tab-btn { flex:1; padding:12px; border:none; cursor:pointer; }
+.tab-btn.active { color:var(--primary); border-bottom:3px solid var(--primary); }
+
+.page { display:none; padding:15px; max-width:600px; margin:auto; }
+.page.active { display:block; }
+
+.card { background:white; padding:15px; border-radius:10px; margin-bottom:15px; }
+
+.input-group { display:flex; gap:5px; }
+.input-field { flex:1; padding:10px; }
+
+button { padding:12px; border:none; color:white; font-weight:bold; cursor:pointer; }
+.save-btn { background:var(--success); margin-top:15px; }
+
+.scan-inline-btn { width:50px; }
+
+#reader { display:none; margin-top:10px; }
+
+.item-card { background:white; padding:10px; margin-bottom:10px; border-left:5px solid var(--primary); }
+</style>
 </head>
+
 <body>
+
 <div class="staff-header">
-    <label>Worker Name (type freely)</label>
-    <input id="staff-name" type="text" placeholder="Your name...">
+<label>Worker Name</label>
+<input id="staff-name" placeholder="Your name">
 </div>
+
 <div class="tabs">
-    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
-    <button class="tab-btn" onclick="showPage('list-page', this)">DATABASE</button>
-    <button class="tab-btn" onclick="showPage('search-page', this)">TRACE</button>
+<button class="tab-btn active" onclick="showPage('scan-page',this)">SCAN</button>
+<button class="tab-btn" onclick="showPage('list-page',this)">DATABASE</button>
 </div>
 
+<!-- SCAN -->
 <div id="scan-page" class="page active">
-    <div class="card">
-        <h3>New Entry</h3>
-        <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
-        <div id="reader"></div>
-        <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
-     
-        <label>Customer</label>
-        <div class="input-group"><input id="customer" class="input-field"><button class="scan-inline-btn" onclick="startScanner('customer')">📷</button></div>
-     
-        <label>PI</label>
-        <div class="input-group"><input id="pi" class="input-field"><button class="scan-inline-btn" onclick="startScanner('pi')">📷</button></div>
-     
-        <label>Part Number</label>
-        <div class="input-group"><input id="part" class="input-field"><button class="scan-inline-btn" onclick="startScanner('part')">📷</button></div>
-     
-        <label>Qty</label>
-        <input id="qty" type="number" class="input-field">
-     
-        <label>Box ID</label>
-        <div class="input-group">
-            <input id="ppbox" class="input-field">
-            <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
-        </div>
-        <label>Pallet No.</label>
-        <div class="input-group">
-            <input id="pallet" class="input-field" placeholder="Pallet number (optional)">
-            <button class="scan-inline-btn" onclick="startScanner('pallet')">📷</button>
-        </div>
-     
-        <label>Initial Stage</label>
-        <select id="status" class="input-field">
-            <option value="Store">Store</option>
-            <option value="Laser">Laser</option>
-            <option value="Packing">Packing</option>
-            <option value="Packed">Packed</option>
-        </select>
-     
-        <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
-    </div>
+<div class="card">
+
+<div id="reader"></div>
+<button onclick="stopScanner()" style="background:#d32f2f;margin-bottom:10px;">Stop Scan</button>
+
+<label>Customer</label>
+<div class="input-group">
+<input id="customer" class="input-field">
+<button onclick="startScanner('customer')" class="scan-inline-btn">📷</button>
 </div>
 
+<label>PI</label>
+<div class="input-group">
+<input id="pi" class="input-field">
+<button onclick="startScanner('pi')" class="scan-inline-btn">📷</button>
+</div>
+
+<label>Part</label>
+<div class="input-group">
+<input id="part" class="input-field">
+<button onclick="startScanner('part')" class="scan-inline-btn">📷</button>
+</div>
+
+<label>Qty</label>
+<input id="qty" type="number" class="input-field">
+
+<label>Box</label>
+<div class="input-group">
+<input id="ppbox" class="input-field">
+<button onclick="startScanner('ppbox')" class="scan-inline-btn">📷</button>
+</div>
+
+<label>Pallet</label>
+<input id="pallet" class="input-field">
+
+<label>Status</label>
+<select id="status" class="input-field">
+<option>Store</option>
+<option>Laser</option>
+<option>Packing</option>
+<option>Packed</option>
+</select>
+
+<button class="save-btn" onclick="saveRecord()">SAVE</button>
+
+</div>
+</div>
+
+<!-- DATABASE -->
 <div id="list-page" class="page">
-    <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
-    <div id="full-database">Loading records from Google Sheet...</div>
-</div>
-
-<div id="search-page" class="page">
-    <div class="card"><label>Search Part Trace</label><input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Part #..."></div>
-    <div id="search-results"></div>
+<button onclick="loadRecords()" class="save-btn">LOAD DATA</button>
+<div id="full-database"></div>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
-    let html5QrCode;
-    let allRecords = [];
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
 
-    async function startScanner(targetId) {
-        document.getElementById("reader").style.display = "block";
-        document.getElementById("stopBtn").style.display = "block";
-        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-        try {
-            if (html5QrCode.isScanning) await html5QrCode.stop();
-            await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (text) => {
-                document.getElementById(targetId).value = text.trim();
-                stopScanner();
-            });
-        } catch (err) {
-            console.error("Scanner error:", err);
-        }
-    }
+let html5QrCode;
+let allRecords = [];
 
-    function stopScanner() {
-        if (html5QrCode && html5QrCode.isScanning) {
-            html5QrCode.stop().then(() => {
-                document.getElementById("reader").style.display = "none";
-                document.getElementById("stopBtn").style.display = "none";
-            });
-        }
-    }
+// ---------- SCANNER ----------
+async function startScanner(targetId){
+document.getElementById("reader").style.display="block";
 
-    function showPage(pageId, btn) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        btn.classList.add('active');
-        if (pageId === 'list-page') loadRecords();
-    }
+if(!html5QrCode) html5QrCode = new Html5Qrcode("reader");
 
-    async function loadRecords() {
-        const container = document.getElementById("full-database");
-        container.innerHTML = "Loading records from Google Sheet...";
-        try {
-            const response = await fetch(WEB_APP_URL);
-            if (!response.ok) throw new Error(`Network error: ${response.status}`);
-            const data = await response.json();
-            if (data.error) throw new Error(data.error);
-            allRecords = data;
-            renderList(allRecords, "full-database");
-        } catch (err) {
-            container.innerHTML = `<p style="color:red;">Error loading data: ${err.message}</p>`;
-            console.error("Load error:", err);
-        }
-    }
+await html5QrCode.start(
+{ facingMode:"environment" },
+{ fps:10, qrbox:250 },
+(text)=>{
+document.getElementById(targetId).value = text;
+stopScanner();
+});
+}
 
-    async function saveRecord() {
-        const staff = document.getElementById("staff-name").value.trim();
-        if (!staff) return alert("Please type your name at the top!");
+function stopScanner(){
+if(html5QrCode){
+html5QrCode.stop();
+document.getElementById("reader").style.display="none";
+}
+}
 
-        const payload = {
-            action: "add",
-            cust: document.getElementById("customer").value.trim() || "N/A",
-            pi: document.getElementById("pi").value.trim() || "N/A",
-            part: document.getElementById("part").value.trim(),
-            qty: Number(document.getElementById("qty").value) || 0,
-            box: document.getElementById("ppbox").value.trim(),
-            pallet: document.getElementById("pallet").value.trim() || "—",
-            status: document.getElementById("status").value,
-            staff: staff
-        };
+// ---------- NAV ----------
+function showPage(id,btn){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+btn.classList.add('active');
+}
 
-        if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
+// ---------- SAVE ----------
+async function saveRecord(){
 
-        try {
-            await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                cache: "no-cache",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            alert("Record saved to Google Sheet!");
-            resetFields();
-        } catch (err) {
-            alert("Failed to save: " + err.message);
-            console.error("Save error:", err);
-        }
-    }
+const staff = document.getElementById("staff-name").value.trim();
+if(!staff) return alert("Enter your name");
 
-    function renderList(dataArray, targetId) {
-        const container = document.getElementById(targetId);
-        if (!dataArray || dataArray.length === 0) {
-            container.innerHTML = "<p>No records found in the sheet.</p>";
-            return;
-        }
+const payload = {
+action:"add",
+cust:customer.value,
+pi:pi.value,
+part:part.value,
+qty:Number(qty.value)||0,
+box:ppbox.value,
+pallet:pallet.value||"—",
+status:status.value,
+staff:staff
+};
 
-        container.innerHTML = dataArray.map(r => {
-            const stages = ['Store', 'Laser', 'Packing', 'Packed'];
-            let timeline = stages.map(s => {
-                const staffKey = s === 'Packed' ? 'Packed_Staff' : `${s}_Staff`;
-                const timeKey  = s === 'Packed' ? 'Packed_Time'  : `${s}_Time`;
-                const staff = r[staffKey] || '';
-                const time  = r[timeKey]  || '';
-                return `<div class="timeline-item ${staff ? 'done' : ''}">
-                    <strong>${s}</strong>: ${staff ? `<span class="staff-badge">${staff}</span><br><span class="log-meta">${time}</span>` : 'Waiting'}
-                </div>`;
-            }).join('');
+if(!payload.part || !payload.box) return alert("Missing Part or Box");
 
-            const currentStatus = r["Current_Status"] || r["Initial Stage"] || "Store";
+try{
 
-            return `<div class="item-card">
-                <strong>${r["Part Number"] || '—'}</strong>
-                <span class="delete-link" onclick="alert('Delete not yet implemented')">Delete</span>
-                <div style="font-size:0.75rem; margin:4px 0 8px;">
-                    Customer: ${r["Customer Name"] || '—'}<br>
-                    Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No"] || '—'} • PI: ${r["PI"] || '—'}
-                </div>
-                <div class="timeline">${timeline}</div>
+const res = await fetch(WEB_APP_URL,{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify(payload)
+});
 
-                <!-- Editable fields for status change -->
-                <div class="edit-row">
-                    <div>
-                        <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Status</label>
-                        <select id="status-${r.id}" class="input-field">
-                            <option value="Store"   ${currentStatus === 'Store'   ? 'selected' : ''}>Store</option>
-                            <option value="Laser"   ${currentStatus === 'Laser'   ? 'selected' : ''}>Laser</option>
-                            <option value="Packing" ${currentStatus === 'Packing' ? 'selected' : ''}>Packing</option>
-                            <option value="Packed"  ${currentStatus === 'Packed'  ? 'selected' : ''}>Packed</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Box ID</label>
-                        <input type="text" id="box-${r.id}" class="input-field" value="${r["BOX ID"] || ''}">
-                    </div>
-                    <div>
-                        <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Pallet No</label>
-                        <input type="text" id="pallet-${r.id}" class="input-field" value="${r["Pallet No"] || ''}">
-                    </div>
-                </div>
+const text = await res.text();
+console.log("RAW POST:",text);
 
-                <div style="margin-top:12px;">
-                    <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Responsible Staff</label>
-                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here..." value="">
-                </div>
+const data = JSON.parse(text);
 
-                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px; font-size:0.95rem; padding:10px;">
-                    SAVE STATUS + STAFF + BOX/PALLET
-                </button>
-            </div>`;
-        }).join('');
-    }
+if(data.error) throw new Error(data.error);
 
-    async function saveStatusUpdate(rowId) {
-        const topStaff = document.getElementById("staff-name").value.trim();
-        if (!topStaff) return alert("Please type your name at the top!");
+alert("✅ Saved: " + data.message);
 
-        const statusEl  = document.getElementById(`status-${rowId}`);
-        const boxEl     = document.getElementById(`box-${rowId}`);
-        const palletEl  = document.getElementById(`pallet-${rowId}`);
-        const staffEl   = document.getElementById(`staff-${rowId}`);
+resetFields();
 
-        const newStatus   = statusEl.value;
-        const newBox      = boxEl.value.trim();
-        const newPallet   = palletEl.value.trim();
-        const responsible = staffEl.value.trim() || topStaff;
+}catch(err){
+alert("❌ Error: "+err.message);
+console.error(err);
+}
+}
 
-        if (!newBox) return alert("Box ID cannot be empty when updating!");
+// ---------- LOAD ----------
+async function loadRecords(){
 
-        try {
-            await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                cache: "no-cache",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "update",
-                    rowIndex: rowId,
-                    status: newStatus,
-                    box: newBox,
-                    pallet: newPallet || "—",
-                    staff: responsible
-                })
-            });
-            alert(`Updated:\nStatus → ${newStatus}\nBox ID → ${newBox}\nPallet → ${newPallet || '—'}\nStaff → ${responsible}`);
-            loadRecords(); // refresh list
-        } catch (err) {
-            alert("Update failed: " + err.message);
-            console.error("Update error:", err);
-        }
-    }
+const container = document.getElementById("full-database");
+container.innerHTML = "Loading...";
 
-    function searchByPart() {
-        const query = document.getElementById("searchInput").value.trim().toLowerCase();
-        const filtered = allRecords.filter(r => (r["Part Number"] || "").toLowerCase().includes(query));
-        renderList(filtered, "search-results");
-    }
+try{
 
-    function resetFields() {
-        ['customer', 'pi', 'part', 'qty', 'ppbox', 'pallet'].forEach(id => {
-            document.getElementById(id).value = "";
-        });
-    }
+const res = await fetch(WEB_APP_URL);
+const text = await res.text();
+console.log("RAW GET:",text);
 
-    function exportToExcel() {
-        if (allRecords.length === 0) return alert("No data loaded – switch to DATABASE tab first");
-        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Initial Stage,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Packed_Staff,Packed_Time,Current_Status\n";
-        allRecords.forEach(r => {
-            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Initial Stage"]||''}","${r.Store_Staff||''}","${r.Store_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r.Packed_Staff||''}","${r.Packed_Time||''}","${r["Current_Status"]||r["Initial Stage"]||''}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `Warehouse_Trace_${new Date().toISOString().slice(0,10)}.csv`;
-        link.click();
-    }
+const data = JSON.parse(text);
+
+if(data.error) throw new Error(data.error);
+
+allRecords = data;
+
+container.innerHTML = data.map(r=>`
+<div class="item-card">
+<b>${r["Part Number"]||""}</b><br>
+Customer: ${r["Customer Name"]||""}<br>
+Box: ${r["BOX ID"]||""}<br>
+Pallet: ${r["Pallet No"]||""}<br>
+Status: ${r["Current_Status"]||r["Initial Stage"]}
+</div>
+`).join("");
+
+}catch(err){
+container.innerHTML = "❌ Error: "+err.message;
+}
+}
+
+// ---------- RESET ----------
+function resetFields(){
+["customer","pi","part","qty","ppbox","pallet"].forEach(id=>{
+document.getElementById(id).value="";
+});
+}
 </script>
+
 </body>
 </html>
