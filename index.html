@@ -8,27 +8,26 @@
     <style>
         :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
-       
+      
         .staff-header { background: #2196f3; color: white; padding: 10px; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .staff-header label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 5px; }
         #staff-name { width: 100%; padding: 10px; border-radius: 4px; border: none; font-size: 1rem; font-weight: bold; box-sizing: border-box; }
-
         .tabs { display: flex; background: #fff; position: sticky; top: 72px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-       
+      
         .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
         .page.active { display: block; }
         .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
         .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
         .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
-       
+      
         label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
         #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
-       
+      
         .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
         .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
@@ -36,18 +35,16 @@
         .timeline-item.done::before { background: var(--primary); }
         .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
-       
+      
         .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
     </style>
 </head>
 <body>
-
 <div class="staff-header">
     <label>Worker Name (type freely)</label>
     <input id="staff-name" type="text" placeholder="Your name...">
 </div>
-
 <div class="tabs">
     <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
     <button class="tab-btn" onclick="showPage('list-page', this)">DATABASE</button>
@@ -60,45 +57,44 @@
         <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
         <div id="reader"></div>
         <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
-       
+      
         <label>Customer</label>
         <div class="input-group"><input id="customer" class="input-field"><button class="scan-inline-btn" onclick="startScanner('customer')">📷</button></div>
-       
+      
         <label>PI</label>
         <div class="input-group"><input id="pi" class="input-field"><button class="scan-inline-btn" onclick="startScanner('pi')">📷</button></div>
-       
+      
         <label>Part Number</label>
         <div class="input-group"><input id="part" class="input-field"><button class="scan-inline-btn" onclick="startScanner('part')">📷</button></div>
-       
+      
         <label>Qty</label>
         <input id="qty" type="number" class="input-field">
-       
+      
         <label>Box ID</label>
         <div class="input-group">
             <input id="ppbox" class="input-field" readonly style="background:#eee">
             <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
         </div>
-
         <label>Pallet No.</label>
         <div class="input-group">
             <input id="pallet" class="input-field" placeholder="Pallet number (optional)">
             <button class="scan-inline-btn" onclick="startScanner('pallet')">📷</button>
         </div>
-       
+      
         <label>Initial Stage</label>
         <select id="status" class="input-field">
             <option value="Store">Store</option>
             <option value="Laser">Laser</option>
             <option value="Packing">Packing</option>
         </select>
-       
+      
         <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
     </div>
 </div>
 
 <div id="list-page" class="page">
     <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
-    <div id="full-database"></div>
+    <div id="full-database">Loading records from sheet...</div>
 </div>
 
 <div id="search-page" class="page">
@@ -107,16 +103,34 @@
 </div>
 
 <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
     let html5QrCode;
-    let records = JSON.parse(localStorage.getItem("warehouse_db_v8") || "[]"); // changed key so old data doesn't conflict
-    const scanSequence = ['customer', 'pi', 'part', 'ppbox', 'pallet']; // added pallet
+    let allRecords = [];
+
+    const scanSequence = ['customer', 'pi', 'part', 'ppbox', 'pallet'];
 
     function showPage(pageId, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         btn.classList.add('active');
-        if (pageId === 'list-page') renderList(records, "full-database");
+        if (pageId === 'list-page') loadRecords();
+    }
+
+    async function loadRecords() {
+        const container = document.getElementById("full-database");
+        container.innerHTML = "Loading records from Google Sheet...";
+        try {
+            const response = await fetch(WEB_APP_URL);
+            if (!response.ok) throw new Error(`Network error: ${response.status}`);
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            allRecords = data;
+            renderList(allRecords, "full-database");
+        } catch (err) {
+            container.innerHTML = `<p style="color:red;">Error loading data: ${err.message}</p><p>Check console (F12) or Apps Script deployment settings.</p>`;
+            console.error("Load error:", err);
+        }
     }
 
     async function startScanner(targetId) {
@@ -128,14 +142,12 @@
             await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (text) => {
                 document.getElementById(targetId).value = text;
                 const nextIdx = scanSequence.indexOf(targetId) + 1;
-                if (nextIdx < scanSequence.length) {
-                    setTimeout(() => startScanner(scanSequence[nextIdx]), 300);
-                } else {
-                    stopScanner();
-                    document.getElementById("qty").focus();
-                }
+                if (nextIdx < scanSequence.length) setTimeout(() => startScanner(scanSequence[nextIdx]), 300);
+                else { stopScanner(); document.getElementById("qty").focus(); }
             });
-        } catch (err) {}
+        } catch (err) {
+            console.error("Scanner start error:", err);
+        }
     }
 
     function stopScanner() {
@@ -143,39 +155,42 @@
             html5QrCode.stop().then(() => {
                 document.getElementById("reader").style.display = "none";
                 document.getElementById("stopBtn").style.display = "none";
-            });
+            }).catch(err => console.error("Scanner stop error:", err));
         }
     }
 
-    function saveRecord() {
+    async function saveRecord() {
         const staff = document.getElementById("staff-name").value.trim();
         if (!staff) return alert("Please type your name at the top!");
 
-        const initStatus = document.getElementById("status").value;
-        const now = new Date().toLocaleString('en-GB');
-
-        const item = {
-            id: Date.now(),
-            cust: document.getElementById("customer").value || "N/A",
-            pi: document.getElementById("pi").value || "N/A",
+        const payload = {
+            action: "add",
+            cust: document.getElementById("customer").value.trim() || "N/A",
+            pi: document.getElementById("pi").value.trim() || "N/A",
             part: document.getElementById("part").value.trim(),
             qty: Number(document.getElementById("qty").value) || 0,
             box: document.getElementById("ppbox").value.trim(),
             pallet: document.getElementById("pallet").value.trim() || "—",
-            status: initStatus,
-            date: now,
-            history: { [initStatus]: { staff: staff, time: now } }
+            status: document.getElementById("status").value,
+            staff: staff
         };
 
-        if (!item.part || !item.box) return alert("Missing Part # or Box ID");
+        if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
 
-        records.unshift(item);
-        localStorage.setItem("warehouse_db_v8", JSON.stringify(records));
-
-        // Clear only the variable fields — keep name & pallet (common in many warehouses)
-        ['customer','pi','part','qty','ppbox'].forEach(id => document.getElementById(id).value = "");
-
-        alert("Saved by " + staff);
+        try {
+            await fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                cache: "no-cache",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            alert("Record saved to Google Sheet!");
+            resetFields();
+        } catch (err) {
+            alert("Failed to save: " + err.message);
+            console.error("Save error:", err);
+        }
     }
 
     function renderList(dataArray, targetId) {
@@ -183,110 +198,89 @@
         container.innerHTML = dataArray.map(r => {
             const stages = ['Store', 'Laser', 'Packing', 'Shipped'];
             let timeline = stages.map(s => {
-                const log = r.history[s];
-                return `<div class="timeline-item ${log ? 'done' : ''}">
-                    <strong>${s}</strong>: ${
-                        log
-                            ? `<span class="staff-badge">${log.staff}</span><br><span class="log-meta">${log.time}</span>`
-                            : 'Waiting'
-                    }
+                const staff = r[`${s}_Staff`] || '';
+                const time = r[`${s}_Time`] || '';
+                return `<div class="timeline-item ${staff ? 'done' : ''}">
+                    <strong>${s}</strong>: ${staff ? `<span class="staff-badge">${staff}</span><br><span class="log-meta">${time}</span>` : 'Waiting'}
                 </div>`;
             }).join('');
 
-            const currentStatus = r.status || 'Store';
+            const currentStatus = r["Current_Status"] || r["Initial Stage"] || "Store";
 
             return `<div class="item-card">
-                <strong>${r.part}</strong>
-                <span class="delete-link" onclick="deleteItem(${r.id})">Delete</span>
+                <strong>${r["Part Number"] || '—'}</strong>
+                <span class="delete-link" onclick="alert('Delete not yet implemented')">Delete</span>
                 <div style="font-size:0.75rem; margin:4px 0 8px;">
-                    Box: ${r.box} • Pallet: ${r.pallet || '—'} • PI: ${r.pi}
+                    Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No."] || '—'} • PI: ${r["PI"] || '—'}
                 </div>
-               
                 <div class="timeline">${timeline}</div>
-
                 <div class="edit-row">
                     <div>
                         <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Status</label>
                         <select id="status-${r.id}" class="input-field">
-                            <option value="Store"   ${currentStatus==='Store'?'selected':''}>Store</option>
-                            <option value="Laser"   ${currentStatus==='Laser'?'selected':''}>Laser</option>
-                            <option value="Packing" ${currentStatus==='Packing'?'selected':''}>Packing</option>
-                            <option value="Shipped" ${currentStatus==='Shipped'?'selected':''}>Shipped</option>
+                            <option value="Store"   ${currentStatus === 'Store'   ? 'selected' : ''}>Store</option>
+                            <option value="Laser"   ${currentStatus === 'Laser'   ? 'selected' : ''}>Laser</option>
+                            <option value="Packing" ${currentStatus === 'Packing' ? 'selected' : ''}>Packing</option>
+                            <option value="Shipped" ${currentStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
                         </select>
                     </div>
                     <div>
                         <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Responsible Staff</label>
-                        <input type="text" id="staff-${r.id}"
-                               class="input-field"
-                               placeholder="Type name here..."
-                               value="">
+                        <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here..." value="">
                     </div>
                 </div>
-
-                <button onclick="saveStatusUpdate(${r.id})"
-                        class="save-btn"
-                        style="margin-top:12px; font-size:0.95rem; padding:10px;">
+                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px; font-size:0.95rem; padding:10px;">
                     SAVE STATUS + STAFF
                 </button>
             </div>`;
-        }).join('');
+        }).join('') || "<p>No records found in the sheet.</p>";
     }
 
-    function saveStatusUpdate(id) {
-        const staffName = document.getElementById("staff-name").value.trim();
-        if (!staffName) {
-            alert("Please type your name at the top first!");
-            document.getElementById("staff-name").focus();
-            return;
-        }
+    async function saveStatusUpdate(rowId) {
+        const topStaff = document.getElementById("staff-name").value.trim();
+        if (!topStaff) return alert("Please type your name at the top!");
 
-        const statusEl = document.getElementById(`status-${id}`);
-        const staffEl  = document.getElementById(`staff-${id}`);
-
+        const statusEl = document.getElementById(`status-${rowId}`);
+        const staffEl  = document.getElementById(`staff-${rowId}`);
         const newStatus = statusEl.value;
-        const typedStaff = staffEl.value.trim() || staffName; // fallback to top name if empty
+        const responsible = staffEl.value.trim() || topStaff;
 
-        const now = new Date().toLocaleString('en-GB');
-
-        records = records.map(r => {
-            if (r.id === id) {
-                if (!r.history[newStatus]) {
-                    r.history[newStatus] = { staff: typedStaff, time: now };
-                }
-                r.status = newStatus;
-            }
-            return r;
-        });
-
-        localStorage.setItem("warehouse_db_v8", JSON.stringify(records));
-        renderList(records, "full-database");
-        alert(`Updated → ${newStatus} by ${typedStaff}`);
-    }
-
-    function deleteItem(id) {
-        if (confirm("Delete this record?")) {
-            records = records.filter(r => r.id !== id);
-            localStorage.setItem("warehouse_db_v8", JSON.stringify(records));
-            renderList(records, "full-database");
+        try {
+            await fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                cache: "no-cache",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "update",
+                    rowIndex: rowId,
+                    status: newStatus,
+                    staff: responsible
+                })
+            });
+            alert(`Updated to ${newStatus} by ${responsible}`);
+            loadRecords(); // refresh list
+        } catch (err) {
+            alert("Update failed: " + err.message);
+            console.error(err);
         }
     }
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
-        renderList(records.filter(r => r.part.toLowerCase().includes(query)), "search-results");
+        const filtered = allRecords.filter(r => (r["Part Number"] || "").toLowerCase().includes(query));
+        renderList(filtered, "search-results");
     }
 
     function resetFields() {
-        ['customer', 'pi', 'part', 'qty', 'ppbox', 'pallet'].forEach(id => {
-            document.getElementById(id).value = "";
-        });
+        ['customer', 'pi', 'part', 'qty', 'ppbox', 'pallet'].forEach(id => document.getElementById(id).value = "");
     }
 
     function exportToExcel() {
-        let csv = "\uFEFFDate,Customer,PI,Part,Qty,BoxID,Pallet,Status,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Shipped_Staff,Shipped_Time\n";
-        records.forEach(r => {
-            const h = r.history;
-            csv += `"${r.date}","${r.cust}","${r.pi}","${r.part}","${r.qty}","${r.box}","${r.pallet||''}","${r.status}","${h.Store?.staff||''}","${h.Store?.time||''}","${h.Laser?.staff||''}","${h.Laser?.time||''}","${h.Packing?.staff||''}","${h.Packing?.time||''}","${h.Shipped?.staff||''}","${h.Shipped?.time||''}"\n`;
+        if (allRecords.length === 0) return alert("No data loaded – switch to DATABASE tab first");
+        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Initial Stage,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Shipped_Staff,Shipped_Time,Current_Status\n";
+        allRecords.forEach(r => {
+            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No."]||''}","${r["Initial Stage"]||''}","${r.Store_Staff||''}","${r.Store_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r.Shipped_Staff||''}","${r.Shipped_Time||''}","${r["Current_Status"]||r["Initial Stage"]||''}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
