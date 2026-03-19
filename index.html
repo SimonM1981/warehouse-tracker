@@ -122,7 +122,7 @@
                 document.getElementById(targetId).value = text.trim();
                 stopScanner();
             });
-        } catch (err) { console.error("Scanner error:", err); }
+        } catch (err) { console.error(err); }
     }
 
     function stopScanner() {
@@ -137,28 +137,32 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         btn.classList.add('active');
-        if (pageId === 'list-page') loadRecords();
+        if (pageId === 'list-page' || pageId === 'search-page') loadRecords();
     }
 
     async function loadRecords() {
         const container = document.getElementById("full-database");
-        container.innerHTML = "Loading records from Google Sheet...";
+        container.innerHTML = "Loading records...";
         try {
             const response = await fetch(WEB_APP_URL);
-            if (!response.ok) throw new Error(`Network error: ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
             if (data.error) throw new Error(data.error);
             allRecords = data;
-            renderList(allRecords, "full-database");
+            if (document.getElementById("full-database").parentElement.classList.contains('active')) {
+                renderList(allRecords, "full-database");
+            } else if (document.getElementById("search-results").parentElement.classList.contains('active')) {
+                searchByPart(); // refresh search results too
+            }
         } catch (err) {
-            container.innerHTML = `<p style="color:red;">Error loading data: ${err.message}</p>`;
+            container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
             console.error(err);
         }
     }
 
     async function saveRecord() {
         const staff = document.getElementById("staff-name").value.trim();
-        if (!staff) return alert("Please type your name at the top!");
+        if (!staff) return alert("Please type your name!");
 
         const payload = {
             action: "add",
@@ -178,11 +182,10 @@
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
-                cache: "no-cache",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
-            alert("Record saved!");
+            alert("Saved!");
             resetFields();
         } catch (err) {
             alert("Save failed: " + err.message);
@@ -191,11 +194,6 @@
 
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
-        if (!dataArray || dataArray.length === 0) {
-            container.innerHTML = "<p>No records found.</p>";
-            return;
-        }
-
         container.innerHTML = dataArray.map(r => {
             const stages = ['Store', 'Laser', 'Packing', 'QC', 'Packed'];
             let timeline = stages.map(s => {
@@ -247,7 +245,7 @@
                     SAVE STATUS + STAFF + BOX/PALLET
                 </button>
             </div>`;
-        }).join('');
+        }).join('') || "<p>No records found.</p>";
     }
 
     async function saveStatusUpdate(rowId) {
@@ -259,29 +257,36 @@
         const palletEl = document.getElementById(`pallet-${rowId}`);
         const staffEl  = document.getElementById(`staff-${rowId}`);
 
+        const payload = {
+            action: "update",
+            rowIndex: rowId,
+            status: statusEl.value,
+            box: boxEl.value.trim(),
+            pallet: palletEl.value.trim() || "—",
+            staff: staffEl.value.trim() || topStaff
+        };
+
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    action: "update",
-                    rowIndex: rowId,
-                    status: statusEl.value,
-                    box: boxEl.value.trim(),
-                    pallet: palletEl.value.trim() || "—",
-                    staff: staffEl.value.trim() || topStaff
-                })
+                body: JSON.stringify(payload)
             });
-            alert("Updated successfully!");
-            loadRecords(); // refresh the list
+            alert("Updated! Refreshing list...");
+            loadRecords();  // Force reload to show new status (QC)
         } catch (err) {
             alert("Update failed: " + err.message);
+            console.error(err);
         }
     }
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        if (!query) {
+            document.getElementById("search-results").innerHTML = "<p>Type a Part Number to search...</p>";
+            return;
+        }
         const filtered = allRecords.filter(r => 
             (r["Part Number"] || "").toString().toLowerCase().includes(query)
         );
