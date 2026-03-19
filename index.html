@@ -87,7 +87,6 @@
             <option value="Laser">Laser</option>
             <option value="Packing">Packing</option>
             <option value="QC">QC</option>
-            <option value="Packed">Packed</option>
         </select>
      
         <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
@@ -122,7 +121,7 @@
                 document.getElementById(targetId).value = text.trim();
                 stopScanner();
             });
-        } catch (err) { console.error(err); }
+        } catch (err) { console.error("Scanner error:", err); }
     }
 
     function stopScanner() {
@@ -141,22 +140,28 @@
     }
 
     async function loadRecords() {
-        const container = document.getElementById("full-database");
-        container.innerHTML = "Loading records...";
+        const container = document.getElementById("full-database") || document.getElementById("search-results");
+        if (container) container.innerHTML = "Loading fresh data...";
+
         try {
-            const response = await fetch(WEB_APP_URL);
+            // Force fresh fetch (no cache + timestamp)
+            const url = WEB_APP_URL + "?nocache=" + Date.now();
+            console.log("Fetching:", url);
+            const response = await fetch(url, { cache: "no-store", redirect: "follow" });
+            console.log("Status:", response.status);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
+            console.log("Data:", data);
             if (data.error) throw new Error(data.error);
             allRecords = data;
-            if (document.getElementById("full-database").parentElement.classList.contains('active')) {
+            if (document.getElementById("full-database")?.parentElement.classList.contains('active')) {
                 renderList(allRecords, "full-database");
-            } else if (document.getElementById("search-results").parentElement.classList.contains('active')) {
-                searchByPart(); // refresh search results too
+            } else if (document.getElementById("search-results")?.parentElement.classList.contains('active')) {
+                searchByPart();
             }
         } catch (err) {
-            container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
-            console.error(err);
+            console.error("Load failed:", err);
+            if (container) container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
         }
     }
 
@@ -182,11 +187,12 @@
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
+                cache: "no-cache",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
-            alert("Saved!");
-            resetFields();
+            alert("Saved! Refreshing...");
+            setTimeout(loadRecords, 2000); // 2 sec delay for server sync
         } catch (err) {
             alert("Save failed: " + err.message);
         }
@@ -195,7 +201,7 @@
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
         container.innerHTML = dataArray.map(r => {
-            const stages = ['Store', 'Laser', 'Packing', 'QC', 'Packed'];
+            const stages = ['Store', 'Laser', 'Packing', 'QC'];
             let timeline = stages.map(s => {
                 const staff = r[`${s}_Staff`] || '';
                 const time  = r[`${s}_Time`] || '';
@@ -223,7 +229,6 @@
                             <option value="Laser"   ${currentStatus==='Laser'?'selected':''}>Laser</option>
                             <option value="Packing" ${currentStatus==='Packing'?'selected':''}>Packing</option>
                             <option value="QC"      ${currentStatus==='QC'?'selected':''}>QC</option>
-                            <option value="Packed"  ${currentStatus==='Packed'?'selected':''}>Packed</option>
                         </select>
                     </div>
                     <div>
@@ -266,25 +271,28 @@
             staff: staffEl.value.trim() || topStaff
         };
 
+        console.log("Sending update:", payload);
+
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
+                cache: "no-cache",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
-            alert("Updated! Refreshing list...");
-            loadRecords();  // Force reload to show new status (QC)
+            alert("Updated! Refreshing...");
+            setTimeout(loadRecords, 2500);  // 2.5 sec delay for server sync
         } catch (err) {
             alert("Update failed: " + err.message);
-            console.error(err);
+            console.error("Update error:", err);
         }
     }
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
         if (!query) {
-            document.getElementById("search-results").innerHTML = "<p>Type a Part Number to search...</p>";
+            document.getElementById("search-results").innerHTML = "<p>Type a Part Number...</p>";
             return;
         }
         const filtered = allRecords.filter(r => 
@@ -299,9 +307,9 @@
 
     function exportToExcel() {
         if (allRecords.length === 0) return alert("No data loaded");
-        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Initial Stage,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,QC_Staff,QC_Time,Packed_Staff,Packed_Time,Current_Status\n";
+        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Initial Stage,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,QC_Staff,QC_Time,Current_Status\n";
         allRecords.forEach(r => {
-            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Initial Stage"]||''}","${r.Store_Staff||''}","${r.Store_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r.QC_Staff||''}","${r.QC_Time||''}","${r.Packed_Staff||''}","${r.Packed_Time||''}","${r["Current_Status"]||''}"\n`;
+            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Initial Stage"]||''}","${r.Store_Staff||''}","${r.Store_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r.QC_Staff||''}","${r.QC_Time||''}","${r["Current_Status"]||''}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
@@ -310,5 +318,3 @@
         link.click();
     }
 </script>
-</body>
-</html>
