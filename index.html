@@ -36,7 +36,7 @@
         .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
      
-        .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
     </style>
 </head>
@@ -48,7 +48,7 @@
 <div class="tabs">
     <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
     <button class="tab-btn" onclick="showPage('list-page', this)">DATABASE</button>
-    <button class="tab-btn" onclick="showPage('search-page', this)">TRACE</button>
+    <button class="tab-btn" onclick="showPage('search-page', this)">SEARCH</button>
 </div>
 
 <div id="scan-page" class="page active">
@@ -86,6 +86,7 @@
             <option value="Store">Store</option>
             <option value="Laser">Laser</option>
             <option value="Packing">Packing</option>
+            <option value="QC">QC</option>
             <option value="Packed">Packed</option>
         </select>
      
@@ -99,7 +100,10 @@
 </div>
 
 <div id="search-page" class="page">
-    <div class="card"><label>Search Part Trace</label><input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Part #..."></div>
+    <div class="card">
+        <label>🔍 Search by Part Number</label>
+        <input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Type Part Number...">
+    </div>
     <div id="search-results"></div>
 </div>
 
@@ -118,18 +122,14 @@
                 document.getElementById(targetId).value = text.trim();
                 stopScanner();
             });
-        } catch (err) {
-            console.error("Scanner error:", err);
-        }
+        } catch (err) { console.error(err); }
     }
 
     function stopScanner() {
-        if (html5QrCode && html5QrCode.isScanning) {
-            html5QrCode.stop().then(() => {
-                document.getElementById("reader").style.display = "none";
-                document.getElementById("stopBtn").style.display = "none";
-            });
-        }
+        if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop().then(() => {
+            document.getElementById("reader").style.display = "none";
+            document.getElementById("stopBtn").style.display = "none";
+        });
     }
 
     function showPage(pageId, btn) {
@@ -152,7 +152,7 @@
             renderList(allRecords, "full-database");
         } catch (err) {
             container.innerHTML = `<p style="color:red;">Error loading data: ${err.message}</p>`;
-            console.error("Load error:", err);
+            console.error(err);
         }
     }
 
@@ -175,35 +175,26 @@
         if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
 
         try {
-            await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                cache: "no-cache",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            alert("Record saved to Google Sheet!");
+            await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload) });
+            alert("Record saved!");
             resetFields();
         } catch (err) {
-            alert("Failed to save: " + err.message);
-            console.error("Save error:", err);
+            alert("Save failed: " + err.message);
         }
     }
 
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
         if (!dataArray || dataArray.length === 0) {
-            container.innerHTML = "<p>No records found in the sheet.</p>";
+            container.innerHTML = "<p>No records found.</p>";
             return;
         }
 
         container.innerHTML = dataArray.map(r => {
-            const stages = ['Store', 'Laser', 'Packing', 'Packed'];
+            const stages = ['Store', 'Laser', 'Packing', 'QC', 'Packed'];
             let timeline = stages.map(s => {
-                const staffKey = s === 'Packed' ? 'Packed_Staff' : `${s}_Staff`;
-                const timeKey  = s === 'Packed' ? 'Packed_Time'  : `${s}_Time`;
-                const staff = r[staffKey] || '';
-                const time  = r[timeKey]  || '';
+                const staff = r[`${s}_Staff`] || r[`${s.replace('Packed','QC')}_Staff`] || '';
+                const time  = r[`${s}_Time`] || '';
                 return `<div class="timeline-item ${staff ? 'done' : ''}">
                     <strong>${s}</strong>: ${staff ? `<span class="staff-badge">${staff}</span><br><span class="log-meta">${time}</span>` : 'Waiting'}
                 </div>`;
@@ -213,40 +204,40 @@
 
             return `<div class="item-card">
                 <strong>${r["Part Number"] || '—'}</strong>
-                <span class="delete-link" onclick="alert('Delete not yet implemented')">Delete</span>
+                <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
                 <div style="font-size:0.75rem; margin:4px 0 8px;">
                     Customer: ${r["Customer Name"] || '—'}<br>
                     Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No"] || '—'} • PI: ${r["PI"] || '—'}
                 </div>
                 <div class="timeline">${timeline}</div>
 
-                <!-- Editable fields for status change -->
                 <div class="edit-row">
                     <div>
-                        <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Status</label>
+                        <label style="font-size:0.7rem; margin-bottom:4px;">Status</label>
                         <select id="status-${r.id}" class="input-field">
-                            <option value="Store"   ${currentStatus === 'Store'   ? 'selected' : ''}>Store</option>
-                            <option value="Laser"   ${currentStatus === 'Laser'   ? 'selected' : ''}>Laser</option>
-                            <option value="Packing" ${currentStatus === 'Packing' ? 'selected' : ''}>Packing</option>
-                            <option value="Packed"  ${currentStatus === 'Packed'  ? 'selected' : ''}>Packed</option>
+                            <option value="Store"   ${currentStatus==='Store'?'selected':''}>Store</option>
+                            <option value="Laser"   ${currentStatus==='Laser'?'selected':''}>Laser</option>
+                            <option value="Packing" ${currentStatus==='Packing'?'selected':''}>Packing</option>
+                            <option value="QC"      ${currentStatus==='QC'?'selected':''}>QC</option>
+                            <option value="Packed"  ${currentStatus==='Packed'?'selected':''}>Packed</option>
                         </select>
                     </div>
                     <div>
-                        <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Box ID</label>
-                        <input type="text" id="box-${r.id}" class="input-field" value="${r["BOX ID"] || ''}">
+                        <label style="font-size:0.7rem; margin-bottom:4px;">Box ID</label>
+                        <input type="text" id="box-${r.id}" class="input-field" value="${r["BOX ID"]||''}">
                     </div>
                     <div>
-                        <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Pallet No</label>
-                        <input type="text" id="pallet-${r.id}" class="input-field" value="${r["Pallet No"] || ''}">
+                        <label style="font-size:0.7rem; margin-bottom:4px;">Pallet No</label>
+                        <input type="text" id="pallet-${r.id}" class="input-field" value="${r["Pallet No"]||''}">
                     </div>
                 </div>
 
-                <div style="margin-top:12px;">
-                    <label style="font-size:0.7rem; margin-bottom:4px; display:block; color:#555;">Responsible Staff</label>
-                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here..." value="">
+                <div style="margin-top:8px;">
+                    <label style="font-size:0.7rem;">Responsible Staff</label>
+                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here...">
                 </div>
 
-                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px; font-size:0.95rem; padding:10px;">
+                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">
                     SAVE STATUS + STAFF + BOX/PALLET
                 </button>
             </div>`;
@@ -255,60 +246,51 @@
 
     async function saveStatusUpdate(rowId) {
         const topStaff = document.getElementById("staff-name").value.trim();
-        if (!topStaff) return alert("Please type your name at the top!");
+        if (!topStaff) return alert("Please type your name!");
 
-        const statusEl  = document.getElementById(`status-${rowId}`);
-        const boxEl     = document.getElementById(`box-${rowId}`);
-        const palletEl  = document.getElementById(`pallet-${rowId}`);
-        const staffEl   = document.getElementById(`staff-${rowId}`);
-
-        const newStatus   = statusEl.value;
-        const newBox      = boxEl.value.trim();
-        const newPallet   = palletEl.value.trim();
-        const responsible = staffEl.value.trim() || topStaff;
-
-        if (!newBox) return alert("Box ID cannot be empty when updating!");
+        const statusEl = document.getElementById(`status-${rowId}`);
+        const boxEl    = document.getElementById(`box-${rowId}`);
+        const palletEl = document.getElementById(`pallet-${rowId}`);
+        const staffEl  = document.getElementById(`staff-${rowId}`);
 
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
-                cache: "no-cache",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     action: "update",
                     rowIndex: rowId,
-                    status: newStatus,
-                    box: newBox,
-                    pallet: newPallet || "—",
-                    staff: responsible
+                    status: statusEl.value,
+                    box: boxEl.value.trim(),
+                    pallet: palletEl.value.trim() || "—",
+                    staff: staffEl.value.trim() || topStaff
                 })
             });
-            alert(`Updated:\nStatus → ${newStatus}\nBox ID → ${newBox}\nPallet → ${newPallet || '—'}\nStaff → ${responsible}`);
-            loadRecords(); // refresh list
+            alert("Updated successfully!");
+            loadRecords();
         } catch (err) {
             alert("Update failed: " + err.message);
-            console.error("Update error:", err);
         }
     }
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
-        const filtered = allRecords.filter(r => (r["Part Number"] || "").toLowerCase().includes(query));
+        const filtered = allRecords.filter(r => 
+            (r["Part Number"] || "").toString().toLowerCase().includes(query)
+        );
         renderList(filtered, "search-results");
     }
 
     function resetFields() {
-        ['customer', 'pi', 'part', 'qty', 'ppbox', 'pallet'].forEach(id => {
-            document.getElementById(id).value = "";
-        });
+        ['customer','pi','part','qty','ppbox','pallet'].forEach(id => document.getElementById(id).value = "");
     }
 
     function exportToExcel() {
-        if (allRecords.length === 0) return alert("No data loaded – switch to DATABASE tab first");
-        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Initial Stage,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Packed_Staff,Packed_Time,Current_Status\n";
+        if (allRecords.length === 0) return alert("No data loaded");
+        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Initial Stage,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,QC_Staff,QC_Time,Packed_Staff,Packed_Time,Current_Status\n";
         allRecords.forEach(r => {
-            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Initial Stage"]||''}","${r.Store_Staff||''}","${r.Store_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r.Packed_Staff||''}","${r.Packed_Time||''}","${r["Current_Status"]||r["Initial Stage"]||''}"\n`;
+            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Initial Stage"]||''}","${r.Store_Staff||''}","${r.Store_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r.QC_Staff||''}","${r.QC_Time||''}","${r.Packed_Staff||''}","${r.Packed_Time||''}","${r["Current_Status"]||''}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
