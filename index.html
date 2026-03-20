@@ -1,57 +1,47 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
-
+    let html5QrCode = null;
     let allRecords = [];
-    let currentStream = null;
 
-    // ✅ NEW CSP-SAFE SCANNER
     async function startScanner(targetId) {
         const reader = document.getElementById("reader");
         const stopBtn = document.getElementById("stopBtn");
 
         reader.style.display = "block";
         stopBtn.style.display = "block";
+
+        // ✅ FULL RESET (fix for search issue)
+        if (html5QrCode) {
+            try {
+                await html5QrCode.stop().catch(()=>{});
+                html5QrCode.clear();
+            } catch (e) {}
+            html5QrCode = null;
+        }
+
+        // ✅ force clean DOM (important)
         reader.innerHTML = "";
 
+        html5QrCode = new Html5Qrcode("reader");
+
         try {
-            currentStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "environment" }
-            });
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 15, qrbox: 250 },
+                (decodedText) => {
+                    document.getElementById(targetId).value = decodedText.trim();
 
-            const video = document.createElement("video");
-            video.srcObject = currentStream;
-            video.setAttribute("playsinline", true);
-            video.play();
+                    stopScanner();
 
-            reader.appendChild(video);
-
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-
-            function scan() {
-                if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                    canvas.height = video.videoHeight;
-                    canvas.width = video.videoWidth;
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, canvas.width, canvas.height);
-
-                    if (code) {
-                        document.getElementById(targetId).value = code.data;
-
-                        stopScanner();
-
-                        if (targetId === "searchInput") {
-                            filterRecords();
-                        }
-                        return;
+                    // ✅ ensure search triggers
+                    if (targetId === "searchInput") {
+                        setTimeout(() => filterRecords(), 100);
                     }
+                },
+                (errorMessage) => {
+                    // ignore scan errors
                 }
-                requestAnimationFrame(scan);
-            }
-
-            scan();
+            );
 
         } catch (err) {
             alert("Camera error: " + err.message);
@@ -60,20 +50,28 @@
     }
 
     function stopScanner() {
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-            currentStream = null;
+        if (html5QrCode) {
+            html5QrCode.stop()
+                .then(() => {
+                    html5QrCode.clear();
+                    html5QrCode = null; // ✅ critical fix
+
+                    document.getElementById("reader").style.display = "none";
+                    document.getElementById("stopBtn").style.display = "none";
+                })
+                .catch(()=>{});
         }
-        document.getElementById("reader").style.display = "none";
-        document.getElementById("stopBtn").style.display = "none";
-        document.getElementById("reader").innerHTML = "";
     }
 
     function showPage(pageId, btn) {
+        // ✅ stop camera when switching tab (fix)
+        stopScanner();
+
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         btn.classList.add('active');
+
         if (pageId === 'records-page') loadRecords();
     }
 
@@ -157,7 +155,7 @@
 
                 <div class="edit-row">
                     <div>
-                        <label style="font-size:0.7rem;">Status</label>
+                        <label style="font-size:0.7rem;">Status (Laser or Packing only)</label>
                         <select id="status-${r.id}" class="input-field">
                             <option value="Laser" ${currentStatus==='Laser'?'selected':''}>Laser</option>
                             <option value="Packing" ${currentStatus==='Packing'?'selected':''}>Packing</option>
@@ -174,25 +172,30 @@
                 </div>
 
                 <div style="margin-top:8px;">
-                    <label style="font-size:0.7rem;">Staff</label>
-                    <input type="text" id="staff-${r.id}" class="input-field">
+                    <label style="font-size:0.7rem;">Responsible Staff</label>
+                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here...">
                 </div>
 
                 <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">
-                    SAVE
+                    SAVE STATUS + STAFF + BOX/PALLET
                 </button>
             </div>`;
         }).join('') || "<p>No records found.</p>";
     }
 
     async function saveStatusUpdate(rowId) {
+        const staffEl = document.getElementById(`staff-${rowId}`);
+        const statusEl = document.getElementById(`status-${rowId}`);
+        const boxEl = document.getElementById(`box-${rowId}`);
+        const palletEl = document.getElementById(`pallet-${rowId}`);
+
         const payload = {
             action: "update",
             rowIndex: rowId,
-            status: document.getElementById(`status-${rowId}`).value,
-            box: document.getElementById(`box-${rowId}`).value.trim(),
-            pallet: document.getElementById(`pallet-${rowId}`).value.trim() || "—",
-            staff: document.getElementById(`staff-${rowId}`).value.trim() || "—"
+            status: statusEl.value,
+            box: boxEl.value.trim(),
+            pallet: palletEl.value.trim() || "—",
+            staff: staffEl.value.trim() || "—"
         };
 
         try {
