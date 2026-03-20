@@ -1,38 +1,34 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
     let html5QrCode = null;
-    let allRecords = [];
+    let allRecords = []; // ✅ prevent crash
 
     async function startScanner(targetId) {
         const reader = document.getElementById("reader");
         const stopBtn = document.getElementById("stopBtn");
 
-        // ✅ Check camera support
+        // ✅ Check support
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Camera not supported on this device/browser.\n\nUse Chrome.");
+            alert("Camera not supported. Please use Chrome.");
             return;
         }
 
         reader.style.display = "block";
         stopBtn.style.display = "block";
 
-        // ✅ Clean previous instance safely
+        // ✅ clean previous scanner safely
         if (html5QrCode) {
             try {
                 await html5QrCode.stop().catch(()=>{});
-                html5QrCode.clear();
-            } catch (e) {
-                console.warn("Cleanup failed:", e);
-            }
+            } catch (e) {}
         }
 
         html5QrCode = new Html5Qrcode("reader");
 
         try {
-            // ✅ Try back camera first → fallback to front
             await html5QrCode.start(
                 { facingMode: "environment" },
-                { fps: 15, qrbox: 250 },
+                { fps: 10, qrbox: 250 },
                 (decodedText) => {
                     document.getElementById(targetId).value = decodedText.trim();
                     stopScanner();
@@ -41,41 +37,22 @@
                         filterRecords();
                     }
                 },
-                (errorMessage) => {
-                    console.log("Scan error:", errorMessage);
+                (err) => {
+                    console.log("Scan error:", err);
                 }
-            ).catch(async () => {
-                // fallback camera
-                await html5QrCode.start(
-                    { facingMode: "user" },
-                    { fps: 15, qrbox: 250 },
-                    (decodedText) => {
-                        document.getElementById(targetId).value = decodedText.trim();
-                        stopScanner();
-
-                        if (targetId === "searchInput") {
-                            filterRecords();
-                        }
-                    }
-                );
-            });
-
-            console.log("Scanner started for:", targetId);
-
+            );
         } catch (err) {
-            console.error("Scanner start failed:", err);
+            console.error("Camera error:", err);
 
             let msg = err.message || err;
 
             if (msg.includes("Permission")) {
-                msg = "Camera permission denied.\n\nPlease allow camera access.";
+                msg = "Camera permission denied. Please allow access.";
             } else if (msg.includes("secure")) {
-                msg = "Camera requires HTTPS.\n\nOpen this page via https://";
-            } else if (msg.includes("NotFound")) {
-                msg = "No camera found on this device.";
+                msg = "Camera requires HTTPS.";
             }
 
-            alert("Camera Error:\n\n" + msg);
+            alert(msg);
             stopScanner();
         }
     }
@@ -86,13 +63,8 @@
                 .then(() => {
                     document.getElementById("reader").style.display = "none";
                     document.getElementById("stopBtn").style.display = "none";
-                    html5QrCode.clear();
-                    html5QrCode = null;
-                    console.log("Scanner stopped");
                 })
-                .catch(e => {
-                    console.warn("Stop failed:", e);
-                });
+                .catch(() => {});
         }
     }
 
@@ -155,6 +127,85 @@
             setTimeout(loadRecords, 2000);
         } catch (err) {
             alert("Save failed: " + err.message);
+        }
+    }
+
+    function renderList(dataArray, targetId) {
+        const container = document.getElementById(targetId);
+        container.innerHTML = dataArray.map(r => {
+            const stages = ['Laser', 'Packing'];
+            let timeline = stages.map(s => {
+                const staff = r[`${s}_Staff`] || '';
+                const time  = r[`${s}_Time`] || '';
+                return `<div class="timeline-item ${staff ? 'done' : ''}">
+                    <strong>${s}</strong>: ${staff ? `<span class="staff-badge">${staff}</span><br><span class="log-meta">${time}</span>` : 'Waiting'}
+                </div>`;
+            }).join('');
+
+            const currentStatus = r["Current_Status"] || "Store";
+
+            return `<div class="item-card">
+                <strong>${r["Part Number"] || '—'}</strong>
+                <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
+                <div style="font-size:0.75rem; margin:4px 0 8px;">
+                    Customer: ${r["Customer Name"] || '—'}<br>
+                    Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No"] || '—'} • PI: ${r["PI"] || '—'}<br>
+                    Received From: ${r["Received From"] || '—'} • Received By: ${r["Received By"] || '—'}
+                </div>
+                <div class="timeline">${timeline}</div>
+
+                <div class="edit-row">
+                    <div>
+                        <label style="font-size:0.7rem;">Status</label>
+                        <select id="status-${r.id}" class="input-field">
+                            <option value="Laser" ${currentStatus==='Laser'?'selected':''}>Laser</option>
+                            <option value="Packing" ${currentStatus==='Packing'?'selected':''}>Packing</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;">Box ID</label>
+                        <input type="text" id="box-${r.id}" class="input-field" value="${r["BOX ID"]||''}">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;">Pallet No</label>
+                        <input type="text" id="pallet-${r.id}" class="input-field" value="${r["Pallet No"]||''}">
+                    </div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <label style="font-size:0.7rem;">Staff</label>
+                    <input type="text" id="staff-${r.id}" class="input-field">
+                </div>
+
+                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">
+                    SAVE
+                </button>
+            </div>`;
+        }).join('') || "<p>No records found.</p>";
+    }
+
+    async function saveStatusUpdate(rowId) {
+        const payload = {
+            action: "update",
+            rowIndex: rowId,
+            status: document.getElementById(`status-${rowId}`).value,
+            box: document.getElementById(`box-${rowId}`).value.trim(),
+            pallet: document.getElementById(`pallet-${rowId}`).value.trim() || "—",
+            staff: document.getElementById(`staff-${rowId}`).value.trim() || "—"
+        };
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                cache: "no-cache",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
+            alert("Updated successfully!");
+            setTimeout(loadRecords, 3000);
+        } catch (err) {
+            alert("Update failed: " + err.message);
         }
     }
 
