@@ -9,10 +9,7 @@
         :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
      
-        .staff-header { background: #2196f3; color: white; padding: 10px; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .staff-header label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        #staff-name { width: 100%; padding: 10px; border-radius: 4px; border: none; font-size: 1rem; font-weight: bold; box-sizing: border-box; }
-        .tabs { display: flex; background: #fff; position: sticky; top: 72px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
      
@@ -41,10 +38,7 @@
     </style>
 </head>
 <body>
-<div class="staff-header">
-    <label>Worker Name (type freely)</label>
-    <input id="staff-name" type="text" placeholder="Your name...">
-</div>
+
 <div class="tabs">
     <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
     <button class="tab-btn" onclick="showPage('list-page', this)">DATABASE</button>
@@ -159,9 +153,6 @@
     }
 
     async function saveRecord() {
-        const staff = document.getElementById("staff-name").value.trim();
-        if (!staff) return alert("Please type your name!");
-
         const payload = {
             action: "add",
             cust: document.getElementById("customer").value.trim() || "N/A",
@@ -171,8 +162,7 @@
             box: document.getElementById("ppbox").value.trim(),
             pallet: document.getElementById("pallet").value.trim() || "—",
             receivedFrom: document.getElementById("receivedFrom").value,
-            receivedBy: document.getElementById("receivedBy").value.trim() || "—",
-            staff: staff
+            receivedBy: document.getElementById("receivedBy").value.trim() || "—"
         };
 
         if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
@@ -248,13 +238,10 @@
     }
 
     async function saveStatusUpdate(rowId) {
-        const topStaff = document.getElementById("staff-name").value.trim();
-        if (!topStaff) return alert("Please type your name!");
-
+        const staffEl = document.getElementById(`staff-${rowId}`);
         const statusEl = document.getElementById(`status-${rowId}`);
-        const boxEl    = document.getElementById(`box-${rowId}`);
+        const boxEl = document.getElementById(`box-${rowId}`);
         const palletEl = document.getElementById(`pallet-${rowId}`);
-        const staffEl  = document.getElementById(`staff-${rowId}`);
 
         const payload = {
             action: "update",
@@ -262,7 +249,7 @@
             status: statusEl.value,
             box: boxEl.value.trim(),
             pallet: palletEl.value.trim() || "—",
-            staff: staffEl.value.trim() || topStaff
+            staff: staffEl.value.trim() || "—"
         };
 
         try {
