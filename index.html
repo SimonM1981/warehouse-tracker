@@ -186,7 +186,8 @@
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
         container.innerHTML = dataArray.map(r => {
-            const stages = ['Store', 'Laser', 'Packing', 'QC'];
+            // Only show Laser and Packing in timeline
+            const stages = ['Laser', 'Packing'];
             let timeline = stages.map(s => {
                 const staff = r[`${s}_Staff`] || '';
                 const time  = r[`${s}_Time`] || '';
@@ -195,7 +196,7 @@
                 </div>`;
             }).join('');
 
-            const currentStatus = r["Current_Status"] || r["Initial Stage"] || "Store";
+            const currentStatus = r["Current_Status"] || "Store";
 
             return `<div class="item-card">
                 <strong>${r["Part Number"] || '—'}</strong>
@@ -285,9 +286,9 @@
 
     function exportToExcel() {
         if (allRecords.length === 0) return alert("No data loaded");
-        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Received From,Received By,Received_Time,Store_Staff,Store_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,QC_Staff,QC_Time,Current_Status\n";
+        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Received From,Received By,Received_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Current_Status\n";
         allRecords.forEach(r => {
-            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Received From"]||''}","${r["Received By"]||''}","${r.Received_Time||''}","${r.Store_Staff||''}","${r.Store_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r.QC_Staff||''}","${r.QC_Time||''}","${r["Current_Status"]||''}"\n`;
+            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Received From"]||''}","${r["Received By"]||''}","${r.Received_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r["Current_Status"]||''}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
