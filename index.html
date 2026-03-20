@@ -24,7 +24,10 @@
         label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
-        #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
+        
+        /* Global Scanner Styles */
+        #reader { width: 100%; max-width: 600px; margin: 15px auto 0; border-radius: 8px; overflow: hidden; background: #000; display: none; }
+        #stopBtn { max-width: 600px; margin: 10px auto; display: none; background: var(--danger); }
      
         .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
@@ -40,6 +43,9 @@
 </head>
 <body>
 
+<div id="reader"></div>
+<button id="stopBtn" onclick="stopScanner()">Cancel Scan</button>
+
 <div class="tabs">
     <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
     <button class="tab-btn" onclick="showPage('records-page', this)">RECORDS</button>
@@ -49,8 +55,6 @@
     <div class="card">
         <h3>New Entry</h3>
         <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
-        <div id="reader"></div>
-        <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
      
         <label>Customer</label>
         <div class="input-group"><input id="customer" class="input-field"><button class="scan-inline-btn" onclick="startScanner('customer')">📷</button></div>
@@ -106,6 +110,7 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
     let html5QrCode = null;
+    let allRecords = []; // Store records globally for filtering
 
     async function startScanner(targetId) {
         const reader = document.getElementById("reader");
@@ -157,10 +162,16 @@
                 document.getElementById("stopBtn").style.display = "none";
                 console.log("Scanner stopped");
             }).catch(e => console.warn("Stop failed:", e));
+        } else {
+            document.getElementById("reader").style.display = "none";
+            document.getElementById("stopBtn").style.display = "none";
         }
     }
 
     function showPage(pageId, btn) {
+        // Stop camera when switching tabs
+        stopScanner();
+        
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
