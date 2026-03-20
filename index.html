@@ -1,162 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>MG Warehouse - Multi-User Traceability</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <style>
-        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
-     
-        .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.9rem; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-     
-        .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
-        .page.active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
-        .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
-        .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
-        .scan-inline-btn.primary { background: var(--primary); color: white; }
-     
-        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
-        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
-        .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
-        #reader { width: 100%; margin-top: 15px; border-radius: 8px; overflow: hidden; background: #000; display: none; }
-     
-        .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
-        .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
-        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
-        .timeline-item.done::before { background: var(--primary); }
-        .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
-     
-        .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
-    </style>
-</head>
-<body>
-
-<div class="tabs">
-    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
-    <button class="tab-btn" onclick="showPage('records-page', this)">RECORDS</button>
-</div>
-
-<div id="scan-page" class="page active">
-    <div class="card">
-        <h3>New Entry</h3>
-        <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
-        <div id="reader"></div>
-        <button id="stopBtn" onclick="stopScanner()" style="display:none; background:var(--danger); margin: 10px 0;">Cancel Scan</button>
-     
-        <label>Customer</label>
-        <div class="input-group"><input id="customer" class="input-field"><button class="scan-inline-btn" onclick="startScanner('customer')">📷</button></div>
-     
-        <label>PI</label>
-        <div class="input-group"><input id="pi" class="input-field"><button class="scan-inline-btn" onclick="startScanner('pi')">📷</button></div>
-     
-        <label>Part Number</label>
-        <div class="input-group"><input id="part" class="input-field"><button class="scan-inline-btn" onclick="startScanner('part')">📷</button></div>
-     
-        <label>Qty</label>
-        <input id="qty" type="number" class="input-field">
-     
-        <label>Box ID</label>
-        <div class="input-group">
-            <input id="ppbox" class="input-field">
-            <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
-        </div>
-        <label>Pallet No.</label>
-        <div class="input-group">
-            <input id="pallet" class="input-field" placeholder="Pallet number (optional)">
-            <button class="scan-inline-btn" onclick="startScanner('pallet')">📷</button>
-        </div>
-
-        <label>Received From</label>
-        <select id="receivedFrom" class="input-field">
-            <option value="Store">Store</option>
-            <option value="QC">QC</option>
-        </select>
-
-        <label>Received By</label>
-        <div class="input-group">
-            <input id="receivedBy" class="input-field" placeholder="Name of person who received">
-            <button class="scan-inline-btn" onclick="startScanner('receivedBy')">📷</button>
-        </div>
-     
-        <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
-    </div>
-</div>
-
-<div id="records-page" class="page">
-    <div class="card">
-        <label>🔍 Search & View Records</label>
-        <div class="input-group">
-            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Type or scan Part Number...">
-            <button class="scan-inline-btn primary" onclick="startScanner('searchInput')">📷 Scan</button>
-        </div>
-    </div>
-    <button class="save-btn" style="background:var(--excel); margin-bottom:15px;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
-    <div id="records-list">Loading records...</div>
-</div>
-
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
     let html5QrCode = null;
+    let allRecords = [];
 
     async function startScanner(targetId) {
         const reader = document.getElementById("reader");
         const stopBtn = document.getElementById("stopBtn");
 
+        // ✅ Check camera support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Camera not supported on this device/browser.\n\nUse Chrome.");
+            return;
+        }
+
         reader.style.display = "block";
         stopBtn.style.display = "block";
 
-        // Clean up previous instance if exists
+        // ✅ Clean previous instance safely
         if (html5QrCode) {
             try {
-                if (html5QrCode.isScanning) await html5QrCode.stop();
+                await html5QrCode.stop().catch(()=>{});
                 html5QrCode.clear();
             } catch (e) {
-                console.warn("Previous scanner cleanup failed:", e);
+                console.warn("Cleanup failed:", e);
             }
         }
 
         html5QrCode = new Html5Qrcode("reader");
 
         try {
+            // ✅ Try back camera first → fallback to front
             await html5QrCode.start(
                 { facingMode: "environment" },
-                { fps: 20, qrbox: 250 },
+                { fps: 15, qrbox: 250 },
                 (decodedText) => {
                     document.getElementById(targetId).value = decodedText.trim();
                     stopScanner();
-                    // If target is search → auto-trigger filter
+
                     if (targetId === "searchInput") {
                         filterRecords();
                     }
                 },
                 (errorMessage) => {
-                    // silent ignore for no QR found
+                    console.log("Scan error:", errorMessage);
                 }
-            );
+            ).catch(async () => {
+                // fallback camera
+                await html5QrCode.start(
+                    { facingMode: "user" },
+                    { fps: 15, qrbox: 250 },
+                    (decodedText) => {
+                        document.getElementById(targetId).value = decodedText.trim();
+                        stopScanner();
+
+                        if (targetId === "searchInput") {
+                            filterRecords();
+                        }
+                    }
+                );
+            });
+
             console.log("Scanner started for:", targetId);
+
         } catch (err) {
             console.error("Scanner start failed:", err);
-            alert("Could not open camera.\n\n" + err.message + "\n\nCheck permissions and try again.");
+
+            let msg = err.message || err;
+
+            if (msg.includes("Permission")) {
+                msg = "Camera permission denied.\n\nPlease allow camera access.";
+            } else if (msg.includes("secure")) {
+                msg = "Camera requires HTTPS.\n\nOpen this page via https://";
+            } else if (msg.includes("NotFound")) {
+                msg = "No camera found on this device.";
+            }
+
+            alert("Camera Error:\n\n" + msg);
             stopScanner();
         }
     }
 
     function stopScanner() {
-        if (html5QrCode && html5QrCode.isScanning) {
-            html5QrCode.stop().then(() => {
-                document.getElementById("reader").style.display = "none";
-                document.getElementById("stopBtn").style.display = "none";
-                console.log("Scanner stopped");
-            }).catch(e => console.warn("Stop failed:", e));
+        if (html5QrCode) {
+            html5QrCode.stop()
+                .then(() => {
+                    document.getElementById("reader").style.display = "none";
+                    document.getElementById("stopBtn").style.display = "none";
+                    html5QrCode.clear();
+                    html5QrCode = null;
+                    console.log("Scanner stopped");
+                })
+                .catch(e => {
+                    console.warn("Stop failed:", e);
+                });
         }
     }
 
@@ -177,7 +113,7 @@
             const data = await response.json();
             if (data.error) throw new Error(data.error);
             allRecords = data;
-            filterRecords();  // show all initially
+            filterRecords();
         } catch (err) {
             container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
         }
@@ -222,90 +158,6 @@
         }
     }
 
-    function renderList(dataArray, targetId) {
-        const container = document.getElementById(targetId);
-        container.innerHTML = dataArray.map(r => {
-            const stages = ['Laser', 'Packing'];
-            let timeline = stages.map(s => {
-                const staff = r[`${s}_Staff`] || '';
-                const time  = r[`${s}_Time`] || '';
-                return `<div class="timeline-item ${staff ? 'done' : ''}">
-                    <strong>${s}</strong>: ${staff ? `<span class="staff-badge">${staff}</span><br><span class="log-meta">${time}</span>` : 'Waiting'}
-                </div>`;
-            }).join('');
-
-            const currentStatus = r["Current_Status"] || "Store";
-
-            return `<div class="item-card">
-                <strong>${r["Part Number"] || '—'}</strong>
-                <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
-                <div style="font-size:0.75rem; margin:4px 0 8px;">
-                    Customer: ${r["Customer Name"] || '—'}<br>
-                    Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No"] || '—'} • PI: ${r["PI"] || '—'}<br>
-                    Received From: ${r["Received From"] || '—'} • Received By: ${r["Received By"] || '—'}
-                </div>
-                <div class="timeline">${timeline}</div>
-
-                <div class="edit-row">
-                    <div>
-                        <label style="font-size:0.7rem;">Status (Laser or Packing only)</label>
-                        <select id="status-${r.id}" class="input-field">
-                            <option value="Laser"   ${currentStatus==='Laser'?'selected':''}>Laser</option>
-                            <option value="Packing" ${currentStatus==='Packing'?'selected':''}>Packing</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-size:0.7rem;">Box ID</label>
-                        <input type="text" id="box-${r.id}" class="input-field" value="${r["BOX ID"]||''}">
-                    </div>
-                    <div>
-                        <label style="font-size:0.7rem;">Pallet No</label>
-                        <input type="text" id="pallet-${r.id}" class="input-field" value="${r["Pallet No"]||''}">
-                    </div>
-                </div>
-
-                <div style="margin-top:8px;">
-                    <label style="font-size:0.7rem;">Responsible Staff</label>
-                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here...">
-                </div>
-
-                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">
-                    SAVE STATUS + STAFF + BOX/PALLET
-                </button>
-            </div>`;
-        }).join('') || "<p>No records found.</p>";
-    }
-
-    async function saveStatusUpdate(rowId) {
-        const staffEl = document.getElementById(`staff-${rowId}`);
-        const statusEl = document.getElementById(`status-${rowId}`);
-        const boxEl = document.getElementById(`box-${rowId}`);
-        const palletEl = document.getElementById(`pallet-${rowId}`);
-
-        const payload = {
-            action: "update",
-            rowIndex: rowId,
-            status: statusEl.value,
-            box: boxEl.value.trim(),
-            pallet: palletEl.value.trim() || "—",
-            staff: staffEl.value.trim() || "—"
-        };
-
-        try {
-            await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                cache: "no-cache",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(payload)
-            });
-            alert("Updated successfully!");
-            setTimeout(loadRecords, 3000);
-        } catch (err) {
-            alert("Update failed: " + err.message);
-        }
-    }
-
     function resetFields() {
         ['customer','pi','part','qty','ppbox','pallet','receivedBy'].forEach(id => {
             const el = document.getElementById(id);
@@ -327,5 +179,3 @@
         link.click();
     }
 </script>
-</body>
-</html>
