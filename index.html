@@ -138,17 +138,42 @@
     }
 
     async function loadRecords() {
-        const container = document.getElementById("full-database") || document.getElementById("search-results");
-        container.innerHTML = "Loading fresh data...";
+        const databaseContainer = document.getElementById("full-database");
+        const searchContainer = document.getElementById("search-results");
+
+        // Show loading in active tab
+        if (databaseContainer && databaseContainer.parentElement.classList.contains('active')) {
+            databaseContainer.innerHTML = "Loading fresh data...";
+        }
+        if (searchContainer && searchContainer.parentElement.classList.contains('active')) {
+            searchContainer.innerHTML = "Loading fresh data...";
+        }
+
         try {
             const url = WEB_APP_URL + "?ts=" + Date.now();
+            console.log("Fetching:", url);
             const response = await fetch(url, { cache: "no-store" });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
+            console.log("Received:", data);
             if (data.error) throw new Error(data.error);
             allRecords = data;
-            renderList(allRecords, container.id);
+
+            // Re-render correct tab
+            if (databaseContainer && databaseContainer.parentElement.classList.contains('active')) {
+                renderList(allRecords, "full-database");
+            }
+            if (searchContainer && searchContainer.parentElement.classList.contains('active')) {
+                searchByPart();  // Re-filter and render SEARCH results
+            }
         } catch (err) {
-            container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
+            console.error("Load failed:", err);
+            if (databaseContainer && databaseContainer.parentElement.classList.contains('active')) {
+                databaseContainer.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
+            }
+            if (searchContainer && searchContainer.parentElement.classList.contains('active')) {
+                searchContainer.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
+            }
         }
     }
 
@@ -177,7 +202,7 @@
             });
             alert("Record saved successfully!");
             resetFields();
-            setTimeout(loadRecords, 1500);
+            setTimeout(loadRecords, 2000);
         } catch (err) {
             alert("Save failed: " + err.message);
         }
@@ -186,7 +211,7 @@
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
         container.innerHTML = dataArray.map(r => {
-            // Only show Laser and Packing in timeline
+            // Only Laser and Packing in timeline (Store & QC removed)
             const stages = ['Laser', 'Packing'];
             let timeline = stages.map(s => {
                 const staff = r[`${s}_Staff`] || '';
@@ -253,6 +278,8 @@
             staff: staffEl.value.trim() || "—"
         };
 
+        console.log("Sending update:", payload);
+
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST",
@@ -261,15 +288,21 @@
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
+            console.log("Save successful - refreshing in 3 sec...");
             alert("Updated successfully!");
-            setTimeout(loadRecords, 2000);
+            setTimeout(loadRecords, 3000);  // 3 seconds for safer sync
         } catch (err) {
             alert("Update failed: " + err.message);
+            console.error("Update error:", err);
         }
     }
 
     function searchByPart() {
         const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        if (!query) {
+            document.getElementById("search-results").innerHTML = "<p>Type a Part Number...</p>";
+            return;
+        }
         const filtered = allRecords.filter(r => 
             (r["Part Number"] || "").toString().toLowerCase().includes(query)
         );
