@@ -10,7 +10,7 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
      
         .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.9rem; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
      
         .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
@@ -41,8 +41,7 @@
 
 <div class="tabs">
     <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
-    <button class="tab-btn" onclick="showPage('list-page', this)">DATABASE</button>
-    <button class="tab-btn" onclick="showPage('search-page', this)">SEARCH</button>
+    <button class="tab-btn" onclick="showPage('records-page', this)">RECORDS</button>
 </div>
 
 <div id="scan-page" class="page active">
@@ -91,17 +90,16 @@
     </div>
 </div>
 
-<div id="list-page" class="page">
-    <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
-    <div id="full-database">Loading records from Google Sheet...</div>
-</div>
-
-<div id="search-page" class="page">
+<div id="records-page" class="page">
     <div class="card">
-        <label>🔍 Search by Part Number</label>
-        <input id="searchInput" class="input-field" onkeyup="searchByPart()" placeholder="Type Part Number...">
+        <label>🔍 Search & View Records</label>
+        <div class="input-group">
+            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Type Part Number...">
+            <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startSearchScanner()">📷 Scan</button>
+        </div>
     </div>
-    <div id="search-results"></div>
+    <button class="save-btn" style="background:var(--excel); margin-bottom:15px;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
+    <div id="records-list">Loading records...</div>
 </div>
 
 <script>
@@ -119,7 +117,24 @@
                 document.getElementById(targetId).value = text.trim();
                 stopScanner();
             });
-        } catch (err) { console.error("Scanner error:", err); }
+        } catch (err) { console.error(err); }
+    }
+
+    async function startSearchScanner() {
+        document.getElementById("reader").style.display = "block";
+        document.getElementById("stopBtn").style.display = "block";
+        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+        try {
+            if (html5QrCode.isScanning) await html5QrCode.stop();
+            await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (text) => {
+                document.getElementById("searchInput").value = text.trim();
+                stopScanner();
+                filterRecords();  // auto-search after scan
+            });
+        } catch (err) {
+            console.error("Search scanner error:", err);
+            alert("Scanner failed: " + err.message);
+        }
     }
 
     function stopScanner() {
@@ -134,47 +149,30 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         btn.classList.add('active');
-        if (pageId === 'list-page' || pageId === 'search-page') loadRecords();
+        if (pageId === 'records-page') loadRecords();
     }
 
     async function loadRecords() {
-        const databaseContainer = document.getElementById("full-database");
-        const searchContainer = document.getElementById("search-results");
-
-        // Show loading in active tab
-        if (databaseContainer && databaseContainer.parentElement.classList.contains('active')) {
-            databaseContainer.innerHTML = "Loading fresh data...";
-        }
-        if (searchContainer && searchContainer.parentElement.classList.contains('active')) {
-            searchContainer.innerHTML = "Loading fresh data...";
-        }
-
+        const container = document.getElementById("records-list");
+        container.innerHTML = "Loading records...";
         try {
             const url = WEB_APP_URL + "?ts=" + Date.now();
-            console.log("Fetching:", url);
             const response = await fetch(url, { cache: "no-store" });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
-            console.log("Received:", data);
             if (data.error) throw new Error(data.error);
             allRecords = data;
-
-            // Re-render correct tab
-            if (databaseContainer && databaseContainer.parentElement.classList.contains('active')) {
-                renderList(allRecords, "full-database");
-            }
-            if (searchContainer && searchContainer.parentElement.classList.contains('active')) {
-                searchByPart();  // Re-filter and render SEARCH results
-            }
+            filterRecords();  // show all initially
         } catch (err) {
-            console.error("Load failed:", err);
-            if (databaseContainer && databaseContainer.parentElement.classList.contains('active')) {
-                databaseContainer.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
-            }
-            if (searchContainer && searchContainer.parentElement.classList.contains('active')) {
-                searchContainer.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
-            }
+            container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
         }
+    }
+
+    function filterRecords() {
+        const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        const filtered = allRecords.filter(r => 
+            (r["Part Number"] || "").toString().toLowerCase().includes(query)
+        );
+        renderList(filtered, "records-list");
     }
 
     async function saveRecord() {
@@ -211,7 +209,6 @@
     function renderList(dataArray, targetId) {
         const container = document.getElementById(targetId);
         container.innerHTML = dataArray.map(r => {
-            // Only Laser and Packing in timeline (Store & QC removed)
             const stages = ['Laser', 'Packing'];
             let timeline = stages.map(s => {
                 const staff = r[`${s}_Staff`] || '';
@@ -278,8 +275,6 @@
             staff: staffEl.value.trim() || "—"
         };
 
-        console.log("Sending update:", payload);
-
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST",
@@ -288,25 +283,11 @@
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
-            console.log("Save successful - refreshing in 3 sec...");
             alert("Updated successfully!");
-            setTimeout(loadRecords, 3000);  // 3 seconds for safer sync
+            setTimeout(loadRecords, 3000);  // 3 sec delay for safe sync
         } catch (err) {
             alert("Update failed: " + err.message);
-            console.error("Update error:", err);
         }
-    }
-
-    function searchByPart() {
-        const query = document.getElementById("searchInput").value.trim().toLowerCase();
-        if (!query) {
-            document.getElementById("search-results").innerHTML = "<p>Type a Part Number...</p>";
-            return;
-        }
-        const filtered = allRecords.filter(r => 
-            (r["Part Number"] || "").toString().toLowerCase().includes(query)
-        );
-        renderList(filtered, "search-results");
     }
 
     function resetFields() {
