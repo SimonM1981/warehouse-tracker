@@ -1,71 +1,72 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
-    let html5QrCode = null;
-    let allRecords = []; // ✅ prevent crash
 
+    let allRecords = [];
+    let currentStream = null;
+
+    // ✅ NEW CSP-SAFE SCANNER
     async function startScanner(targetId) {
         const reader = document.getElementById("reader");
         const stopBtn = document.getElementById("stopBtn");
 
-        // ✅ Check support
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Camera not supported. Please use Chrome.");
-            return;
-        }
-
         reader.style.display = "block";
         stopBtn.style.display = "block";
-
-        // ✅ clean previous scanner safely
-        if (html5QrCode) {
-            try {
-                await html5QrCode.stop().catch(()=>{});
-            } catch (e) {}
-        }
-
-        html5QrCode = new Html5Qrcode("reader");
+        reader.innerHTML = "";
 
         try {
-            await html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: 250 },
-                (decodedText) => {
-                    document.getElementById(targetId).value = decodedText.trim();
-                    stopScanner();
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" }
+            });
 
-                    if (targetId === "searchInput") {
-                        filterRecords();
+            const video = document.createElement("video");
+            video.srcObject = currentStream;
+            video.setAttribute("playsinline", true);
+            video.play();
+
+            reader.appendChild(video);
+
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            function scan() {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvas.height = video.videoHeight;
+                    canvas.width = video.videoWidth;
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+                    if (code) {
+                        document.getElementById(targetId).value = code.data;
+
+                        stopScanner();
+
+                        if (targetId === "searchInput") {
+                            filterRecords();
+                        }
+                        return;
                     }
-                },
-                (err) => {
-                    console.log("Scan error:", err);
                 }
-            );
-        } catch (err) {
-            console.error("Camera error:", err);
-
-            let msg = err.message || err;
-
-            if (msg.includes("Permission")) {
-                msg = "Camera permission denied. Please allow access.";
-            } else if (msg.includes("secure")) {
-                msg = "Camera requires HTTPS.";
+                requestAnimationFrame(scan);
             }
 
-            alert(msg);
+            scan();
+
+        } catch (err) {
+            alert("Camera error: " + err.message);
             stopScanner();
         }
     }
 
     function stopScanner() {
-        if (html5QrCode) {
-            html5QrCode.stop()
-                .then(() => {
-                    document.getElementById("reader").style.display = "none";
-                    document.getElementById("stopBtn").style.display = "none";
-                })
-                .catch(() => {});
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
         }
+        document.getElementById("reader").style.display = "none";
+        document.getElementById("stopBtn").style.display = "none";
+        document.getElementById("reader").innerHTML = "";
     }
 
     function showPage(pageId, btn) {
