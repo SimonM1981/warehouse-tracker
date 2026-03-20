@@ -92,21 +92,13 @@
             <input id="receivedBy" class="input-field" placeholder="Name of person who received">
             <button class="scan-inline-btn" onclick="startScanner('receivedBy')">📷</button>
         </div>
-
-        <label>Initial Stage</label>
-        <select id="status" class="input-field">
-            <option value="Store">Store</option>
-            <option value="Laser">Laser</option>
-            <option value="Packing">Packing</option>
-            <option value="QC">QC</option>
-        </select>
      
         <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
     </div>
 </div>
 
 <div id="list-page" class="page">
-    <button class="save-btn" style="background:var(--excel); margin-bottom:15px;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
+    <button class="save-btn" style="background:var(--excel); margin-bottom:15px; margin-top:0;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
     <div id="full-database">Loading records from Google Sheet...</div>
 </div>
 
@@ -133,7 +125,7 @@
                 document.getElementById(targetId).value = text.trim();
                 stopScanner();
             });
-        } catch (err) { console.error(err); }
+        } catch (err) { console.error("Scanner error:", err); }
     }
 
     function stopScanner() {
@@ -180,7 +172,6 @@
             pallet: document.getElementById("pallet").value.trim() || "—",
             receivedFrom: document.getElementById("receivedFrom").value,
             receivedBy: document.getElementById("receivedBy").value.trim() || "—",
-            status: document.getElementById("status").value,
             staff: staff
         };
 
@@ -228,7 +219,7 @@
 
                 <div class="edit-row">
                     <div>
-                        <label style="font-size:0.7rem;">Status (Laser / Packing only)</label>
+                        <label style="font-size:0.7rem;">Status (Laser or Packing only)</label>
                         <select id="status-${r.id}" class="input-field">
                             <option value="Laser"   ${currentStatus==='Laser'?'selected':''}>Laser</option>
                             <option value="Packing" ${currentStatus==='Packing'?'selected':''}>Packing</option>
@@ -265,20 +256,22 @@
         const palletEl = document.getElementById(`pallet-${rowId}`);
         const staffEl  = document.getElementById(`staff-${rowId}`);
 
+        const payload = {
+            action: "update",
+            rowIndex: rowId,
+            status: statusEl.value,
+            box: boxEl.value.trim(),
+            pallet: palletEl.value.trim() || "—",
+            staff: staffEl.value.trim() || topStaff
+        };
+
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
                 cache: "no-cache",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    action: "update",
-                    rowIndex: rowId,
-                    status: statusEl.value,
-                    box: boxEl.value.trim(),
-                    pallet: palletEl.value.trim() || "—",
-                    staff: staffEl.value.trim() || topStaff
-                })
+                body: JSON.stringify(payload)
             });
             alert("Updated successfully!");
             setTimeout(loadRecords, 2000);
