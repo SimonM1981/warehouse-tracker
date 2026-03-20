@@ -19,6 +19,7 @@
         .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
         .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
         .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
+        .scan-inline-btn.primary { background: var(--primary); color: white; }
      
         label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
@@ -94,8 +95,8 @@
     <div class="card">
         <label>🔍 Search & View Records</label>
         <div class="input-group">
-            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Type Part Number...">
-            <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startSearchScanner()">📷 Scan</button>
+            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Type or scan Part Number...">
+            <button class="scan-inline-btn primary" onclick="startScanner('searchInput')">📷 Scan</button>
         </div>
     </div>
     <button class="save-btn" style="background:var(--excel); margin-bottom:15px;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
@@ -104,44 +105,59 @@
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
-    let html5QrCode;
-    let allRecords = [];
+    let html5QrCode = null;
 
     async function startScanner(targetId) {
-        document.getElementById("reader").style.display = "block";
-        document.getElementById("stopBtn").style.display = "block";
-        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-        try {
-            if (html5QrCode.isScanning) await html5QrCode.stop();
-            await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (text) => {
-                document.getElementById(targetId).value = text.trim();
-                stopScanner();
-            });
-        } catch (err) { console.error(err); }
-    }
+        const reader = document.getElementById("reader");
+        const stopBtn = document.getElementById("stopBtn");
 
-    async function startSearchScanner() {
-        document.getElementById("reader").style.display = "block";
-        document.getElementById("stopBtn").style.display = "block";
-        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+        reader.style.display = "block";
+        stopBtn.style.display = "block";
+
+        // Clean up previous instance if exists
+        if (html5QrCode) {
+            try {
+                if (html5QrCode.isScanning) await html5QrCode.stop();
+                html5QrCode.clear();
+            } catch (e) {
+                console.warn("Previous scanner cleanup failed:", e);
+            }
+        }
+
+        html5QrCode = new Html5Qrcode("reader");
+
         try {
-            if (html5QrCode.isScanning) await html5QrCode.stop();
-            await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (text) => {
-                document.getElementById("searchInput").value = text.trim();
-                stopScanner();
-                filterRecords();  // auto-search after scan
-            });
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 20, qrbox: 250 },
+                (decodedText) => {
+                    document.getElementById(targetId).value = decodedText.trim();
+                    stopScanner();
+                    // If target is search → auto-trigger filter
+                    if (targetId === "searchInput") {
+                        filterRecords();
+                    }
+                },
+                (errorMessage) => {
+                    // silent ignore for no QR found
+                }
+            );
+            console.log("Scanner started for:", targetId);
         } catch (err) {
-            console.error("Search scanner error:", err);
-            alert("Scanner failed: " + err.message);
+            console.error("Scanner start failed:", err);
+            alert("Could not open camera.\n\n" + err.message + "\n\nCheck permissions and try again.");
+            stopScanner();
         }
     }
 
     function stopScanner() {
-        if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop().then(() => {
-            document.getElementById("reader").style.display = "none";
-            document.getElementById("stopBtn").style.display = "none";
-        });
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                document.getElementById("reader").style.display = "none";
+                document.getElementById("stopBtn").style.display = "none";
+                console.log("Scanner stopped");
+            }).catch(e => console.warn("Stop failed:", e));
+        }
     }
 
     function showPage(pageId, btn) {
@@ -284,7 +300,7 @@
                 body: JSON.stringify(payload)
             });
             alert("Updated successfully!");
-            setTimeout(loadRecords, 3000);  // 3 sec delay for safe sync
+            setTimeout(loadRecords, 3000);
         } catch (err) {
             alert("Update failed: " + err.message);
         }
