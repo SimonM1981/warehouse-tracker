@@ -18,30 +18,29 @@
         .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
         .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
-        
-        /* Button styling with disabled state */
-        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; transition: 0.2s; }
-        button:disabled { background-color: #cccccc !important; color: #666666 !important; cursor: not-allowed; transform: none !important; }
-        
-        .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; }
+        .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
+        .scan-inline-btn.primary { background: var(--primary); color: white; }
+     
+        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
         
         #reader { width: 100%; max-width: 600px; margin: 15px auto 0; border-radius: 8px; overflow: hidden; background: #000; display: none; }
         #stopBtn { max-width: 600px; margin: 10px auto; display: none; background: var(--danger); }
      
-        /* Record display styling */
         .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .info-row { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #333; border-bottom: 1px solid #f0f0f0; padding-bottom: 2px; }
-        .info-label { font-weight: 700; color: #000; min-width: 150px; display: inline-block; }
-        .part-header { font-size: 1.3rem; font-weight: 900; color: #000; margin-bottom: 10px; text-transform: uppercase; }
-
         .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
         .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
         .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
         .timeline-item.done::before { background: var(--primary); }
-        
+        .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
+     
+        .info-row { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #333; }
+        .info-label { font-weight: 700; color: #000; min-width: 140px; display: inline-block; }
+
         .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
+        .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
     </style>
 </head>
 <body>
@@ -79,10 +78,9 @@
             <input id="ppbox" class="input-field">
             <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
         </div>
-
         <label>Pallet No.</label>
         <div class="input-group">
-            <input id="pallet" class="input-field">
+            <input id="pallet" class="input-field" placeholder="Pallet number (optional)">
             <button class="scan-inline-btn" onclick="startScanner('pallet')">📷</button>
         </div>
 
@@ -94,20 +92,20 @@
 
         <label>Received By</label>
         <div class="input-group">
-            <input id="receivedBy" class="input-field">
+            <input id="receivedBy" class="input-field" placeholder="Name of person who received">
             <button class="scan-inline-btn" onclick="startScanner('receivedBy')">📷</button>
         </div>
      
-        <button id="mainSaveBtn" class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
+        <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
     </div>
 </div>
 
 <div id="records-page" class="page">
     <div class="card">
-        <label>🔍 Search Part Number</label>
+        <label>🔍 Search & View Records</label>
         <div class="input-group">
-            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Scan or type...">
-            <button class="scan-inline-btn primary" onclick="startScanner('searchInput')">📷</button>
+            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Type or scan Part Number...">
+            <button class="scan-inline-btn primary" onclick="startScanner('searchInput')">📷 Scan</button>
         </div>
     </div>
     <button class="save-btn" style="background:var(--excel); margin-bottom:15px;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
@@ -119,7 +117,6 @@
     let html5QrCode = null;
     let allRecords = [];
 
-    // SCANNER LOGIC
     async function startScanner(targetId) {
         const reader = document.getElementById("reader");
         const stopBtn = document.getElementById("stopBtn");
@@ -127,7 +124,12 @@
         stopBtn.style.display = "block";
 
         if (html5QrCode) {
-            try { if (html5QrCode.isScanning) await html5QrCode.stop(); html5QrCode.clear(); } catch (e) {}
+            try {
+                if (html5QrCode.isScanning) await html5QrCode.stop();
+                html5QrCode.clear();
+            } catch (e) {
+                console.warn("Scanner cleanup failed:", e);
+            }
         }
 
         html5QrCode = new Html5Qrcode("reader");
@@ -143,24 +145,23 @@
                 (errorMessage) => {}
             );
         } catch (err) {
-            alert("Camera Error: " + err.message);
+            alert("Could not open camera.\n\n" + err.message);
             stopScanner();
         }
     }
 
     function stopScanner() {
-        if (html5QrCode) {
+        if (html5QrCode && html5QrCode.isScanning) {
             html5QrCode.stop().then(() => {
                 document.getElementById("reader").style.display = "none";
                 document.getElementById("stopBtn").style.display = "none";
-            }).catch(() => {
-                document.getElementById("reader").style.display = "none";
-                document.getElementById("stopBtn").style.display = "none";
-            });
+            }).catch(e => console.warn("Stop failed:", e));
+        } else {
+            document.getElementById("reader").style.display = "none";
+            document.getElementById("stopBtn").style.display = "none";
         }
     }
 
-    // TAB LOGIC
     function showPage(pageId, btn) {
         stopScanner();
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -170,16 +171,17 @@
         if (pageId === 'records-page') loadRecords();
     }
 
-    // DATA OPERATIONS
     async function loadRecords() {
         const container = document.getElementById("records-list");
-        container.innerHTML = "Refreshing data...";
+        container.innerHTML = "Loading records...";
         try {
-            const response = await fetch(WEB_APP_URL + "?ts=" + Date.now());
-            allRecords = await response.json();
+            const url = WEB_APP_URL + "?ts=" + Date.now();
+            const response = await fetch(url, { cache: "no-store" });
+            const data = await response.json();
+            allRecords = data;
             filterRecords();
         } catch (err) {
-            container.innerHTML = "Error loading data.";
+            container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
         }
     }
 
@@ -188,130 +190,150 @@
         const filtered = allRecords.filter(r => 
             (r["Part Number"] || "").toString().toLowerCase().includes(query)
         );
-        renderList(filtered);
+        renderList(filtered, "records-list");
     }
 
     async function saveRecord() {
-        const btn = document.getElementById("mainSaveBtn");
         const payload = {
             action: "add",
-            cust: document.getElementById("customer").value.trim(),
-            pi: document.getElementById("pi").value.trim(),
+            cust: document.getElementById("customer").value.trim() || "N/A",
+            pi: document.getElementById("pi").value.trim() || "N/A",
             part: document.getElementById("part").value.trim(),
-            qty: document.getElementById("qty").value,
-            deliveryDate: document.getElementById("deliveryDate").value,
+            qty: Number(document.getElementById("qty").value) || 0,
+            deliveryDate: document.getElementById("deliveryDate").value, // New Field
             box: document.getElementById("ppbox").value.trim(),
-            pallet: document.getElementById("pallet").value.trim(),
+            pallet: document.getElementById("pallet").value.trim() || "—",
             receivedFrom: document.getElementById("receivedFrom").value,
-            receivedBy: document.getElementById("receivedBy").value.trim()
+            receivedBy: document.getElementById("receivedBy").value.trim() || "—"
         };
-
-        if (!payload.part || !payload.box) return alert("Part Number and Box ID are required.");
-
-        // Double-click protection
-        btn.disabled = true;
-        btn.innerText = "SAVING...";
-
+        if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
         try {
             await fetch(WEB_APP_URL, {
-                method: "POST", mode: "no-cors",
+                method: "POST", mode: "no-cors", cache: "no-cache",
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
-            alert("Success!");
+            alert("Record saved successfully!");
             resetFields();
+            setTimeout(loadRecords, 2000);
         } catch (err) {
-            alert("Save Failed.");
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "SAVE RECORD";
+            alert("Save failed: " + err.message);
         }
     }
 
-    function renderList(dataArray) {
-        const container = document.getElementById("records-list");
+    function renderList(dataArray, targetId) {
+        const container = document.getElementById(targetId);
         container.innerHTML = dataArray.map(r => {
-            
-            // Format dates safely
-            const formatD = (val) => {
-                if (!val) return "—";
-                const d = new Date(val);
-                return isNaN(d.getTime()) ? val.toString().split(' ')[0] : d.toLocaleDateString('en-GB');
-            };
+            const stages = ['Laser', 'Packing'];
+            let timeline = stages.map(s => {
+                const staff = r[`${s}_Staff`] || '';
+                const time  = r[`${s}_Time`] || '';
+                return `<div class="timeline-item ${staff ? 'done' : ''}">
+                    <strong>${s}</strong>: ${staff ? `<span class="staff-badge">${staff}</span><br><span class="log-meta">${time}</span>` : 'Waiting'}
+                </div>`;
+            }).join('');
 
-            return `
-            <div class="item-card">
-                <div class="part-header">${r["Part Number"] || 'NO PART #'}</div>
+            // Format Entry Date
+            let dateVal = r.Timestamp || r.Received_Time;
+            let dateStr = "—";
+            if (dateVal) {
+                const d = new Date(dateVal);
+                dateStr = isNaN(d.getTime()) ? dateVal.toString().split('T')[0] : d.toLocaleDateString('en-GB');
+            }
+
+            // Format Supplier Delivery Date
+            let delDateRaw = r.Supplier_Delivery_Date || r.deliveryDate || "";
+            let delDateStr = "—";
+            if (delDateRaw) {
+                const d2 = new Date(delDateRaw);
+                delDateStr = isNaN(d2.getTime()) ? delDateRaw.toString().split('T')[0] : d2.toLocaleDateString('en-GB');
+            }
+
+            return `<div class="item-card">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                    <div style="font-size:1.1rem; font-weight:bold; color:var(--primary);">${r["Part Number"] || '—'}</div>
+                    <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
+                </div>
                 
-                <div class="info-row"><span class="info-label">Entry Date:</span> ${formatD(r.Timestamp)}</div>
-                <div class="info-row"><span class="info-label">Supplier Delivery:</span> <strong>${formatD(r.Supplier_Delivery_Date)}</strong></div>
+                <div class="info-row"><span class="info-label">Entry Date:</span> ${dateStr}</div>
+                <div class="info-row"><span class="info-label">Supplier Delivery:</span> <strong>${delDateStr}</strong></div>
                 <div class="info-row"><span class="info-label">Customer:</span> ${r["Customer Name"] || '—'}</div>
                 <div class="info-row"><span class="info-label">QTY:</span> <strong>${r["QTY"] || '0'}</strong></div>
                 <div class="info-row"><span class="info-label">Box ID:</span> ${r["BOX ID"] || '—'}</div>
-                <div class="info-row"><span class="info-label">Pallet No:</span> ${r["Pallet No"] || '—'}</div>
+                <div class="info-row"><span class="info-label">Pallet:</span> ${r["Pallet No"] || '—'}</div>
                 <div class="info-row"><span class="info-label">PI:</span> ${r["PI"] || '—'}</div>
-                <div class="info-row"><span class="info-label">Received From:</span> ${r["Received From"] || '—'}</div>
-                <div class="info-row"><span class="info-label">Received By:</span> ${r["Received By"] || '—'}</div>
+                <div class="info-row"><span class="info-label">From:</span> ${r["Received From"] || '—'}</div>
+                <div class="info-row"><span class="info-label">By:</span> ${r["Received By"] || '—'}</div>
 
-                <div class="timeline">
-                    <div class="timeline-item ${r.Laser_Staff ? 'done' : ''}"><strong>Laser:</strong> ${r.Laser_Staff || 'Waiting'}</div>
-                    <div class="timeline-item ${r.Packing_Staff ? 'done' : ''}"><strong>Packing:</strong> ${r.Packing_Staff || 'Waiting'}</div>
-                </div>
-
+                <div class="timeline">${timeline}</div>
                 <div class="edit-row">
-                    <select id="status-${r.id}" class="input-field">
-                        <option value="Laser" ${r.Current_Status==='Laser'?'selected':''}>Laser</option>
-                        <option value="Packing" ${r.Current_Status==='Packing'?'selected':''}>Packing</option>
-                    </select>
-                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Staff Name">
-                    <button onclick="updateStatus(${r.id}, this)">UPDATE</button>
+                    <div>
+                        <label style="font-size:0.7rem;">Status</label>
+                        <select id="status-${r.id}" class="input-field">
+                            <option value="Laser"   ${r.Current_Status==='Laser'?'selected':''}>Laser</option>
+                            <option value="Packing" ${r.Current_Status==='Packing'?'selected':''}>Packing</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;">Box ID</label>
+                        <input type="text" id="box-${r.id}" class="input-field" value="${r["BOX ID"]||''}">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;">Pallet No</label>
+                        <input type="text" id="pallet-${r.id}" class="input-field" value="${r["Pallet No"]||''}">
+                    </div>
                 </div>
+                <div style="margin-top:8px;">
+                    <label style="font-size:0.7rem;">Responsible Staff</label>
+                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here...">
+                </div>
+                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">SAVE UPDATE</button>
             </div>`;
-        }).join('') || "No records found.";
+        }).join('') || "<p>No records found.</p>";
     }
 
-    async function updateStatus(rowId, btn) {
+    async function saveStatusUpdate(rowId) {
         const payload = {
             action: "update",
             rowIndex: rowId,
             status: document.getElementById(`status-${rowId}`).value,
-            staff: document.getElementById(`staff-${rowId}`).value.trim(),
-            box: "", // Placeholder if needed
-            pallet: "" 
+            box: document.getElementById(`box-${rowId}`).value.trim(),
+            pallet: document.getElementById(`pallet-${rowId}`).value.trim() || "—",
+            staff: document.getElementById(`staff-${rowId}`).value.trim() || "—"
         };
-
-        btn.disabled = true;
-        btn.innerText = "...";
-
         try {
-            await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-            alert("Updated!");
-            loadRecords();
+            await fetch(WEB_APP_URL, {
+                method: "POST", mode: "no-cors", cache: "no-cache",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
+            alert("Updated successfully!");
+            setTimeout(loadRecords, 3000);
         } catch (err) {
-            alert("Update failed.");
-            btn.disabled = false;
-            btn.innerText = "UPDATE";
+            alert("Update failed: " + err.message);
         }
     }
 
     function resetFields() {
         ['customer','pi','part','qty','deliveryDate','ppbox','pallet','receivedBy'].forEach(id => {
-            document.getElementById(id).value = "";
+            const el = document.getElementById(id);
+            if (el) el.value = "";
         });
+        document.getElementById("receivedFrom").value = "Store";
     }
 
     function exportToExcel() {
-        if (allRecords.length === 0) return alert("No data to export");
-        let csv = "\uFEFFTimestamp,Customer,PI,Part Number,QTY,Supplier Date,Box ID,Pallet,Status\n";
+        if (allRecords.length === 0) return alert("No data loaded");
+        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,Supplier_Delivery_Date,BOX ID,Pallet No,Received From,Received By,Received_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Current_Status\n";
         allRecords.forEach(r => {
-            csv += `"${r.Timestamp}","${r["Customer Name"]}","${r.PI}","${r["Part Number"]}","${r.QTY}","${r.Supplier_Delivery_Date}","${r["BOX ID"]}","${r.Pallet No}","${r.Current_Status}"\n`;
+            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r.Supplier_Delivery_Date||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Received From"]||''}","${r["Received By"]||''}","${r.Received_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r["Current_Status"]||''}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "Warehouse_Report.csv";
+        link.download = `Warehouse_Trace_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
     }
 </script>
-
 </body>
 </html>
