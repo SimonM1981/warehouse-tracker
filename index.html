@@ -1,114 +1,317 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>MG Warehouse - Multi-User Traceability</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
-        :root { --primary: #1976d2; --bg: #f4f7f6; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px; }
-        .input-field { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn:disabled { background: #ccc; }
-        .item-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid var(--primary); }
-        .info { font-size: 14px; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
-        .label { font-weight: bold; width: 130px; display: inline-block; }
-        .tabs { display: flex; margin-bottom: 15px; }
-        .tab { flex: 1; padding: 10px; text-align: center; background: #ddd; cursor: pointer; font-weight: bold; }
-        .tab.active { background: var(--primary); color: white; }
+        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
+     
+        .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.9rem; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+     
+        .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
+        .page.active { display: block; }
+        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
+        .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
+        
+        /* Button styling with disabled state */
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; transition: 0.2s; }
+        button:disabled { background-color: #cccccc !important; color: #666666 !important; cursor: not-allowed; transform: none !important; }
+        
+        .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; }
+        .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
+        
+        #reader { width: 100%; max-width: 600px; margin: 15px auto 0; border-radius: 8px; overflow: hidden; background: #000; display: none; }
+        #stopBtn { max-width: 600px; margin: 10px auto; display: none; background: var(--danger); }
+     
+        /* Record display styling */
+        .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .info-row { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #333; border-bottom: 1px solid #f0f0f0; padding-bottom: 2px; }
+        .info-label { font-weight: 700; color: #000; min-width: 150px; display: inline-block; }
+        .part-header { font-size: 1.3rem; font-weight: 900; color: #000; margin-bottom: 10px; text-transform: uppercase; }
+
+        .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
+        .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
+        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
+        .timeline-item.done::before { background: var(--primary); }
+        
+        .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
     </style>
 </head>
 <body>
 
+<div id="reader"></div>
+<button id="stopBtn" onclick="stopScanner()">Cancel Scan</button>
+
 <div class="tabs">
-    <div id="t1" class="tab active" onclick="switchTab('scan')">SCAN</div>
-    <div id="t2" class="tab" onclick="switchTab('records')">RECORDS</div>
+    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
+    <button class="tab-btn" onclick="showPage('records-page', this)">RECORDS</button>
 </div>
 
-<div id="scan-page">
+<div id="scan-page" class="page active">
     <div class="card">
-        <h3>MG Packing Entry</h3>
-        <input id="customer" class="input-field" placeholder="Customer">
-        <input id="part" class="input-field" placeholder="Part Number">
-        <input id="qty" type="number" class="input-field" placeholder="Quantity">
-        <label style="font-size:12px">Supplier Delivery Date</label>
+        <h3>New Entry</h3>
+        <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
+     
+        <label>Customer</label>
+        <div class="input-group"><input id="customer" class="input-field"><button class="scan-inline-btn" onclick="startScanner('customer')">📷</button></div>
+     
+        <label>PI</label>
+        <div class="input-group"><input id="pi" class="input-field"><button class="scan-inline-btn" onclick="startScanner('pi')">📷</button></div>
+     
+        <label>Part Number</label>
+        <div class="input-group"><input id="part" class="input-field"><button class="scan-inline-btn" onclick="startScanner('part')">📷</button></div>
+     
+        <label>Qty</label>
+        <input id="qty" type="number" class="input-field">
+
+        <label>Supplier Delivery Date</label>
         <input id="deliveryDate" type="date" class="input-field">
-        <input id="ppbox" class="input-field" placeholder="Box ID">
-        <button id="saveBtn" class="btn" onclick="saveData()">SAVE RECORD</button>
+     
+        <label>Box ID</label>
+        <div class="input-group">
+            <input id="ppbox" class="input-field">
+            <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
+        </div>
+
+        <label>Pallet No.</label>
+        <div class="input-group">
+            <input id="pallet" class="input-field">
+            <button class="scan-inline-btn" onclick="startScanner('pallet')">📷</button>
+        </div>
+
+        <label>Received From</label>
+        <select id="receivedFrom" class="input-field">
+            <option value="Store">Store</option>
+            <option value="QC">QC</option>
+        </select>
+
+        <label>Received By</label>
+        <div class="input-group">
+            <input id="receivedBy" class="input-field">
+            <button class="scan-inline-btn" onclick="startScanner('receivedBy')">📷</button>
+        </div>
+     
+        <button id="mainSaveBtn" class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
     </div>
 </div>
 
-<div id="records-page" style="display:none">
-    <input id="search" class="input-field" placeholder="Search Part #" onkeyup="render()">
-    <div id="list">Loading...</div>
+<div id="records-page" class="page">
+    <div class="card">
+        <label>🔍 Search Part Number</label>
+        <div class="input-group">
+            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Scan or type...">
+            <button class="scan-inline-btn primary" onclick="startScanner('searchInput')">📷</button>
+        </div>
+    </div>
+    <button class="save-btn" style="background:var(--excel); margin-bottom:15px;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
+    <div id="records-list">Loading records...</div>
 </div>
 
 <script>
-    const WEB_APP_URL = "YOUR_NEW_DEPLOY_URL_HERE"; // PASTE NEW URL HERE
-    let data = [];
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
+    let html5QrCode = null;
+    let allRecords = [];
 
-    function switchTab(t) {
-        document.getElementById('scan-page').style.display = t === 'scan' ? 'block' : 'none';
-        document.getElementById('records-page').style.display = t === 'records' ? 'block' : 'none';
-        document.getElementById('t1').classList.toggle('active', t === 'scan');
-        document.getElementById('t2').classList.toggle('active', t === 'records');
-        if (t === 'records') load();
-    }
+    // SCANNER LOGIC
+    async function startScanner(targetId) {
+        const reader = document.getElementById("reader");
+        const stopBtn = document.getElementById("stopBtn");
+        reader.style.display = "block";
+        stopBtn.style.display = "block";
 
-    async function load() {
-        document.getElementById('list').innerHTML = "Fetching records...";
+        if (html5QrCode) {
+            try { if (html5QrCode.isScanning) await html5QrCode.stop(); html5QrCode.clear(); } catch (e) {}
+        }
+
+        html5QrCode = new Html5Qrcode("reader");
         try {
-            const res = await fetch(WEB_APP_URL);
-            data = await res.json();
-            render();
-        } catch (e) { document.getElementById('list').innerHTML = "Error loading data."; }
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 20, qrbox: 250 },
+                (decodedText) => {
+                    document.getElementById(targetId).value = decodedText.trim();
+                    stopScanner();
+                    if (targetId === "searchInput") filterRecords();
+                },
+                (errorMessage) => {}
+            );
+        } catch (err) {
+            alert("Camera Error: " + err.message);
+            stopScanner();
+        }
     }
 
-    function render() {
-        const query = document.getElementById('search').value.toLowerCase();
-        const filtered = data.filter(r => (r["Part Number"]||"").toString().toLowerCase().includes(query));
-        
-        document.getElementById('list').innerHTML = filtered.map(r => `
-            <div class="item-card">
-                <div style="font-size:18px; font-weight:bold; color:#1976d2">${r["Part Number"] || 'N/A'}</div>
-                <div class="info"><span class="label">Supplier Delivery:</span> ${r["Supplier_Delivery_Date"] || '—'}</div>
-                <div class="info"><span class="label">Box ID:</span> ${r["BOX ID"] || '—'}</div>
-                <div class="info"><span class="label">Customer:</span> ${r["Customer Name"] || '—'}</div>
-                <div class="info"><span class="label">Quantity:</span> ${r["QTY"] || '0'}</div>
-                <div class="info"><span class="label">Status:</span> <b>${r["Current_Status"] || 'Received'}</b></div>
-            </div>
-        `).join('');
+    function stopScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                document.getElementById("reader").style.display = "none";
+                document.getElementById("stopBtn").style.display = "none";
+            }).catch(() => {
+                document.getElementById("reader").style.display = "none";
+                document.getElementById("stopBtn").style.display = "none";
+            });
+        }
     }
 
-    async function saveData() {
-        const btn = document.getElementById('saveBtn');
+    // TAB LOGIC
+    function showPage(pageId, btn) {
+        stopScanner();
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        btn.classList.add('active');
+        if (pageId === 'records-page') loadRecords();
+    }
+
+    // DATA OPERATIONS
+    async function loadRecords() {
+        const container = document.getElementById("records-list");
+        container.innerHTML = "Refreshing data...";
+        try {
+            const response = await fetch(WEB_APP_URL + "?ts=" + Date.now());
+            allRecords = await response.json();
+            filterRecords();
+        } catch (err) {
+            container.innerHTML = "Error loading data.";
+        }
+    }
+
+    function filterRecords() {
+        const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        const filtered = allRecords.filter(r => 
+            (r["Part Number"] || "").toString().toLowerCase().includes(query)
+        );
+        renderList(filtered);
+    }
+
+    async function saveRecord() {
+        const btn = document.getElementById("mainSaveBtn");
         const payload = {
             action: "add",
-            part: document.getElementById('part').value,
-            cust: document.getElementById('customer').value,
-            qty: document.getElementById('qty').value,
-            deliveryDate: document.getElementById('deliveryDate').value,
-            box: document.getElementById('ppbox').value
+            cust: document.getElementById("customer").value.trim(),
+            pi: document.getElementById("pi").value.trim(),
+            part: document.getElementById("part").value.trim(),
+            qty: document.getElementById("qty").value,
+            deliveryDate: document.getElementById("deliveryDate").value,
+            box: document.getElementById("ppbox").value.trim(),
+            pallet: document.getElementById("pallet").value.trim(),
+            receivedFrom: document.getElementById("receivedFrom").value,
+            receivedBy: document.getElementById("receivedBy").value.trim()
         };
 
-        if(!payload.part || !payload.box) return alert("Fill Part and Box ID");
+        if (!payload.part || !payload.box) return alert("Part Number and Box ID are required.");
 
+        // Double-click protection
         btn.disabled = true;
         btn.innerText = "SAVING...";
 
         try {
             await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
+                method: "POST", mode: "no-cors",
                 body: JSON.stringify(payload)
             });
-            alert("Sent to sheet!");
-            document.getElementById('part').value = "";
-            document.getElementById('ppbox').value = "";
-        } catch (e) { alert("Error saving"); }
-        finally { btn.disabled = false; btn.innerText = "SAVE RECORD"; }
+            alert("Success!");
+            resetFields();
+        } catch (err) {
+            alert("Save Failed.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "SAVE RECORD";
+        }
+    }
+
+    function renderList(dataArray) {
+        const container = document.getElementById("records-list");
+        container.innerHTML = dataArray.map(r => {
+            
+            // Format dates safely
+            const formatD = (val) => {
+                if (!val) return "—";
+                const d = new Date(val);
+                return isNaN(d.getTime()) ? val.toString().split(' ')[0] : d.toLocaleDateString('en-GB');
+            };
+
+            return `
+            <div class="item-card">
+                <div class="part-header">${r["Part Number"] || 'NO PART #'}</div>
+                
+                <div class="info-row"><span class="info-label">Entry Date:</span> ${formatD(r.Timestamp)}</div>
+                <div class="info-row"><span class="info-label">Supplier Delivery:</span> <strong>${formatD(r.Supplier_Delivery_Date)}</strong></div>
+                <div class="info-row"><span class="info-label">Customer:</span> ${r["Customer Name"] || '—'}</div>
+                <div class="info-row"><span class="info-label">QTY:</span> <strong>${r["QTY"] || '0'}</strong></div>
+                <div class="info-row"><span class="info-label">Box ID:</span> ${r["BOX ID"] || '—'}</div>
+                <div class="info-row"><span class="info-label">Pallet No:</span> ${r["Pallet No"] || '—'}</div>
+                <div class="info-row"><span class="info-label">PI:</span> ${r["PI"] || '—'}</div>
+                <div class="info-row"><span class="info-label">Received From:</span> ${r["Received From"] || '—'}</div>
+                <div class="info-row"><span class="info-label">Received By:</span> ${r["Received By"] || '—'}</div>
+
+                <div class="timeline">
+                    <div class="timeline-item ${r.Laser_Staff ? 'done' : ''}"><strong>Laser:</strong> ${r.Laser_Staff || 'Waiting'}</div>
+                    <div class="timeline-item ${r.Packing_Staff ? 'done' : ''}"><strong>Packing:</strong> ${r.Packing_Staff || 'Waiting'}</div>
+                </div>
+
+                <div class="edit-row">
+                    <select id="status-${r.id}" class="input-field">
+                        <option value="Laser" ${r.Current_Status==='Laser'?'selected':''}>Laser</option>
+                        <option value="Packing" ${r.Current_Status==='Packing'?'selected':''}>Packing</option>
+                    </select>
+                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Staff Name">
+                    <button onclick="updateStatus(${r.id}, this)">UPDATE</button>
+                </div>
+            </div>`;
+        }).join('') || "No records found.";
+    }
+
+    async function updateStatus(rowId, btn) {
+        const payload = {
+            action: "update",
+            rowIndex: rowId,
+            status: document.getElementById(`status-${rowId}`).value,
+            staff: document.getElementById(`staff-${rowId}`).value.trim(),
+            box: "", // Placeholder if needed
+            pallet: "" 
+        };
+
+        btn.disabled = true;
+        btn.innerText = "...";
+
+        try {
+            await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+            alert("Updated!");
+            loadRecords();
+        } catch (err) {
+            alert("Update failed.");
+            btn.disabled = false;
+            btn.innerText = "UPDATE";
+        }
+    }
+
+    function resetFields() {
+        ['customer','pi','part','qty','deliveryDate','ppbox','pallet','receivedBy'].forEach(id => {
+            document.getElementById(id).value = "";
+        });
+    }
+
+    function exportToExcel() {
+        if (allRecords.length === 0) return alert("No data to export");
+        let csv = "\uFEFFTimestamp,Customer,PI,Part Number,QTY,Supplier Date,Box ID,Pallet,Status\n";
+        allRecords.forEach(r => {
+            csv += `"${r.Timestamp}","${r["Customer Name"]}","${r.PI}","${r["Part Number"]}","${r.QTY}","${r.Supplier_Delivery_Date}","${r["BOX ID"]}","${r.Pallet No}","${r.Current_Status}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Warehouse_Report.csv";
+        link.click();
     }
 </script>
+
 </body>
 </html>
