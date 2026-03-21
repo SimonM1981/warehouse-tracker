@@ -36,6 +36,10 @@
         .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
      
+        /* Record details row styling */
+        .info-row { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #333; }
+        .info-label { font-weight: 700; color: #000; min-width: 80px; display: inline-block; }
+
         .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
     </style>
@@ -227,15 +231,19 @@
             }).join('');
 
             return `<div class="item-card">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <strong>${r["Part Number"] || '—'}</strong>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                    <div style="font-size:1.1rem; font-weight:bold; color:var(--primary);">${r["Part Number"] || '—'}</div>
                     <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
                 </div>
-                <div style="font-size:0.75rem; margin:4px 0 8px; line-height:1.4;">
-                    Customer: ${r["Customer Name"] || '—'}<br>
-                    <strong>QTY: ${r["QTY"] || '0'}</strong> • Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No"] || '—'}<br>
-                    PI: ${r["PI"] || '—'} • From: ${r["Received From"] || '—'} • By: ${r["Received By"] || '—'}
-                </div>
+                
+                <div class="info-row"><span class="info-label">Customer:</span> ${r["Customer Name"] || '—'}</div>
+                <div class="info-row"><span class="info-label">QTY:</span> <strong>${r["QTY"] || '0'}</strong></div>
+                <div class="info-row"><span class="info-label">Box ID:</span> ${r["BOX ID"] || '—'}</div>
+                <div class="info-row"><span class="info-label">Pallet:</span> ${r["Pallet No"] || '—'}</div>
+                <div class="info-row"><span class="info-label">PI:</span> ${r["PI"] || '—'}</div>
+                <div class="info-row"><span class="info-label">From:</span> ${r["Received From"] || '—'}</div>
+                <div class="info-row"><span class="info-label">By:</span> ${r["Received By"] || '—'}</div>
+
                 <div class="timeline">${timeline}</div>
                 <div class="edit-row">
                     <div>
