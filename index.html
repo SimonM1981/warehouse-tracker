@@ -36,7 +36,6 @@
         .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
      
-        /* Record details row styling */
         .info-row { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #333; }
         .info-label { font-weight: 700; color: #000; min-width: 80px; display: inline-block; }
 
@@ -230,12 +229,16 @@
                 </div>`;
             }).join('');
 
+            // Format date if available
+            const dateStr = r.Timestamp ? new Date(r.Timestamp).toLocaleDateString('en-GB') : '—';
+
             return `<div class="item-card">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
                     <div style="font-size:1.1rem; font-weight:bold; color:var(--primary);">${r["Part Number"] || '—'}</div>
                     <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
                 </div>
                 
+                <div class="info-row"><span class="info-label">Date:</span> ${dateStr}</div>
                 <div class="info-row"><span class="info-label">Customer:</span> ${r["Customer Name"] || '—'}</div>
                 <div class="info-row"><span class="info-label">QTY:</span> <strong>${r["QTY"] || '0'}</strong></div>
                 <div class="info-row"><span class="info-label">Box ID:</span> ${r["BOX ID"] || '—'}</div>
