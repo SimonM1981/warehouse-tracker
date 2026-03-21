@@ -37,7 +37,7 @@
         .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
      
         .info-row { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #333; }
-        .info-label { font-weight: 700; color: #000; min-width: 80px; display: inline-block; }
+        .info-label { font-weight: 700; color: #000; min-width: 140px; display: inline-block; }
 
         .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
@@ -69,6 +69,9 @@
      
         <label>Qty</label>
         <input id="qty" type="number" class="input-field">
+
+        <label>Supplier Delivery Date</label>
+        <input id="deliveryDate" type="date" class="input-field">
      
         <label>Box ID</label>
         <div class="input-group">
@@ -197,6 +200,7 @@
             pi: document.getElementById("pi").value.trim() || "N/A",
             part: document.getElementById("part").value.trim(),
             qty: Number(document.getElementById("qty").value) || 0,
+            deliveryDate: document.getElementById("deliveryDate").value, // New Field
             box: document.getElementById("ppbox").value.trim(),
             pallet: document.getElementById("pallet").value.trim() || "—",
             receivedFrom: document.getElementById("receivedFrom").value,
@@ -229,22 +233,20 @@
                 </div>`;
             }).join('');
 
-            // Robust Date Display: Checks Timestamp first, then Received_Time
+            // Format Entry Date
             let dateVal = r.Timestamp || r.Received_Time;
             let dateStr = "—";
-            
             if (dateVal) {
                 const d = new Date(dateVal);
-                // If it's still invalid, try cleaning the string if it's from Google Sheets
-                if (isNaN(d.getTime())) {
-                    dateStr = dateVal.toString().split('T')[0]; // Fallback to raw string cut
-                } else {
-                    dateStr = d.toLocaleDateString('en-GB', { 
-                        day: '2-digit', 
-                        month: '2-digit', 
-                        year: 'numeric' 
-                    });
-                }
+                dateStr = isNaN(d.getTime()) ? dateVal.toString().split('T')[0] : d.toLocaleDateString('en-GB');
+            }
+
+            // Format Supplier Delivery Date
+            let delDateRaw = r.Supplier_Delivery_Date || r.deliveryDate || "";
+            let delDateStr = "—";
+            if (delDateRaw) {
+                const d2 = new Date(delDateRaw);
+                delDateStr = isNaN(d2.getTime()) ? delDateRaw.toString().split('T')[0] : d2.toLocaleDateString('en-GB');
             }
 
             return `<div class="item-card">
@@ -253,7 +255,8 @@
                     <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
                 </div>
                 
-                <div class="info-row"><span class="info-label">Date:</span> ${dateStr}</div>
+                <div class="info-row"><span class="info-label">Entry Date:</span> ${dateStr}</div>
+                <div class="info-row"><span class="info-label">Supplier Delivery:</span> <strong>${delDateStr}</strong></div>
                 <div class="info-row"><span class="info-label">Customer:</span> ${r["Customer Name"] || '—'}</div>
                 <div class="info-row"><span class="info-label">QTY:</span> <strong>${r["QTY"] || '0'}</strong></div>
                 <div class="info-row"><span class="info-label">Box ID:</span> ${r["BOX ID"] || '—'}</div>
@@ -312,7 +315,7 @@
     }
 
     function resetFields() {
-        ['customer','pi','part','qty','ppbox','pallet','receivedBy'].forEach(id => {
+        ['customer','pi','part','qty','deliveryDate','ppbox','pallet','receivedBy'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = "";
         });
@@ -321,9 +324,9 @@
 
     function exportToExcel() {
         if (allRecords.length === 0) return alert("No data loaded");
-        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,BOX ID,Pallet No,Received From,Received By,Received_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Current_Status\n";
+        let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,Supplier_Delivery_Date,BOX ID,Pallet No,Received From,Received By,Received_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Current_Status\n";
         allRecords.forEach(r => {
-            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Received From"]||''}","${r["Received By"]||''}","${r.Received_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r["Current_Status"]||''}"\n`;
+            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r.Supplier_Delivery_Date||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Received From"]||''}","${r["Received By"]||''}","${r.Received_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r["Current_Status"]||''}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
