@@ -25,7 +25,6 @@
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
         
-        /* Global Scanner Styles */
         #reader { width: 100%; max-width: 600px; margin: 15px auto 0; border-radius: 8px; overflow: hidden; background: #000; display: none; }
         #stopBtn { max-width: 600px; margin: 10px auto; display: none; background: var(--danger); }
      
@@ -110,27 +109,24 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
     let html5QrCode = null;
-    let allRecords = []; // Store records globally for filtering
+    let allRecords = [];
 
     async function startScanner(targetId) {
         const reader = document.getElementById("reader");
         const stopBtn = document.getElementById("stopBtn");
-
         reader.style.display = "block";
         stopBtn.style.display = "block";
 
-        // Clean up previous instance if exists
         if (html5QrCode) {
             try {
                 if (html5QrCode.isScanning) await html5QrCode.stop();
                 html5QrCode.clear();
             } catch (e) {
-                console.warn("Previous scanner cleanup failed:", e);
+                console.warn("Scanner cleanup failed:", e);
             }
         }
 
         html5QrCode = new Html5Qrcode("reader");
-
         try {
             await html5QrCode.start(
                 { facingMode: "environment" },
@@ -138,19 +134,12 @@
                 (decodedText) => {
                     document.getElementById(targetId).value = decodedText.trim();
                     stopScanner();
-                    // If target is search → auto-trigger filter
-                    if (targetId === "searchInput") {
-                        filterRecords();
-                    }
+                    if (targetId === "searchInput") filterRecords();
                 },
-                (errorMessage) => {
-                    // silent ignore for no QR found
-                }
+                (errorMessage) => {}
             );
-            console.log("Scanner started for:", targetId);
         } catch (err) {
-            console.error("Scanner start failed:", err);
-            alert("Could not open camera.\n\n" + err.message + "\n\nCheck permissions and try again.");
+            alert("Could not open camera.\n\n" + err.message);
             stopScanner();
         }
     }
@@ -160,7 +149,6 @@
             html5QrCode.stop().then(() => {
                 document.getElementById("reader").style.display = "none";
                 document.getElementById("stopBtn").style.display = "none";
-                console.log("Scanner stopped");
             }).catch(e => console.warn("Stop failed:", e));
         } else {
             document.getElementById("reader").style.display = "none";
@@ -169,9 +157,7 @@
     }
 
     function showPage(pageId, btn) {
-        // Stop camera when switching tabs
         stopScanner();
-        
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
@@ -186,9 +172,8 @@
             const url = WEB_APP_URL + "?ts=" + Date.now();
             const response = await fetch(url, { cache: "no-store" });
             const data = await response.json();
-            if (data.error) throw new Error(data.error);
             allRecords = data;
-            filterRecords();  // show all initially
+            filterRecords();
         } catch (err) {
             container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
         }
@@ -214,14 +199,10 @@
             receivedFrom: document.getElementById("receivedFrom").value,
             receivedBy: document.getElementById("receivedBy").value.trim() || "—"
         };
-
         if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
-
         try {
             await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                cache: "no-cache",
+                method: "POST", mode: "no-cors", cache: "no-cache",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
@@ -245,24 +226,23 @@
                 </div>`;
             }).join('');
 
-            const currentStatus = r["Current_Status"] || "Store";
-
             return `<div class="item-card">
-                <strong>${r["Part Number"] || '—'}</strong>
-                <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
-                <div style="font-size:0.75rem; margin:4px 0 8px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <strong>${r["Part Number"] || '—'}</strong>
+                    <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
+                </div>
+                <div style="font-size:0.75rem; margin:4px 0 8px; line-height:1.4;">
                     Customer: ${r["Customer Name"] || '—'}<br>
-                    Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No"] || '—'} • PI: ${r["PI"] || '—'}<br>
-                    Received From: ${r["Received From"] || '—'} • Received By: ${r["Received By"] || '—'}
+                    <strong>QTY: ${r["QTY"] || '0'}</strong> • Box: ${r["BOX ID"] || '—'} • Pallet: ${r["Pallet No"] || '—'}<br>
+                    PI: ${r["PI"] || '—'} • From: ${r["Received From"] || '—'} • By: ${r["Received By"] || '—'}
                 </div>
                 <div class="timeline">${timeline}</div>
-
                 <div class="edit-row">
                     <div>
-                        <label style="font-size:0.7rem;">Status (Laser or Packing only)</label>
+                        <label style="font-size:0.7rem;">Status</label>
                         <select id="status-${r.id}" class="input-field">
-                            <option value="Laser"   ${currentStatus==='Laser'?'selected':''}>Laser</option>
-                            <option value="Packing" ${currentStatus==='Packing'?'selected':''}>Packing</option>
+                            <option value="Laser"   ${r.Current_Status==='Laser'?'selected':''}>Laser</option>
+                            <option value="Packing" ${r.Current_Status==='Packing'?'selected':''}>Packing</option>
                         </select>
                     </div>
                     <div>
@@ -274,39 +254,27 @@
                         <input type="text" id="pallet-${r.id}" class="input-field" value="${r["Pallet No"]||''}">
                     </div>
                 </div>
-
                 <div style="margin-top:8px;">
                     <label style="font-size:0.7rem;">Responsible Staff</label>
                     <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here...">
                 </div>
-
-                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">
-                    SAVE STATUS + STAFF + BOX/PALLET
-                </button>
+                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">SAVE UPDATE</button>
             </div>`;
         }).join('') || "<p>No records found.</p>";
     }
 
     async function saveStatusUpdate(rowId) {
-        const staffEl = document.getElementById(`staff-${rowId}`);
-        const statusEl = document.getElementById(`status-${rowId}`);
-        const boxEl = document.getElementById(`box-${rowId}`);
-        const palletEl = document.getElementById(`pallet-${rowId}`);
-
         const payload = {
             action: "update",
             rowIndex: rowId,
-            status: statusEl.value,
-            box: boxEl.value.trim(),
-            pallet: palletEl.value.trim() || "—",
-            staff: staffEl.value.trim() || "—"
+            status: document.getElementById(`status-${rowId}`).value,
+            box: document.getElementById(`box-${rowId}`).value.trim(),
+            pallet: document.getElementById(`pallet-${rowId}`).value.trim() || "—",
+            staff: document.getElementById(`staff-${rowId}`).value.trim() || "—"
         };
-
         try {
             await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                cache: "no-cache",
+                method: "POST", mode: "no-cors", cache: "no-cache",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
