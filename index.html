@@ -23,6 +23,10 @@
      
         label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
+        
+        /* Added disabled state styling */
+        button:disabled { background-color: #cccccc !important; color: #666666 !important; cursor: not-allowed; }
+        
         .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
         
         #reader { width: 100%; max-width: 600px; margin: 15px auto 0; border-radius: 8px; overflow: hidden; background: #000; display: none; }
@@ -96,7 +100,7 @@
             <button class="scan-inline-btn" onclick="startScanner('receivedBy')">📷</button>
         </div>
      
-        <button class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
+        <button id="mainSaveBtn" class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
     </div>
 </div>
 
@@ -194,19 +198,27 @@
     }
 
     async function saveRecord() {
+        const btn = document.getElementById("mainSaveBtn");
         const payload = {
             action: "add",
             cust: document.getElementById("customer").value.trim() || "N/A",
             pi: document.getElementById("pi").value.trim() || "N/A",
             part: document.getElementById("part").value.trim(),
             qty: Number(document.getElementById("qty").value) || 0,
-            deliveryDate: document.getElementById("deliveryDate").value, // New Field
+            deliveryDate: document.getElementById("deliveryDate").value,
             box: document.getElementById("ppbox").value.trim(),
             pallet: document.getElementById("pallet").value.trim() || "—",
             receivedFrom: document.getElementById("receivedFrom").value,
             receivedBy: document.getElementById("receivedBy").value.trim() || "—"
         };
+        
         if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
+
+        // --- DOUBLE-CLICK PROTECTION START ---
+        btn.disabled = true;
+        btn.innerText = "SAVING... PLEASE WAIT";
+        // --- DOUBLE-CLICK PROTECTION END ---
+
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST", mode: "no-cors", cache: "no-cache",
@@ -218,6 +230,10 @@
             setTimeout(loadRecords, 2000);
         } catch (err) {
             alert("Save failed: " + err.message);
+        } finally {
+            // Re-enable button after process is done
+            btn.disabled = false;
+            btn.innerText = "SAVE RECORD";
         }
     }
 
@@ -233,7 +249,6 @@
                 </div>`;
             }).join('');
 
-            // Format Entry Date
             let dateVal = r.Timestamp || r.Received_Time;
             let dateStr = "—";
             if (dateVal) {
@@ -241,7 +256,6 @@
                 dateStr = isNaN(d.getTime()) ? dateVal.toString().split('T')[0] : d.toLocaleDateString('en-GB');
             }
 
-            // Format Supplier Delivery Date
             let delDateRaw = r.Supplier_Delivery_Date || r.deliveryDate || "";
             let delDateStr = "—";
             if (delDateRaw) {
@@ -287,12 +301,13 @@
                     <label style="font-size:0.7rem;">Responsible Staff</label>
                     <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here...">
                 </div>
-                <button onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">SAVE UPDATE</button>
+                <button id="updateBtn-${r.id}" onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">SAVE UPDATE</button>
             </div>`;
         }).join('') || "<p>No records found.</p>";
     }
 
     async function saveStatusUpdate(rowId) {
+        const btn = document.getElementById(`updateBtn-${rowId}`);
         const payload = {
             action: "update",
             rowIndex: rowId,
@@ -301,6 +316,12 @@
             pallet: document.getElementById(`pallet-${rowId}`).value.trim() || "—",
             staff: document.getElementById(`staff-${rowId}`).value.trim() || "—"
         };
+
+        // --- DOUBLE-CLICK PROTECTION START ---
+        btn.disabled = true;
+        btn.innerText = "UPDATING...";
+        // --- DOUBLE-CLICK PROTECTION END ---
+
         try {
             await fetch(WEB_APP_URL, {
                 method: "POST", mode: "no-cors", cache: "no-cache",
@@ -311,6 +332,8 @@
             setTimeout(loadRecords, 3000);
         } catch (err) {
             alert("Update failed: " + err.message);
+            btn.disabled = false;
+            btn.innerText = "SAVE UPDATE";
         }
     }
 
