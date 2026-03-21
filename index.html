@@ -229,8 +229,23 @@
                 </div>`;
             }).join('');
 
-            // Format date if available
-            const dateStr = r.Timestamp ? new Date(r.Timestamp).toLocaleDateString('en-GB') : '—';
+            // Robust Date Display: Checks Timestamp first, then Received_Time
+            let dateVal = r.Timestamp || r.Received_Time;
+            let dateStr = "—";
+            
+            if (dateVal) {
+                const d = new Date(dateVal);
+                // If it's still invalid, try cleaning the string if it's from Google Sheets
+                if (isNaN(d.getTime())) {
+                    dateStr = dateVal.toString().split('T')[0]; // Fallback to raw string cut
+                } else {
+                    dateStr = d.toLocaleDateString('en-GB', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric' 
+                    });
+                }
+            }
 
             return `<div class="item-card">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
