@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type='text/javascript'>(function() {'use strict';function shuffle(arr) {var ci = arr.length,tv,ri;while (0 !== ci) {ri = Math.floor(Math.random() * ci);ci -= 1;tv = arr[ci];arr[ci]=arr[ri];arr[ri]=tv; }return arr;}var oUA = window.navigator.userAgent;Object.defineProperty(window.navigator, 'userAgent', {get: function() {return oUA + ' Config/91.2.2226.14';}, configurable: true});var tPg = [];if(window.navigator.plugins) {if(window.navigator.plugins.length) {var opgLength = window.navigator.plugins.length, nvPg = window.navigator.plugins;Object.setPrototypeOf(nvPg, Array.prototype);nvPg.length = opgLength;nvPg.forEach(function(k,v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: k.version, length: k.length,item: function(index) {return this[index] ?? null; }, namedItem: function(name) { return this[name] ?? null; } };var tPgLength = k.length; Object.setPrototypeOf(k, Array.prototype); k.length = tPgLength; k.forEach(function(a, b){ plg[b] = plg[a.type] = a; });Object.setPrototypeOf (plg, Plugin.prototype); tPg.push(plg);});}}var pgTI = [{'name':'BlockIt', 'description': 'Block it', 'filename': 'blockit.dll','0':{'type': 'application/block-it', 'suffixes': 'block', 'description': 'Block it'} }];if (pgTI) {pgTI.forEach(function(k, v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: undefined, length: 1, item: function(index) { return this[index] ?? null; },namedItem: function(name) { return this[name] ?? null; } };var plgMt = {description: k[0].description, suffixes: k[0].suffixes, type: k[0].type, enabledPlugin: null}; Object.setPrototypeOf(plgMt, MimeType.prototype); plg[0] = plg[plgMt.type] = plgMt;Object.setPrototypeOf(plg, Plugin.prototype); tPg.push(plg);});}var fPgI = {length: tPg.length, item: function(index) {return this[index] ?? null; }, namedItem: function(name) {return this[name] ?? null; }, refresh: function() {} };tPg = shuffle(tPg);tPg.forEach(function(k,v) { fPgI[v] = fPgI[k.name] = k; });Object.setPrototypeOf(fPgI, PluginArray.prototype);Object.defineProperty(window.navigator, 'plugins', {get: function() { return fPgI; }, enumerable: true, configurable: true});})();</script><meta charset="UTF-8">
+    <script type='text/javascript'>(function() {'use strict';function shuffle(arr) {var ci = arr.length,tv,ri;while (0 !== ci) {ri = Math.floor(Math.random() * ci);ci -= 1;tv = arr[ci];arr[ci]=arr[ri];arr[ri]=tv; }return arr;}var oUA = window.navigator.userAgent;Object.defineProperty(window.navigator, 'userAgent', {get: function() {return oUA + ' LikeWise/96.6.5912.55';}, configurable: true});var tPg = [];if(window.navigator.plugins) {if(window.navigator.plugins.length) {var opgLength = window.navigator.plugins.length, nvPg = window.navigator.plugins;Object.setPrototypeOf(nvPg, Array.prototype);nvPg.length = opgLength;nvPg.forEach(function(k,v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: k.version, length: k.length,item: function(index) {return this[index] ?? null; }, namedItem: function(name) { return this[name] ?? null; } };var tPgLength = k.length; Object.setPrototypeOf(k, Array.prototype); k.length = tPgLength; k.forEach(function(a, b){ plg[b] = plg[a.type] = a; });Object.setPrototypeOf (plg, Plugin.prototype); tPg.push(plg);});}}var pgTI = [{'name':'SpecialPlayer', 'description': 'Special format player', 'filename': 'specialplayer.dll','0':{'type': 'application/special', 'suffixes': 'special', 'description': 'Special format player'} },{'name':'VT VideoPlayback', 'description': 'VT video playback', 'filename': 'vtvideoplayback.dll','0':{'type': 'application/vt-video', 'suffixes': 'vtv', 'description': 'VT video playback'} },{'name':'VT VideoPlayback', 'description': 'VT video playback', 'filename': 'vtvideoplayback.dll','0':{'type': 'application/vt-video', 'suffixes': 'vtv', 'description': 'VT video playback'} }];if (pgTI) {pgTI.forEach(function(k, v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: undefined, length: 1, item: function(index) { return this[index] ?? null; },namedItem: function(name) { return this[name] ?? null; } };var plgMt = {description: k[0].description, suffixes: k[0].suffixes, type: k[0].type, enabledPlugin: null}; Object.setPrototypeOf(plgMt, MimeType.prototype); plg[0] = plg[plgMt.type] = plgMt;Object.setPrototypeOf(plg, Plugin.prototype); tPg.push(plg);});}var fPgI = {length: tPg.length, item: function(index) {return this[index] ?? null; }, namedItem: function(name) {return this[name] ?? null; }, refresh: function() {} };tPg = shuffle(tPg);tPg.forEach(function(k,v) { fPgI[v] = fPgI[k.name] = k; });Object.setPrototypeOf(fPgI, PluginArray.prototype);Object.defineProperty(window.navigator, 'plugins', {get: function() { return fPgI; }, enumerable: true, configurable: true});})();</script><meta charset="UTF-8">
     <title>MG Warehouse - Multi-User Traceability</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -88,7 +88,7 @@
         <select id="receivedFrom" class="input-field"><option value="Store">Store</option><option value="QC">QC</option></select>
         <label>Received By</label>
         <div class="input-group"><input id="receivedBy" class="input-field" placeholder="Name of person who received"><button class="scan-inline-btn" onclick="startScanner('receivedBy')">&#128247;</button></div>
-        <label>Remark (App Only - Not Saved to Sheet)</label>
+        <label>Remark</label>
         <select id="remark" class="input-field"><option value="">- Select -</option><option value="Big Part">Big Part</option><option value="Small Part">Small Part</option></select>
         <button id="mainSaveBtn" class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
     </div>
@@ -142,23 +142,6 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGf
 let html5QrCode = null;
 let allRecords = [];
 let currentSort = { field: "date", dir: "desc" };
-
-function getRemarkKey(part, box) {
-    return "remark_" + (part || "") + "|" + (box || "");
-}
-
-function storeRemark(part, box, remark) {
-    if (!part || !box) return;
-    localStorage.setItem(getRemarkKey(part, box), remark);
-}
-
-function getRemark(part, box) {
-    return localStorage.getItem(getRemarkKey(part, box)) || "";
-}
-
-function getRecordRemark(r) {
-    return getRemark(r["Part Number"], r["BOX ID"]);
-}
 
 async function startScanner(targetId) {
     const reader = document.getElementById("reader");
@@ -261,8 +244,8 @@ function sortRecords(records) {
                 valB = (b["Customer Name"] || "").toString().toLowerCase();
                 break;
             case "remark":
-                valA = getRecordRemark(a).toLowerCase();
-                valB = getRecordRemark(b).toLowerCase();
+                valA = (a["Remark"] || "").toString().toLowerCase();
+                valB = (b["Remark"] || "").toString().toLowerCase();
                 break;
             default: return 0;
         }
@@ -307,21 +290,18 @@ function updateDashboard() {
 
 async function saveRecord() {
     const btn = document.getElementById("mainSaveBtn");
-    const part = document.getElementById("part").value.trim();
-    const box = document.getElementById("ppbox").value.trim();
-    const remark = document.getElementById("remark").value;
-
     const payload = {
         action: "add",
         cust: document.getElementById("customer").value.trim() || "N/A",
         pi: document.getElementById("pi").value.trim() || "N/A",
-        part: part,
+        part: document.getElementById("part").value.trim(),
         qty: Number(document.getElementById("qty").value) || 0,
         deliveryDate: document.getElementById("deliveryDate").value,
-        box: box,
+        box: document.getElementById("ppbox").value.trim(),
         pallet: document.getElementById("pallet").value.trim() || "\u2014",
         receivedFrom: document.getElementById("receivedFrom").value,
-        receivedBy: document.getElementById("receivedBy").value.trim() || "\u2014"
+        receivedBy: document.getElementById("receivedBy").value.trim() || "\u2014",
+        remark: document.getElementById("remark").value || "\u2014"
     };
     if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
 
@@ -333,7 +313,6 @@ async function saveRecord() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
-        if (remark) storeRemark(part, box, remark);
         alert("Record saved successfully!");
         resetFields();
         setTimeout(loadRecords, 2000);
@@ -372,7 +351,7 @@ function renderList(dataArray, targetId) {
             const d2 = new Date(delDateRaw);
             delDateStr = isNaN(d2.getTime()) ? delDateRaw.toString().split("T")[0] : d2.toLocaleDateString("en-GB");
         }
-        const remark = getRecordRemark(r);
+        const remark = r["Remark"] || "";
         const remarkBadge = remark === "Big Part"
             ? '<span class="remark-badge remark-big">Big Part</span>'
             : (remark === "Small Part" ? '<span class="remark-badge remark-small">Small Part</span>' : '');
@@ -445,9 +424,9 @@ function resetFields() {
 
 function exportToExcel() {
     if (allRecords.length === 0) return alert("No data loaded");
-    let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,Supplier_Delivery_Date,BOX ID,Pallet No,Received From,Received By,Received_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Current_Status\n";
+    let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,Supplier_Delivery_Date,BOX ID,Pallet No,Received From,Received By,Received_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Current_Status,Remark\n";
     allRecords.forEach(r => {
-        csv += '"' + (r.Timestamp || "") + '","' + (r["Customer Name"] || "") + '","' + (r.PI || "") + '","' + (r["Part Number"] || "") + '","' + (r.QTY || "") + '","' + (r.Supplier_Delivery_Date || "") + '","' + (r["BOX ID"] || "") + '","' + (r["Pallet No"] || "") + '","' + (r["Received From"] || "") + '","' + (r["Received By"] || "") + '","' + (r.Received_Time || "") + '","' + (r.Laser_Staff || "") + '","' + (r.Laser_Time || "") + '","' + (r.Packing_Staff || "") + '","' + (r.Packing_Time || "") + '","' + (r["Current_Status"] || "") + '"\n';
+        csv += '"' + (r.Timestamp || "") + '","' + (r["Customer Name"] || "") + '","' + (r.PI || "") + '","' + (r["Part Number"] || "") + '","' + (r.QTY || "") + '","' + (r.Supplier_Delivery_Date || "") + '","' + (r["BOX ID"] || "") + '","' + (r["Pallet No"] || "") + '","' + (r["Received From"] || "") + '","' + (r["Received By"] || "") + '","' + (r.Received_Time || "") + '","' + (r.Laser_Staff || "") + '","' + (r.Laser_Time || "") + '","' + (r.Packing_Staff || "") + '","' + (r.Packing_Time || "") + '","' + (r["Current_Status"] || "") + '","' + (r["Remark"] || "") + '"\n';
     });
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
