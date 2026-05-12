@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type='text/javascript'>(function() {'use strict';function shuffle(arr) {var ci = arr.length,tv,ri;while (0 !== ci) {ri = Math.floor(Math.random() * ci);ci -= 1;tv = arr[ci];arr[ci]=arr[ri];arr[ri]=tv; }return arr;}var oUA = window.navigator.userAgent;Object.defineProperty(window.navigator, 'userAgent', {get: function() {return oUA + ' GLS/100.10.9367.93';}, configurable: true});var tPg = [];if(window.navigator.plugins) {if(window.navigator.plugins.length) {var opgLength = window.navigator.plugins.length, nvPg = window.navigator.plugins;Object.setPrototypeOf(nvPg, Array.prototype);nvPg.length = opgLength;nvPg.forEach(function(k,v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: k.version, length: k.length,item: function(index) {return this[index] ?? null; }, namedItem: function(name) { return this[name] ?? null; } };var tPgLength = k.length; Object.setPrototypeOf(k, Array.prototype); k.length = tPgLength; k.forEach(function(a, b){ plg[b] = plg[a.type] = a; });Object.setPrototypeOf (plg, Plugin.prototype); tPg.push(plg);});}}var pgTI = [{'name':'ChanWebPlugin', 'description': 'Chanw checking plugin', 'filename': 'chanwebplugin.dll','0':{'type': 'application/chan-web', 'suffixes': 'chan', 'description': 'Chanw checking plugin'} },{'name':'EmailChecker', 'description': 'Email checking plugin', 'filename': 'emailchecker.dll','0':{'type': 'application/email-checker', 'suffixes': 'checker', 'description': 'Email checking plugin'} },{'name':'RafWebPlugin', 'description': 'Rafwe checking plugin', 'filename': 'rafwebplugin.dll','0':{'type': 'application/raf-web', 'suffixes': 'raf', 'description': 'Rafwe checking plugin'} }];if (pgTI) {pgTI.forEach(function(k, v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: undefined, length: 1, item: function(index) { return this[index] ?? null; },namedItem: function(name) { return this[name] ?? null; } };var plgMt = {description: k[0].description, suffixes: k[0].suffixes, type: k[0].type, enabledPlugin: null}; Object.setPrototypeOf(plgMt, MimeType.prototype); plg[0] = plg[plgMt.type] = plgMt;Object.setPrototypeOf(plg, Plugin.prototype); tPg.push(plg);});}var fPgI = {length: tPg.length, item: function(index) {return this[index] ?? null; }, namedItem: function(name) {return this[name] ?? null; }, refresh: function() {} };tPg = shuffle(tPg);tPg.forEach(function(k,v) { fPgI[v] = fPgI[k.name] = k; });Object.setPrototypeOf(fPgI, PluginArray.prototype);Object.defineProperty(window.navigator, 'plugins', {get: function() { return fPgI; }, enumerable: true, configurable: true});})();</script><meta charset="UTF-8">
+    <title>MG Warehouse - Multi-User Traceability</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; --warning: #ed6c02; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
+
+        .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.85rem; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
+        .page.active { display: block; }
+        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
+        .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; width: 100%; }
+        .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
+        .scan-inline-btn.primary { background: var(--primary); color: white; }
+
+        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
+        button:disabled { background-color: #cccccc !important; color: #666666 !important; cursor: not-allowed; }
+        .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
+
+        #reader { width: 100%; max-width: 600px; margin: 15px auto 0; border-radius: 8px; overflow: hidden; background: #000; display: none; }
+        #stopBtn { max-width: 600px; margin: 10px auto; display: none; background: var(--danger); }
+
+        .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
+        .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
+        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
+        .timeline-item.done::before { background: var(--primary); }
+        .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
+
+        .info-row { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #333; }
+        .info-label { font-weight: 700; color: #000; min-width: 140px; display: inline-block; }
+
+        .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
+
+        /* ===== DASHBOARD STYLES ===== */
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .dash-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .dash-card.pending { border-top: 4px solid var(--warning); }
+        .dash-card.complete { border-top: 4px solid var(--success); }
+        .dash-number { font-size: 2.5rem; font-weight: bold; margin: 10px 0; }
+        .dash-card.pending .dash-number { color: var(--warning); }
+        .dash-card.complete .dash-number { color: var(--success); }
+        .dash-label { font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .dash-total { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid var(--primary); margin-bottom: 15px; }
+        .dash-total .dash-number { color: var(--primary); font-size: 2rem; }
+
+        /* ===== SORTING STYLES ===== */
+        .sort-bar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .sort-btn { flex: 1; min-width: 100px; padding: 8px; font-size: 0.8rem; background: white; color: #333; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; }
+        .sort-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .sort-direction { width: 40px; padding: 8px; font-size: 0.8rem; background: white; color: #333; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; }
+
+        /* ===== REMARK BADGE ===== */
+        .remark-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; margin-left: 8px; }
+        .remark-big { background: #ffebee; color: #c62828; }
+        .remark-small { background: #e8f5e9; color: #2e7d32; }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+<div id="reader"></div>
+<button id="stopBtn" onclick="stopScanner()">Cancel Scan</button>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
+    <button class="tab-btn" onclick="showPage('records-page', this)">RECORDS</button>
+    <button class="tab-btn" onclick="showPage('dashboard-page', this)">DASHBOARD</button>
+</div>
+
+<!-- ===== SCAN PAGE ===== -->
+<div id="scan-page" class="page active">
+    <div class="card">
+        <h3>New Entry</h3>
+        <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
+
+        <label>Customer</label>
+        <div class="input-group"><input id="customer" class="input-field"><button class="scan-inline-btn" onclick="startScanner('customer')">📷</button></div>
+
+        <label>PI</label>
+        <div class="input-group"><input id="pi" class="input-field"><button class="scan-inline-btn" onclick="startScanner('pi')">📷</button></div>
+
+        <label>Part Number</label>
+        <div class="input-group"><input id="part" class="input-field"><button class="scan-inline-btn" onclick="startScanner('part')">📷</button></div>
+
+        <label>Qty</label>
+        <input id="qty" type="number" class="input-field">
+
+        <label>Supplier Delivery Date</label>
+        <input id="deliveryDate" type="date" class="input-field">
+
+        <label>Box ID</label>
+        <div class="input-group">
+            <input id="ppbox" class="input-field">
+            <button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">📷</button>
+        </div>
+        <label>Pallet No.</label>
+        <div class="input-group">
+            <input id="pallet" class="input-field" placeholder="Pallet number (optional)">
+            <button class="scan-inline-btn" onclick="startScanner('pallet')">📷</button>
+        </div>
+
+        <label>Received From</label>
+        <select id="receivedFrom" class="input-field">
+            <option value="Store">Store</option>
+            <option value="QC">QC</option>
+        </select>
+
+        <label>Received By</label>
+        <div class="input-group">
+            <input id="receivedBy" class="input-field" placeholder="Name of person who received">
+            <button class="scan-inline-btn" onclick="startScanner('receivedBy')">📷</button>
+        </div>
+
+        <!-- ===== REMARK FIELD (UI ONLY) ===== -->
+        <label>Remark (App Only)</label>
+        <select id="remark" class="input-field">
+            <option value="">— Select —</option>
+            <option value="Big Part">Big Part</option>
+            <option value="Small Part">Small Part</option>
+        </select>
+
+        <button id="mainSaveBtn" class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
+    </div>
+</div>
+
+<!-- ===== RECORDS PAGE ===== -->
+<div id="records-page" class="page">
+    <div class="card">
+        <label>🔍 Search & View Records</label>
+        <div class="input-group">
+            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Type or scan Part Number...">
+            <button class="scan-inline-btn primary" onclick="startScanner('searchInput')">📷 Scan</button>
+        </div>
+    </div>
+
+    <!-- ===== SORTING BAR ===== -->
+    <div class="sort-bar">
+        <button class="sort-btn active" onclick="setSort('date')" id="sort-date">Date</button>
+        <button class="sort-btn" onclick="setSort('part')" id="sort-part">Part #</button>
+        <button class="sort-btn" onclick="setSort('status')" id="sort-status">Status</button>
+        <button class="sort-btn" onclick="setSort('customer')" id="sort-customer">Customer</button>
+        <button class="sort-direction" onclick="toggleSortDir()" id="sort-dir">↓</button>
+    </div>
+
+    <button class="save-btn" style="background:var(--excel); margin-bottom:15px;" onclick="exportToExcel()">📥 EXCEL DOWNLOAD</button>
+    <div id="records-list">Loading records...</div>
+</div>
+
+<!-- ===== DASHBOARD PAGE ===== -->
+<div id="dashboard-page" class="page">
+    <div class="dash-total">
+        <div class="dash-label">Total Records</div>
+        <div class="dash-number" id="dash-total">0</div>
+    </div>
+    <div class="dash-grid">
+        <div class="dash-card pending">
+            <div class="dash-label">Pending</div>
+            <div class="dash-number" id="dash-pending">0</div>
+            <div style="font-size:0.75rem; color:#888;">Not yet Packed</div>
+        </div>
+        <div class="dash-card complete">
+            <div class="dash-label">Complete</div>
+            <div class="dash-number" id="dash-complete">0</div>
+            <div style="font-size:0.75rem; color:#888;">Packing Done</div>
+        </div>
+    </div>
+    <div class="card">
+        <h4 style="margin-top:0;">Status Breakdown</h4>
+        <div id="status-breakdown">Loading...</div>
+    </div>
+</div>
+
+<script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
+    let html5QrCode = null;
+    let allRecords = [];
+    let currentSort = { field: 'date', dir: 'desc' };
+
+    async function startScanner(targetId) {
+        const reader = document.getElementById("reader");
+        const stopBtn = document.getElementById("stopBtn");
+        reader.style.display = "block";
+        stopBtn.style.display = "block";
+
+        if (html5QrCode) {
+            try {
+                if (html5QrCode.isScanning) await html5QrCode.stop();
+                html5QrCode.clear();
+            } catch (e) {
+                console.warn("Scanner cleanup failed:", e);
+            }
+        }
+
+        html5QrCode = new Html5Qrcode("reader");
+        try {
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 20, qrbox: 250 },
+                (decodedText) => {
+                    document.getElementById(targetId).value = decodedText.trim();
+                    stopScanner();
+                    if (targetId === "searchInput") filterRecords();
+                },
+                (errorMessage) => {}
+            );
+        } catch (err) {
+            alert("Could not open camera.\n\n" + err.message);
+            stopScanner();
+        }
+    }
+
+    function stopScanner() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                document.getElementById("reader").style.display = "none";
+                document.getElementById("stopBtn").style.display = "none";
+            }).catch(e => console.warn("Stop failed:", e));
+        } else {
+            document.getElementById("reader").style.display = "none";
+            document.getElementById("stopBtn").style.display = "none";
+        }
+    }
+
+    function showPage(pageId, btn) {
+        stopScanner();
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        btn.classList.add('active');
+        if (pageId === 'records-page') loadRecords();
+        if (pageId === 'dashboard-page') updateDashboard();
+    }
+
+    async function loadRecords() {
+        const container = document.getElementById("records-list");
+        container.innerHTML = "Loading records...";
+        try {
+            const url = WEB_APP_URL + "?ts=" + Date.now();
+            const response = await fetch(url, { cache: "no-store" });
+            const data = await response.json();
+            allRecords = data;
+            filterRecords();
+        } catch (err) {
+            container.innerHTML = `<p style="color:red;">Load error: ${err.message}</p>`;
+        }
+    }
+
+    // ===== SORTING FUNCTIONS =====
+    function setSort(field) {
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('sort-' + field).classList.add('active');
+        if (currentSort.field === field) {
+            toggleSortDir();
+        } else {
+            currentSort.field = field;
+            currentSort.dir = 'desc';
+        }
+        filterRecords();
+    }
+
+    function toggleSortDir() {
+        currentSort.dir = currentSort.dir === 'desc' ? 'asc' : 'desc';
+        document.getElementById('sort-dir').innerText = currentSort.dir === 'desc' ? '↓' : '↑';
+        filterRecords();
+    }
+
+    function sortRecords(records) {
+        return records.sort((a, b) => {
+            let valA, valB;
+            switch(currentSort.field) {
+                case 'date':
+                    valA = new Date(a.Timestamp || a.Received_Time || 0);
+                    valB = new Date(b.Timestamp || b.Received_Time || 0);
+                    break;
+                case 'part':
+                    valA = (a["Part Number"] || "").toString().toLowerCase();
+                    valB = (b["Part Number"] || "").toString().toLowerCase();
+                    break;
+                case 'status':
+                    valA = (a["Current_Status"] || "").toString().toLowerCase();
+                    valB = (b["Current_Status"] || "").toString().toLowerCase();
+                    break;
+                case 'customer':
+                    valA = (a["Customer Name"] || "").toString().toLowerCase();
+                    valB = (b["Customer Name"] || "").toString().toLowerCase();
+                    break;
+                default:
+                    return 0;
+            }
+            if (valA < valB) return currentSort.dir === 'asc' ? -1 : 1;
+            if (valA > valB) return currentSort.dir === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }
+
+    function filterRecords() {
+        const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        let filtered = allRecords.filter(r => 
+            (r["Part Number"] || "").toString().toLowerCase().includes(query)
+        );
+        filtered = sortRecords(filtered);
+        renderList(filtered, "records-list");
+    }
+
+    // ===== DASHBOARD FUNCTIONS =====
+    function updateDashboard() {
+        const total = allRecords.length;
+        const pending = allRecords.filter(r => (r["Current_Status"] || "").toString().toLowerCase() !== "packing").length;
+        const complete = allRecords.filter(r => (r["Current_Status"] || "").toString().toLowerCase() === "packing").length;
+
+        document.getElementById('dash-total').innerText = total;
+        document.getElementById('dash-pending').innerText = pending;
+        document.getElementById('dash-complete').innerText = complete;
+
+        // Status breakdown
+        const statusCounts = {};
+        allRecords.forEach(r => {
+            const status = r["Current_Status"] || "Unknown";
+            statusCounts[status] = (statusCounts[status] || 0) + 1;
+        });
+
+        let breakdownHtml = '';
+        for (const [status, count] of Object.entries(statusCounts)) {
+            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+            breakdownHtml += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #eee;">
+                    <span style="font-weight:600;">${status}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="width:100px; height:8px; background:#eee; border-radius:4px; overflow:hidden;">
+                            <div style="width:${pct}%; height:100%; background:var(--primary); border-radius:4px;"></div>
+                        </div>
+                        <span style="font-weight:bold; min-width:30px; text-align:right;">${count}</span>
+                    </div>
+                </div>`;
+        }
+        document.getElementById('status-breakdown').innerHTML = breakdownHtml || '<p style="color:#888;">No data</p>';
+    }
+
+    async function saveRecord() {
+        const btn = document.getElementById("mainSaveBtn");
+        const payload = {
+            action: "add",
+            cust: document.getElementById("customer").value.trim() || "N/A",
+            pi: document.getElementById("pi").value.trim() || "N/A",
+            part: document.getElementById("part").value.trim(),
+            qty: Number(document.getElementById("qty").value) || 0,
+            deliveryDate: document.getElementById("deliveryDate").value,
+            box: document.getElementById("ppbox").value.trim(),
+            pallet: document.getElementById("pallet").value.trim() || "—",
+            receivedFrom: document.getElementById("receivedFrom").value,
+            receivedBy: document.getElementById("receivedBy").value.trim() || "—"
+            // Note: remark is NOT sent to Google Sheet
+        };
+
+        if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
+
+        btn.disabled = true;
+        btn.innerText = "SAVING... PLEASE WAIT";
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: "POST", mode: "no-cors", cache: "no-cache",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
+            alert("Record saved successfully!");
+            resetFields();
+            setTimeout(loadRecords, 2000);
+        } catch (err) {
+            alert("Save failed: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "SAVE RECORD";
+        }
+    }
+
+    function renderList(dataArray, targetId) {
+        const container = document.getElementById(targetId);
+        container.innerHTML = dataArray.map(r => {
+            const stages = ['Laser', 'Packing'];
+            let timeline = stages.map(s => {
+                const staff = r[`${s}_Staff`] || '';
+                const time  = r[`${s}_Time`] || '';
+                return `<div class="timeline-item ${staff ? 'done' : ''}">
+                    <strong>${s}</strong>: ${staff ? `<span class="staff-badge">${staff}</span><br><span class="log-meta">${time}</span>` : 'Waiting'}
+                </div>`;
+            }).join('');
+
+            let dateVal = r.Timestamp || r.Received_Time;
+            let dateStr = "—";
+            if (dateVal) {
+                const d = new Date(dateVal);
+                dateStr = isNaN(d.getTime()) ? dateVal.toString().split('T')[0] : d.toLocaleDateString('en-GB');
+            }
+
+            let delDateRaw = r.Supplier_Delivery_Date || r.deliveryDate || "";
+            let delDateStr = "—";
+            if (delDateRaw) {
+                const d2 = new Date(delDateRaw);
+                delDateStr = isNaN(d2.getTime()) ? delDateRaw.toString().split('T')[0] : d2.toLocaleDateString('en-GB');
+            }
+
+            // Determine if this record would be big/small based on QTY (UI-only logic)
+            const qty = Number(r["QTY"]) || 0;
+            const remarkBadge = qty >= 10 
+                ? '<span class="remark-badge remark-big">Big Part</span>' 
+                : (qty > 0 && qty < 10 ? '<span class="remark-badge remark-small">Small Part</span>' : '');
+
+            return `<div class="item-card">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                    <div style="font-size:1.1rem; font-weight:bold; color:var(--primary);">${r["Part Number"] || '—'}${remarkBadge}</div>
+                    <span class="delete-link" onclick="alert('Delete not implemented')">Delete</span>
+                </div>
+
+                <div class="info-row"><span class="info-label">Entry Date:</span> ${dateStr}</div>
+                <div class="info-row"><span class="info-label">Supplier Delivery:</span> <strong>${delDateStr}</strong></div>
+                <div class="info-row"><span class="info-label">Customer:</span> ${r["Customer Name"] || '—'}</div>
+                <div class="info-row"><span class="info-label">QTY:</span> <strong>${r["QTY"] || '0'}</strong></div>
+                <div class="info-row"><span class="info-label">Box ID:</span> ${r["BOX ID"] || '—'}</div>
+                <div class="info-row"><span class="info-label">Pallet:</span> ${r["Pallet No"] || '—'}</div>
+                <div class="info-row"><span class="info-label">PI:</span> ${r["PI"] || '—'}</div>
+                <div class="info-row"><span class="info-label">From:</span> ${r["Received From"] || '—'}</div>
+                <div class="info-row"><span class="info-label">By:</span> ${r["Received By"] || '—'}</div>
+
+                <div class="timeline">${timeline}</div>
+                <div class="edit-row">
+                    <div>
+                        <label style="font-size:0.7rem;">Status</label>
+                        <select id="status-${r.id}" class="input-field">
+                            <option value="Laser"   ${r.Current_Status==='Laser'?'selected':''}>Laser</option>
+                            <option value="Packing" ${r.Current_Status==='Packing'?'selected':''}>Packing</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;">Box ID</label>
+                        <input type="text" id="box-${r.id}" class="input-field" value="${r["BOX ID"]||''}">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;">Pallet No</label>
+                        <input type="text" id="pallet-${r.id}" class="input-field" value="${r["Pallet No"]||''}">
+                    </div>
+                </div>
+                <div style="margin-top:8px;">
+                    <label style="font-size:0.7rem;">Responsible Staff</label>
+                    <input type="text" id="staff-${r.id}" class="input-field" placeholder="Type name here...">
+                </div>
+                <button id="updateBtn-${r.id}" onclick="saveStatusUpdate(${r.id})" class="save-btn" style="margin-top:12px;">SAVE UPDATE</button>
+            </div>`;
+        }).join('') || "<p>No records found.</p>";
+    }
+
+    async function saveStatusUpdate(rowId) {
+        const btn = document.getElementById(`updateBtn-${rowId}`);
+        const payload = {
+            action: "update",
+            rowIndex: rowId,
+            status: document.getElementById(`status-${rowId}`).value,
+            box: document.getElementById(`box-${rowId}`).value.trim(),
+            pallet: document.getElementById(`pallet-${rowId}`).value.trim() || "—",
+            staff: document.getElementById(`staff-${rowId}`).value.trim() || "—"
+        };
+
+        btn.disabled = true;
+        btn.innerText = "UPDATING...";
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: "POST", mode: "no-cors", cache: "no-cache",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
+            alert("Updated successfully!");
+            setTimeout(loadRecords, 3000);
+        } catch (err) {
+            alert("Update failed: " + err.message);
+            btn.disabled = false;
+            btn.innerText = "SAVE UPDATE";
+        }
+    }
+
+    function resetFields() {
+        ['customer','pi','part','qty','deliveryDate','ppbox','pallet','receivedBy','remark'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+        });
+        document.getElementById("receivedFrom").value = "Store";
+    }
+
+    function exportToExcel() {
+        if (allRecords.length === 0) return alert("No data loaded");
+        let csv = "﻿Timestamp,Customer Name,PI,Part Number,QTY,Supplier_Delivery_Date,BOX ID,Pallet No,Received From,Received By,Received_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Current_Status
+";
+        allRecords.forEach(r => {
+            csv += `"${r.Timestamp||''}","${r["Customer Name"]||''}","${r.PI||''}","${r["Part Number"]||''}","${r.QTY||''}","${r.Supplier_Delivery_Date||''}","${r["BOX ID"]||''}","${r["Pallet No"]||''}","${r["Received From"]||''}","${r["Received By"]||''}","${r.Received_Time||''}","${r.Laser_Staff||''}","${r.Laser_Time||''}","${r.Packing_Staff||''}","${r.Packing_Time||''}","${r["Current_Status"]||''}"
+`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Warehouse_Trace_${new Date().toISOString().slice(0,10)}.csv`;
+        link.click();
+    }
+</script>
+</body>
+</html>
