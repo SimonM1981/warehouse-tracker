@@ -3,232 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Tracking System</title>
+    <title>Order Management & Tracking Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f4f6f9; font-family: system-ui, sans-serif; }
-        .nav-tabs .nav-link { font-weight: 600; color: #495057; border: none; padding: 12px 20px; }
-        .nav-tabs .nav-link.active { border-bottom: 4px solid #0d6efd; color: #0d6efd; background: transparent; }
-        .card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .info-header { background: #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 20px; border-left: 5px solid #0d6efd; }
-        .status-badge { font-size: 0.9rem; padding: 5px 10px; border-radius: 20px; }
+        body { background-color: #f1f3f7; font-family: system-ui, -apple-system, sans-serif; }
+        .nav-pills .nav-link { font-weight: 600; padding: 12px 24px; color: #495057; border: 1px solid #ced4da; margin-right: 8px; }
+        .nav-pills .nav-link.active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
+        .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-radius: 8px; }
+        .table-responsive { max-height: 400px; overflow-y: auto; }
+        .sticky-thead th { position: sticky; top: 0; background-color: #212529; color: white; z-index: 1; }
+        .highlight-row { background-color: #e2f0fe !important; font-weight: 500; }
+        .feed-item { border-left: 4px solid #198754; padding-left: 12px; margin-bottom: 12px; }
     </style>
 </head>
 <body>
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📦 Order Tracking App</h2>
-        <button id="refreshBtn" class="btn btn-outline-primary" onclick="fetchData()">🔄 Sync Data</button>
+<div class="container-fluid px-4 py-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
+        <h4 class="mb-0 text-dark fw-bold">📦 Order Tracking Ecosystem</h4>
+        <div class="d-flex align-items-center">
+            <span id="lastSyncTime" class="text-muted me-3 small">Not Synced</span>
+            <button id="refreshBtn" class="btn btn-primary px-4" onclick="fetchData()">🔄 Sync Master Sheet</button>
+        </div>
     </div>
-
-    <ul class="nav nav-tabs mb-4" id="deptTabs" role="tablist">
-        <li class="nav-item"><button class="nav-link active" onclick="switchDept('Store')">🏪 Store</button></li>
-        <li class="nav-item"><button class="nav-link" onclick="switchDept('Laser')">⚡ Laser</button></li>
-        <li class="nav-item"><button class="nav-link" onclick="switchDept('Packing')">📦 Packing</button></li>
-        <li class="nav-item"><button class="nav-link" onclick="switchDept('QC')">🔬 QC / Incoming</button></li>
-    </ul>
 
     <div class="card p-3 mb-4">
-        <label for="orderSelector" class="form-label fw-bold">Select Active P/I No. & Part Number:</label>
-        <select id="orderSelector" class="form-select form-select-lg" onchange="onOrderSelect()">
-            <option value="">-- Choose Item for Full Processing Info --</option>
-        </select>
-    </div>
-
-    <div id="infoDisplay" class="card p-4 d-none">
-        <div class="info-header">
-            <h4 class="mb-2">📋 Full Order Specifications</h4>
-            <div class="row g-3">
-                <div class="col-md-4"><strong>Customer Name:</strong> <span id="lblCustomer"></span></div>
-                <div class="col-md-4"><strong>P/I Number:</strong> <span id="lblPI"></span></div>
-                <div class="col-md-4"><strong>Part Number:</strong> <span id="lblPart"></span></div>
-                <div class="col-md-4"><strong>Customer No:</strong> <span id="lblCustNo"></span></div>
-                <div class="col-md-4"><strong>Target Qty Order:</strong> <span id="lblOrderQty" class="badge bg-dark fs-6"></span> <span id="lblUnit"></span></div>
-                <div class="col-md-4"><strong>Line Status:</strong> <span id="lblStatus" class="status-badge bg-warning text-dark"></span></div>
+        <div class="row g-2 align-items-center">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark text-white">🔍 Global Search</span>
+                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Type Customer Name, P/I No, or Part Number to filter instantly..." onkeyup="filterMasterTable()">
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <span class="badge bg-secondary p-2 fs-6">Matches Found: <span id="matchCount">0</span></span>
             </div>
         </div>
 
-        <h5 class="mt-4 mb-3">⏱️ Fulfillment Pipeline Breakdown</h5>
-        <div class="row text-center mb-4 g-2">
-            <div class="col-md-3"><div class="p-3 bg-light border rounded"><h6>Collected (Store)</h6><h3 id="statStore">0</h3></div></div>
-            <div class="col-md-3"><div class="p-3 bg-light border rounded"><h6>Laser Processed</h6><h3 id="statLaser">0</h3></div></div>
-            <div class="col-md-3"><div class="p-3 bg-light border rounded"><h6>Packed Quantity</h6><h3 id="statPacking">0</h3></div></div>
-            <div class="col-md-3"><div class="p-3 bg-light border rounded"><h6>QC / Incoming Injected</h6><h3 id="statQC">0</h3></div></div>
+        <div class="table-responsive mt-3 border rounded">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
+                <thead class="sticky-thead">
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>P/I No.</th>
+                        <th>Part Number</th>
+                        <th>Customer No.</th>
+                        <th>Order Qty</th>
+                        <th>Collected</th>
+                        <th>Laser Done</th>
+                        <th>Packed</th>
+                        <th>QC Arrival</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="masterTableBody">
+                    <tr><td colspan="10" class="text-center py-4 text-muted">Click "Sync Master Sheet" to pull records...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="workspaceLayout" class="row d-none">
+        
+        <div class="col-lg-7">
+            <div class="card p-4 mb-4">
+                <div class="bg-light p-3 rounded mb-3 border-start border-primary border-5">
+                    <h5 class="fw-bold mb-1">Active Item Target Context:</h5>
+                    <p class="mb-0 text-muted">
+                        Customer: <strong id="ctxCustomer" class="text-dark">--</strong> | 
+                        P/I No: <strong id="ctxPI" class="text-dark">--</strong> | 
+                        Part Number: <strong id="ctxPart" class="text-dark">--</strong>
+                    </p>
+                </div>
+
+                <label class="form-label fw-bold text-secondary uppercase small mb-2">Switch Active Processing Department Workflow:</label>
+                <div class="nav nav-pills mb-4" id="deptPills">
+                    <button class="nav-link active" onclick="setDepartment('Store')">🏪 Store Tab</button>
+                    <button class="nav-link" onclick="setDepartment('Laser')">⚡ Laser Tab</button>
+                    <button class="nav-link" onclick="setDepartment('Packing')">📦 Packing Tab</button>
+                    <button class="nav-link" onclick="setDepartment('QC')">🔬 QC Tab</button>
+                </div>
+
+                <h5 id="formHeadline" class="fw-bold text-primary mb-3">Store Data Inputs</h5>
+                <form id="executionForm" onsubmit="handleTransactionSubmit(event)" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Action Entry Quantity</label>
+                        <input type="number" id="formQty" class="form-control form-control-lg text-center" required min="1">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Operator Name / Staff ID</label>
+                        <input type="text" id="formOperator" class="form-control form-control-lg" required placeholder="Who is processing this?">
+                    </div>
+                    
+                    <div class="col-md-6 field-standard">
+                        <label id="lblBox" class="form-label fw-bold">STORE BOX ID</label>
+                        <input type="text" id="formBox" class="form-control">
+                    </div>
+                    <div class="col-md-6 field-standard">
+                        <label id="lblPallet" class="form-label fw-bold">STORE Pallet No.</label>
+                        <input type="text" id="formPallet" class="form-control">
+                    </div>
+                    
+                    <div class="col-md-12 field-qc d-none">
+                        <label class="form-label fw-bold">QC Received From Source</label>
+                        <input type="text" id="formReceivedFrom" class="form-control" placeholder="Supplier, production line reference batch context">
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label text-muted">Transaction Remark / Discrepancy Adjustment Note</label>
+                        <input type="text" id="formRemark" class="form-control" placeholder="E.g., Batch arrival partial 1 of 3...">
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg w-100 fw-bold py-3 shadow-sm">💾 Save Transaction and Update Logs</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div class="border-top pt-4">
-            <h5 id="formTitle">Perform Actions</h5>
-            <form id="actionForm" onsubmit="submitForm(event)" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Action Quantity</label>
-                    <input type="number" id="inputQty" class="form-control" required min="1">
+        <div class="col-lg-5">
+            
+            <div class="card p-4 mb-4 bg-dark text-white">
+                <h5 class="fw-bold text-warning border-bottom border-secondary pb-2 mb-3">📋 P/I Line Item Pipeline Metrics</h5>
+                <div class="row g-3 text-center">
+                    <div class="col-6 col-sm-3"><div><small class="text-muted">Ordered</small><h2 id="metOrder" class="fw-bold text-white">0</h2></div></div>
+                    <div class="col-6 col-sm-3"><div><small class="text-muted">Collected</small><h2 id="metCollected" class="fw-bold text-info">0</h2></div></div>
+                    <div class="col-6 col-sm-3"><div><small class="text-muted">Laser Run</small><h2 id="metLaser" class="fw-bold text-primary">0</h2></div></div>
+                    <div class="col-6 col-sm-3"><div><small class="text-muted">Packed</small><h2 id="metPacked" class="fw-bold text-success">0</h2></div></div>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Operator Name</label>
-                    <input type="text" id="inputOperator" class="form-control" required>
-                </div>
-                
-                <div class="col-md-3 field-standard">
-                    <label class="form-label fw-bold">Box ID</label>
-                    <input type="text" id="inputBox" class="form-control">
-                </div>
-                <div class="col-md-3 field-standard">
-                    <label class="form-label fw-bold">Pallet No.</label>
-                    <input type="text" id="inputPallet" class="form-control">
-                </div>
-                <div class="col-md-3 field-qc d-none">
-                    <label class="form-label fw-bold">Received FROM</label>
-                    <input type="text" id="inputReceivedFrom" class="form-control">
-                </div>
+            </div>
 
-                <div class="col-md-12">
-                    <label class="form-label">Remark / Adjustments</label>
-                    <input type="text" id="inputRemark" class="form-control" placeholder="Optional notes regarding incremental run">
+            <div class="card p-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">⏱️ Today's Completed Actions Logs</h5>
+                <div id="dailyFeedContainer" style="max-height: 290px; overflow-y: auto;">
+                    <p class="text-muted small">No items logged yet today.</p>
                 </div>
-                <div class="col-12 mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg w-100">Save Transaction entry</button>
-                </div>
-            </form>
+            </div>
         </div>
+
     </div>
 </div>
 
 <script>
-    // Paste your Web App Link generated from Google Apps Script below
-    const API_URL = "https://script.google.com/macros/s/AKfycbyXLp6sCHhAFbJpfRrGsAlfs_M4gMmpKV8ROMxx0ruaRs6aLqHKiC-bJbs_eVlbJvI5sA/exec"; 
-    let currentDept = "Store";
-    let globalOrdersCache = [];
-    let selectedIndex = null;
+    const API_URL = "https://script.google.com/macros/s/AKfycbyXLp6sCHhAFbJpfRrGsAlfs_M4gMmpKV8ROMxx0ruaRs6aLqHKiC-bJbs_eVlbJvI5sA/exec";
+    let activeDept = "Store";
+    let ordersCache = [];
+    let logsCache = [];
+    let selectedRowIdx = null;
 
-    window.onload = function() {
-        fetchData();
-    };
+    function fetchData() {
+        const btn = document.getElementById('refreshBtn');
+        btn.innerText = "⏳ Pulling Data...";
+        btn.disabled = true;
 
-    function switchDept(dept) {
-        currentDept = dept;
-        document.querySelectorAll('#deptTabs button').forEach(btn => {
-            btn.classList.remove('active');
-            if(btn.innerText.includes(dept)) btn.classList.add('active');
+        fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getOrdersAndLogs' }) })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                ordersCache = res.orders;
+                logsCache = res.dailyLogs;
+                
+                renderMasterTable(ordersCache);
+                renderDailyFeed(logsCache);
+                
+                document.getElementById('lastSyncTime').innerText = "Last Sync: " + new Date().toLocaleTimeString();
+                if(selectedRowIdx !== null) selectTargetRow(selectedRowIdx);
+            } else {
+                alert("Error loading data arrays: " + res.message);
+            }
+        })
+        .catch(err => alert("Connection error to core API script: " + err))
+        .finally(() => {
+            btn.innerText = "🔄 Sync Master Sheet";
+            btn.disabled = false;
         });
-        
-        // Dynamically shift form labels to suit specific workflows
-        document.getElementById('formTitle').innerText = `Submit Incremental ${dept} Batch Record`;
-        
+    }
+
+    function renderMasterTable(data) {
+        const tbody = document.getElementById('masterTableBody');
+        tbody.innerHTML = '';
+        document.getElementById('matchCount').innerText = data.length;
+
+        data.forEach((row, idx) => {
+            const tr = document.createElement('tr');
+            tr.id = `row-idx-${idx}`;
+            if(selectedRowIdx === idx) tr.className = "highlight-row";
+            
+            tr.innerHTML = `
+                <td class="fw-bold">${row.customerName}</td>
+                <td><span class="badge bg-light text-dark border">${row.piNo}</span></td>
+                <td>${row.partNumber}</td>
+                <td><small class="text-muted">${row.customerNo}</small></td>
+                <td><strong class="text-dark">${row.qtyOrder}</strong> <small class="text-muted">${row.unit}</small></td>
+                <td><span class="badge bg-info text-dark">${row.qtyCollected}</span></td>
+                <td><span class="badge bg-primary">${row.qtyLaser}</span></td>
+                <td><span class="badge bg-success">${row.qtyPacked}</span></td>
+                <td><span class="badge bg-warning text-dark">${row.qtyQC}</span></td>
+                <td><button class="btn btn-sm btn-dark px-3" onclick="selectTargetRow(${idx})">Select</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterMasterTable() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        if(!query) {
+            renderMasterTable(ordersCache);
+            return;
+        }
+
+        const filtered = ordersCache.filter(item => 
+            item.customerName.toLowerCase().includes(query) ||
+            item.piNo.toLowerCase().includes(query) ||
+            item.partNumber.toLowerCase().includes(query)
+        );
+        renderMasterTable(filtered);
+    }
+
+    function selectTargetRow(idx) {
+        // Manage Highlight Rows Cleanly
+        document.querySelectorAll('#masterTableBody tr').forEach(el => el.classList.remove('highlight-row'));
+        const activeRow = document.getElementById(`row-idx-${idx}`);
+        if(activeRow) activeRow.classList.add('highlight-row');
+
+        selectedRowIdx = idx;
+        const target = ordersCache[idx];
+
+        // Hydrate Application Workspace Layout Context Fields
+        document.getElementById('ctxCustomer').innerText = target.customerName;
+        document.getElementById('ctxPI').innerText = target.piNo;
+        document.getElementById('ctxPart').innerText = target.partNumber;
+
+        // Set Metric Figures Elements
+        document.getElementById('metOrder').innerText = target.qtyOrder;
+        document.getElementById('metCollected').innerText = target.qtyCollected;
+        document.getElementById('metLaser').innerText = target.qtyLaser;
+        document.getElementById('metPacked').innerText = target.qtyPacked;
+
+        document.getElementById('workspaceLayout').classList.remove('d-none');
+        window.scrollTo({ top: document.getElementById('workspaceLayout').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    function setDepartment(dept) {
+        activeDept = dept;
+        document.querySelectorAll('#deptPills button').forEach(b => {
+            b.classList.remove('active');
+            if(b.innerText.includes(dept)) b.classList.add('active');
+        });
+
+        document.getElementById('formHeadline').innerText = `${dept} Department Actions Entry Form`;
+
+        // Configure layout field visibilities dynamically based on department scope
         if(dept === 'QC') {
             document.querySelectorAll('.field-standard').forEach(el => el.classList.add('d-none'));
             document.querySelectorAll('.field-qc').forEach(el => el.classList.remove('d-none'));
         } else {
             document.querySelectorAll('.field-standard').forEach(el => el.classList.remove('d-none'));
             document.querySelectorAll('.field-qc').forEach(el => el.classList.add('d-none'));
+            
+            // Adjust box and pallet labels for context clarity
+            document.getElementById('lblBox').innerText = `${dept.toUpperCase()} BOX ID`;
+            document.getElementById('lblPallet').innerText = `${dept.toUpperCase()} Pallet No.`;
         }
     }
 
-    function fetchData() {
-        const refreshBtn = document.getElementById('refreshBtn');
-        refreshBtn.innerText = "⏳ Loading...";
-        refreshBtn.disabled = true;
-
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'getOrders' })
-        })
-        .then(res => res.json())
-        .then(response => {
-            if(response.status === 'success') {
-                globalOrdersCache = response.orders;
-                populateSelector();
-                if(selectedIndex !== null) onOrderSelect();
-            } else {
-                alert("Error loading data: " + response.message);
-            }
-        })
-        .catch(err => alert("Connection error: " + err))
-        .finally(() => {
-            refreshBtn.innerText = "🔄 Sync Data";
-            refreshBtn.disabled = false;
-        });
-    }
-
-    function populateSelector() {
-        const selector = document.getElementById('orderSelector');
-        const currentVal = selector.value;
-        selector.innerHTML = '<option value="">-- Choose Item for Full Processing Info --</option>';
-        
-        globalOrdersCache.forEach((order, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            // Full primary context identifier
-            option.innerText = `[${order.piNo}] ${order.customerName} - Part: ${order.partNumber} (Order Qty: ${order.qtyOrder})`;
-            selector.appendChild(option);
-        });
-
-        if(currentVal !== "") selector.value = currentVal;
-    }
-
-    function onOrderSelect() {
-        const selector = document.getElementById('orderSelector');
-        if(!selector.value) {
-            document.getElementById('infoDisplay').classList.add('d-none');
+    function renderDailyFeed(logs) {
+        const container = document.getElementById('dailyFeedContainer');
+        if(logs.length === 0) {
+            container.innerHTML = `<p class="text-muted small p-2">No entries have been saved yet today.</p>`;
             return;
         }
-        
-        selectedIndex = selector.value;
-        const item = globalOrdersCache[selectedIndex];
+        container.innerHTML = '';
+        logs.forEach(log => {
+            const div = document.createElement('div');
+            div.className = "feed-item bg-light p-2 rounded shadow-2xs mb-2 border-start border-4";
+            
+            // Assign custom color codes per department feed visibility
+            if(log.dept === 'Store') div.style.borderColor = "#0dcaf0";
+            if(log.dept === 'Laser') div.style.borderColor = "#0d6efd";
+            if(log.dept === 'Packing') div.style.borderColor = "#198754";
+            if(log.dept === 'QC') div.style.borderColor = "#ffc107";
 
-        // Fill full layout info elements
-        document.getElementById('lblCustomer').innerText = item.customerName;
-        document.getElementById('lblPI').innerText = item.piNo;
-        document.getElementById('lblPart').innerText = item.partNumber;
-        document.getElementById('lblCustNo').innerText = item.customerNo;
-        document.getElementById('lblOrderQty').innerText = item.qtyOrder;
-        document.getElementById('lblUnit').innerText = item.unit;
-        document.getElementById('lblStatus').innerText = item.currentStatus;
-
-        // Metric calculations aggregated by server logs
-        document.getElementById('statStore').innerText = item.qtyCollected;
-        document.getElementById('statLaser').innerText = item.qtyLaser;
-        document.getElementById('statPacking').innerText = item.qtyPacked;
-        document.getElementById('statQC').innerText = item.qtyQC;
-
-        document.getElementById('infoDisplay').classList.remove('d-none');
+            div.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold text-dark">[${log.dept}] - Processed ${log.qty} Pcs</span>
+                    <span class="text-muted small">${log.time}</span>
+                </div>
+                <small class="text-secondary block">P/I: ${log.piNo} | Part: ${log.partNo} | By: ${log.operator}</small>
+            `;
+            container.appendChild(div);
+        });
     }
 
-    function submitForm(e) {
+    function handleTransactionSubmit(e) {
         e.preventDefault();
-        const item = globalOrdersCache[selectedIndex];
+        const target = ordersCache[selectedRowIdx];
         
         const payload = {
             action: 'saveTransaction',
             data: {
-                piNo: item.piNo,
-                partNumber: item.partNumber,
-                department: currentDept,
-                actionType: currentDept === 'QC' ? 'Received' : 'Processed',
-                qty: document.getElementById('inputQty').value,
-                operatorName: document.getElementById('inputOperator').value,
-                boxId: document.getElementById('inputBox').value,
-                palletNo: document.getElementById('inputPallet').value,
-                receivedFrom: document.getElementById('inputReceivedFrom').value,
-                remark: document.getElementById('inputRemark').value
+                piNo: target.piNo,
+                partNumber: target.partNumber,
+                department: activeDept,
+                actionType: activeDept === 'QC' ? 'Received' : 'Processed',
+                qty: document.getElementById('formQty').value,
+                operatorName: document.getElementById('formOperator').value,
+                boxId: document.getElementById('formBox').value,
+                palletNo: document.getElementById('formPallet').value,
+                receivedFrom: document.getElementById('formReceivedFrom').value,
+                remark: document.getElementById('formRemark').value
             }
         };
 
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        })
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
         .then(res => res.json())
         .then(res => {
             if(res.status === 'success') {
-                // Clear fields safely upon incremental save success
-                document.getElementById('inputQty').value = '';
-                document.getElementById('inputBox').value = '';
-                document.getElementById('inputPallet').value = '';
-                document.getElementById('inputRemark').value = '';
-                fetchData(); // Instantly update progress display matrix numbers
+                document.getElementById('formQty').value = '';
+                document.getElementById('formBox').value = '';
+                document.getElementById('formPallet').value = '';
+                document.getElementById('formRemark').value = '';
+                fetchData(); // Trigger structural data layout numerical sync refresh loops
             } else {
-                alert("Submission failed: " + res.message);
+                alert("Execution error saving payload data row: " + res.message);
             }
         });
     }
