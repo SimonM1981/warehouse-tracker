@@ -24,7 +24,7 @@
 <div class="bg-white shadow-sm mb-4">
     <div class="container-fluid px-4 py-3 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <img class="brand-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABwKC9vAAAAwFBMVEVHcEwBAQEJCQkVFRUWFhYWFhYWFhYGBgYKCgoODg4KCgoKCgoKCgoLCwsNDQ0ODg4PDw8QEBAQEBAQEBAQEBAWFhYVFRUKCgoQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBDe897VAAAAAnRSTlMAAQGU/08AAAGZSURBVGjI7ZXZSgMxEEUhS9SujmsVq6u4W9///39tSAXv9EwmgXToB88hId8ckmSSTGZ6vV6v16u9fD8fT00S7bZ6b8f3w9fD8epYAt0S76WvV6P77vhqWIvEulGfL0bUoM8XfNf5I0XfPZf6S0b6NujgC30T9XbYId7Sre/8C926f6p6K3wT9fDNcCHqIeqhHqIeoh7qIepBPdQbUT3UG1E91BtRPdQbUT3UG1E9qId6iHqoN6Ieoh7qIeqhHqIeoh7UQ70R1UO9EdVDvRHVQ70R1UO9EdWDeqiHqId6I+oh6qEeoh7qIeqhHqIe1EO9EdVDvRHVQ70R1UO9EdVDvRHVg3qoh6iHeiPqIeqhHqIe6iHqoR6iHtRDvRHVQ70R1UO9EdVDvRHVQ70R1YN6qIeoh3oj6iHqoR6iHuoh6qEeevyf6Inon+iD6IEohKiDKIIogKiPKHqoeyh6KHooaih6KHp6vV6v9vIDbO9W16vxeHIsgbw9nZok7mby0TfS/v7ZAt1MvXpbe9Xv96u9/ABY1C89f9I63gAAAABJRU5ErkJggg==" alt="MG Logo">
+            <img class="brand-logo" src="MG.png" alt="MG Logo">
             <h3 class="mb-0 fw-bold text-dark me-4">MG Order Tracking System</h3>
             <ul class="nav main-nav" id="mainAppTabs">
                 <li class="nav-item"><button class="nav-link active" onclick="switchMainTab('ops')">🏭 Operations Workspace</button></li>
@@ -411,7 +411,6 @@
         validateLiveInputLimit();
     }
 
-    // STRICT OVER-INPUT INTERCEPT ENGINE
     function validateLiveInputLimit() {
         if (selectedRowIdx === null) return true;
         
@@ -493,9 +492,6 @@
         });
     }
 
-    // ==========================================
-    // CUSTOMER STATUS ENGINE LOGIC
-    // ==========================================
     function renderCustomerListReport() {
         const container = document.getElementById('reportCustomerList');
         if(ordersCache.length === 0) return;
@@ -597,9 +593,6 @@
         `;
     }
 
-    // ==========================================
-    // DAILY LOGS ENGINE LOGIC
-    // ==========================================
     function renderAnalyticsView() {
         populateLedgerTable(logsCache);
     }
