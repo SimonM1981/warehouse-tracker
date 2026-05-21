@@ -8,10 +8,10 @@
     <style>
         body { background-color: #f3f5f9; font-family: system-ui, -apple-system, sans-serif; }
         
-        /* Brand Optimization - Scaled to half size for clean mobile/desktop balance */
-        .brand-logo { height: 24px; width: auto; object-fit: contain; margin-right: 10px; }
+        /* Scaled Logo Asset to half original size */
+        .brand-logo { height: 20px; width: auto; object-fit: contain; margin-right: 10px; }
         
-        /* Mobile-First Responsive Navigation Adjustments */
+        /* Mobile-First Responsive Adjustments */
         .header-container { display: flex; flex-direction: column; gap: 12px; }
         @media(min-width: 992px) {
             .header-container { flex-direction: row; justify-content: space-between; align-items: center; }
@@ -25,18 +25,12 @@
         .dept-pills .nav-link { font-weight: 600; padding: 8px 16px; color: #495057; border: 1px solid #ced4da; }
         .dept-pills .nav-link.active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
         
-        /* Card & UI Component Aesthetics */
-        .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-radius: 10px; }
-        
-        /* Mobile responsive scrolling for wide data tables */
-        .table-responsive { max-height: 400px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        /* Mobile responsive touch scroll data grid */
+        .table-responsive { max-height: 420px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .sticky-thead th { position: sticky; top: 0; background-color: #212529; color: white; z-index: 2; }
         .highlight-row { background-color: #e2f0fe !important; font-weight: 500; }
         
-        /* Metric Badges & Display Boxes */
         .metric-card { border-left: 5px solid; text-align: center; background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .badge-interactive { cursor: pointer; transition: transform 0.1s ease; }
-        .badge-interactive:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -51,7 +45,7 @@
             <ul class="nav main-nav" id="mainAppTabs">
                 <li class="nav-item"><button class="nav-link active" onclick="switchMainTab('ops')">🏭 Operations Workspace</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="switchMainTab('reports')">📊 Customer Status Reports</button></li>
-                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('analytics')">⏱️ Daily Input/Output Logs</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('analytics')">⏱️ Transaction Audit Logs</button></li>
             </ul>
         </div>
         <div class="d-flex align-items-center justify-content-between gap-3 mt-2 mt-lg-0">
@@ -64,7 +58,7 @@
 <div class="container-fluid px-3">
     
     <div id="tab-ops" class="app-tab-content">
-        <div class="card p-3 mb-4">
+        <div class="card p-3 mb-4 border-0 shadow-sm">
             <div class="row g-2 align-items-center">
                 <div class="col-12 col-md-9">
                     <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Type Customer, P/I No, or Part Number to filter lines instantly..." onkeyup="filterMasterTable()">
@@ -94,7 +88,7 @@
                         </tr>
                     </thead>
                     <tbody id="masterTableBody">
-                        <tr><td colspan="13" class="text-center py-5 text-muted">Click "Sync Master Sheet" above to pull live row context streams...</td></tr>
+                        <tr><td colspan="13" class="text-center py-5 text-muted">Click "Sync Master Sheet" above to fetch processing data streams...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -102,7 +96,7 @@
 
         <div id="workspaceLayout" class="row g-3 d-none">
             <div class="col-12 col-lg-7">
-                <div class="card p-3 p-sm-4 mb-4">
+                <div class="card p-3 p-sm-4 mb-4 border-0 shadow-sm">
                     <div class="bg-light p-3 rounded mb-3 border-start border-primary border-5">
                         <small class="fw-bold d-block text-secondary text-uppercase">Target Identity Context:</small>
                         <h5 class="mb-0 text-dark flex-wrap"><span id="ctxCustomer" class="fw-bold">--</span> | P/I: <span id="ctxPI" class="fw-bold text-primary">--</span> | Part: <span id="ctxPart">--</span></h5>
@@ -110,49 +104,35 @@
 
                     <div class="nav nav-pills dept-pills mb-4">
                         <button class="nav-link active" onclick="setDepartment('Store')">🏪 Store Tab</button>
-                        <button class="nav-link" onclick="setDepartment('Packing')">📦 Packing Tab</button>
                         <button class="nav-link" onclick="setDepartment('Laser')">⚡ Laser Tab</button>
+                        <button class="nav-link" onclick="setDepartment('Packing')">📦 Packing Tab</button>
                         <button class="nav-link" onclick="setDepartment('QC')">🔬 QC Tab</button>
                     </div>
 
                     <h5 id="formHeadline" class="fw-bold text-primary mb-3">Store Department Actions Entry Form</h5>
                     
-                    <div id="formValidationErrorAlert" class="alert alert-danger d-none py-2 mb-3 fw-bold">
-                        ⚠️ Over-input baseline protection constraint triggered!
-                    </div>
-
-                    <div id="laserSourceAlert" class="alert alert-warning d-none py-2 mb-3 small">
-                        ℹ️ <strong>Laser Dependency Flow:</strong> Select which packed box output batch you are executing.
-                    </div>
+                    <div id="formValidationErrorAlert" class="alert alert-danger d-none py-2 mb-3 fw-bold"></div>
 
                     <form id="executionForm" onsubmit="handleTransactionSubmit(event)" class="row g-3">
-                        
-                        <div id="fieldLaserSourceSelect" class="col-12 d-none">
-                            <label class="form-label fw-bold text-danger">Select Source Batch (What Staff Packed Above)</label>
-                            <select id="formLaserSourceBatch" class="form-select form-select-lg border-danger" onchange="autoFillLaserFromPackingBatch()">
-                                <option value="">-- Choose Active Packed Item Drop Container --</option>
-                            </select>
-                        </div>
-
                         <div class="col-6 col-md-4">
                             <label class="form-label fw-bold">Action Quantity</label>
                             <input type="number" id="formQty" class="form-control form-control-lg text-center fw-bold text-dark" required min="1" oninput="validateLiveInputLimit()">
                         </div>
                         <div class="col-6 col-md-8">
                             <label class="form-label fw-bold">Operator / Staff Name</label>
-                            <input type="text" id="formOperator" class="form-control form-control-lg" required placeholder="Employee initials">
+                            <input type="text" id="formOperator" class="form-control form-control-lg" required placeholder="Employee name or ID">
                         </div>
                         
-                        <div class="col-6 field-standard"><label id="lblBox" class="form-label fw-bold">STORE BOX ID</label><input type="text" id="formBox" class="form-control"></div>
-                        <div class="col-6 field-standard"><label id="lblPallet" class="form-label fw-bold">STORE Pallet No.</label><input type="text" id="formPallet" class="form-control"></div>
+                        <div class="col-6"><label id="lblBox" class="form-label fw-bold">STORE BOX ID</label><input type="text" id="formBox" class="form-control"></div>
+                        <div class="col-6"><label id="lblPallet" class="form-label fw-bold">STORE Pallet No.</label><input type="text" id="formPallet" class="form-control"></div>
                         
                         <div class="col-12 col-md-6 field-supplier d-none">
-                            <label id="lblReceivedDate" class="form-label fw-bold text-primary">Receiving From Supplier Date</label>
+                            <label class="form-label fw-bold text-primary">Receiving From Supplier Date</label>
                             <input type="date" id="formReceivedDate" class="form-control border-primary">
                         </div>
                         <div class="col-12 col-md-6 field-supplier d-none">
                             <label class="form-label fw-bold text-primary">Supplier / Production Origin Name</label>
-                            <input type="text" id="formReceivedFrom" class="form-control border-primary" placeholder="Factory origin / vendor">
+                            <input type="text" id="formReceivedFrom" class="form-control border-primary" placeholder="Factory origin or supplier vendor name">
                         </div>
                         
                         <div class="col-12"><label class="form-label text-muted small">Transaction Remark</label><input type="text" id="formRemark" class="form-control"></div>
@@ -165,23 +145,23 @@
             </div>
 
             <div class="col-12 col-lg-5">
-                <div class="card p-3 p-sm-4 bg-dark text-white shadow-lg mb-4">
-                    <h5 class="fw-bold text-warning border-bottom border-secondary pb-2 mb-3">📋 P/I Line Item Pipeline Metrics</h5>
+                <div class="card p-3 p-sm-4 bg-dark text-white shadow-sm mb-4">
+                    <h5 class="fw-bold text-warning border-bottom border-secondary pb-2 mb-3">📋 Selected Line Metric Calculations</h5>
                     <div class="row g-2 mb-3">
-                        <div class="col-4"><div class="metric-card border-secondary"><small class="text-muted d-block font-monospace small">ORDERED</small><h4 id="metOrder" class="fw-bold text-dark mb-0">0</h4></div></div>
-                        <div class="col-4"><div class="metric-card border-info"><small class="text-muted d-block font-monospace small">COLLECTED</small><h4 id="metCollected" class="fw-bold text-info mb-0">0</h4></div></div>
-                        <div class="col-4"><div class="metric-card border-success"><small class="text-muted d-block font-monospace small">PACKED</small><h4 id="metPacked" class="fw-bold text-success mb-0">0</h4></div></div>
+                        <div class="col-4"><div class="metric-card border-secondary"><small class="text-muted d-block small">ORDERED</small><h4 id="metOrder" class="fw-bold text-dark mb-0">0</h4></div></div>
+                        <div class="col-4"><div class="metric-card border-info"><small class="text-muted d-block small">COLLECTED</small><h4 id="metCollected" class="fw-bold text-info mb-0">0</h4></div></div>
+                        <div class="col-4"><div class="metric-card border-success"><small class="text-muted d-block small">PACKED</small><h4 id="metPacked" class="fw-bold text-success mb-0">0</h4></div></div>
                     </div>
-                    <div class="row g-2 mb-2">
-                        <div class="col-4"><div class="metric-card border-primary"><small class="text-muted d-block font-monospace small">LASER</small><h4 id="metLaser" class="fw-bold text-primary mb-0">0</h4></div></div>
-                        <div class="col-4"><div class="metric-card border-warning"><small class="text-muted d-block font-monospace small">QC ARRIVAL</small><h4 id="metQC" class="fw-bold text-warning mb-0">0</h4></div></div>
-                        <div class="col-4"><div class="metric-card border-danger"><small class="text-muted d-block font-monospace small">SHORT QTY</small><h4 id="metShort" class="fw-bold text-danger mb-0">0</h4></div></div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-4"><div class="metric-card border-primary"><small class="text-muted d-block small">LASER</small><h4 id="metLaser" class="fw-bold text-primary mb-0">0</h4></div></div>
+                        <div class="col-4"><div class="metric-card border-warning"><small class="text-muted d-block small">QC ARRIVAL</small><h4 id="metQC" class="fw-bold text-warning mb-0">0</h4></div></div>
+                        <div class="col-4"><div class="metric-card border-danger"><small class="text-muted d-block small">SHORT QTY</small><h4 id="metShort" class="fw-bold text-danger mb-0">0</h4></div></div>
                     </div>
                     <div class="row g-2">
-                        <div class="col-12"><div class="metric-card border-warning bg-secondary text-white py-2"><small class="text-white-50 d-block font-monospace small">PENDING PACKING BALANCE</small><h4 id="metPendingPacking" class="fw-bold text-warning mb-0">0</h4></div></div>
+                        <div class="col-12"><div class="metric-card border-warning bg-secondary text-white py-2"><small class="text-white-50 d-block small">PENDING PACKING BALANCE</small><h4 id="metPendingPacking" class="fw-bold text-warning mb-0">0</h4></div></div>
                     </div>
                     <div class="mt-3 text-center border-top border-secondary pt-3 d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">Milestone:</span><span id="metStatus" class="badge bg-light text-dark px-3 py-2 fs-6">Pending</span>
+                        <span class="text-muted small">Current Line Processing Milestone:</span><span id="metStatus" class="badge bg-light text-dark px-3 py-2 fs-6">Pending</span>
                     </div>
                 </div>
             </div>
@@ -191,27 +171,27 @@
     <div id="tab-reports" class="app-tab-content d-none">
         <div class="row g-3">
             <div class="col-12 col-md-4">
-                <div class="card p-3 mb-4">
-                    <h6 class="fw-bold mb-2">🌐 Customer List Filtering View</h6>
-                    <input type="text" id="customerSearchInput" class="form-control mb-3" placeholder="Filter customer profiling rows..." onkeyup="filterReportCustomerList()">
+                <div class="card p-3 mb-4 border-0 shadow-sm">
+                    <h6 class="fw-bold mb-2">🌐 Customer Tiers</h6>
+                    <input type="text" id="customerSearchInput" class="form-control mb-3" placeholder="Search customer rows..." onkeyup="filterReportCustomerList()">
                     <div class="list-group" id="reportCustomerList" style="max-height: 350px; overflow-y:auto;">
-                        <button class="list-group-item list-group-item-action text-muted text-center py-3">Sync data to load view tiers...</button>
+                        <button class="list-group-item list-group-item-action text-muted text-center py-3">Load system data to populate profiles...</button>
                     </div>
                 </div>
             </div>
             <div class="col-12 col-md-8">
-                <div class="card p-3 p-sm-4">
+                <div class="card p-3 p-sm-4 border-0 shadow-sm">
                     <div class="d-flex flex-column gap-2 flex-sm-row justify-content-between align-items-sm-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold text-primary mb-0">📑 Absolute Order Summary Report</h5>
+                        <h5 class="fw-bold text-primary mb-0">📑 Order Profile Summary Details</h5>
                         <div class="d-flex align-items-center shadow-sm" id="piFilterWrapper" style="display: none !important;">
                             <label class="me-2 fw-bold text-nowrap small text-secondary ps-2">P/I Filter:</label>
                             <select id="reportPiSelector" class="form-select form-select-sm" onchange="applyReportPiFilter()">
-                                <option value="">ALL Lines Combined</option>
+                                <option value="">ALL Lines</option>
                             </select>
                         </div>
                     </div>
                     <div id="reportDetailsContainer">
-                        <div class="text-center py-5 text-muted">Select an entry target row from the dashboard selection column parameters to run metrics.</div>
+                        <div class="text-center py-5 text-muted">Select an entry row option parameter from the panel profile index card to compile reporting statistics.</div>
                     </div>
                 </div>
             </div>
@@ -219,19 +199,10 @@
     </div>
 
     <div id="tab-analytics" class="app-tab-content d-none">
-        <div class="row g-2 mb-4">
-            <div class="col-6 col-md-3"><div class="card p-2 bg-white border-start border-4 border-info text-center"><small class="text-muted font-monospace d-block">STORE VOL</small><h3 id="dayStoreTotal" class="fw-bold text-info mb-0">0</h3></div></div>
-            <div class="col-6 col-md-3"><div class="card p-2 bg-white border-start border-4 border-success text-center"><small class="text-muted font-monospace d-block">PACKING VOL</small><h3 id="dayPackingTotal" class="fw-bold text-success mb-0">0</h3></div></div>
-            <div class="col-6 col-md-3"><div class="card p-2 bg-white border-start border-4 border-primary text-center"><small class="text-muted font-monospace d-block">LASER VOL</small><h3 id="dayLaserTotal" class="fw-bold text-primary mb-0">0</h3></div></div>
-            <div class="col-6 col-md-3"><div class="card p-2 bg-white border-start border-4 border-warning text-center"><small class="text-muted font-monospace d-block">QC ARRIVALS</small><h3 id="dayQCTotal" class="fw-bold text-warning mb-0">0</h3></div></div>
-        </div>
-
-        <div class="card p-3 shadow-sm">
+        <div class="card p-3 shadow-sm border-0">
             <div class="d-flex flex-column gap-2 flex-md-row justify-content-between align-items-md-center mb-3 border-bottom pb-2">
-                <h5 class="fw-bold mb-0">📋 Complete System Transaction Audit Ledger Feed</h5>
-                <div class="w-100 style-holder" style="max-width: 400px;">
-                    <input type="text" id="ledgerSearchInput" class="form-control" placeholder="Search logs by P/I, Part, Staff, Supplier..." onkeyup="filterLedgerTable()">
-                </div>
+                <h5 class="fw-bold mb-0">📋 Ledger Log Audit Stream Feed</h5>
+                <input type="text" id="ledgerSearchInput" class="form-control style-holder" style="max-width: 400px;" placeholder="Filter logs by P/I, Staff, Supplier, or Part..." onkeyup="filterLedgerTable()">
             </div>
             <div class="table-responsive">
                 <table class="table table-striped align-middle table-sm text-nowrap">
@@ -251,25 +222,22 @@
                         </tr>
                     </thead>
                     <tbody id="analyticsTableBody">
-                        <tr><td colspan="11" class="text-center text-muted py-4">No logged database history metrics found...</td></tr>
+                        <tr><td colspan="11" class="text-center text-muted py-4">No data logged found in database history logs...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
-    // System Connection String Context Endpoint URL Routing
+    // Deployment Web App URL Link
     const API_URL = "https://script.google.com/macros/s/AKfycbyXLp6sCHhAFbJpfRrGsAlfs_M4gMmpKV8ROMxx0ruaRs6aLqHKiC-bJbs_eVlbJvI5sA/exec";
     
     let activeDept = "Store";
     let ordersCache = [];
     let logsCache = [];
-    
-    // Hardening Strategy: Lock rows down via dedicated Array Row Tracking Index parameters explicitly
-    let selectedRowIdx = null;
+    let selectedRowIdx = null; // Strict Row Position Identifier (Fixes QTY cross-talk errors)
     let selectedCustomerForReport = "";
 
     function switchMainTab(tabId) {
@@ -280,45 +248,45 @@
         event.currentTarget.classList.add('active');
         
         if (tabId === 'reports') { renderCustomerListReport(); resetReportView(); }
-        if (tabId === 'analytics') renderAnalyticsView();
+        if (tabId === 'analytics') populateLedgerTable(logsCache);
     }
 
     function resetReportView() {
         selectedCustomerForReport = "";
         document.getElementById('piFilterWrapper').setAttribute("style", "display: none !important;");
-        document.getElementById('reportDetailsContainer').innerHTML = `<div class="text-center py-5 text-muted">Select a customer parameter option row to compute current breakdown analytics.</div>`;
+        document.getElementById('reportDetailsContainer').innerHTML = `<div class="text-center py-5 text-muted">Select a customer profile column row to compile breakdown items metrics data sheets.</div>`;
     }
 
     function fetchData() {
         const btn = document.getElementById('refreshBtn');
-        const origText = btn.innerHTML;
-        btn.innerHTML = "⏳ Streaming Sync Rows...";
+        btn.innerHTML = "⏳ Syncing Logs...";
         btn.disabled = true;
 
         fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getOrdersAndLogs' }) })
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
-                // Hardening: Explicitly assign array placement position mapping parameters to protect duplicate sets from cross-firing
-                ordersCache = res.orders.map((order, index) => {
-                    order.rowId = index; 
+                // Hardening Strategy: Lock rows down based completely on unique absolute spreadsheet row arrays indexing placements
+                ordersCache = res.orders.map((order, idx) => {
+                    order.rowId = idx; 
                     return order;
                 });
                 logsCache = res.allLogs || [];
                 
                 renderMasterTable(ordersCache);
                 document.getElementById('lastSyncTime').innerText = "Sync: " + new Date().toLocaleTimeString();
+                
                 if(selectedRowIdx !== null) {
-                    const freshIdx = ordersCache.findIndex(o => o.rowId === selectedRowIdx);
-                    if(freshIdx !== -1) selectTargetRow(freshIdx);
+                    const matchIndex = ordersCache.findIndex(o => o.rowId === selectedRowIdx);
+                    if(matchIndex !== -1) selectTargetRow(matchIndex);
                 }
             } else {
-                alert("App Sync Error Details: " + res.message);
+                alert("App Error Message Content: " + res.message);
             }
         })
-        .catch(err => alert("System interface connection lost: " + err))
+        .catch(err => alert("System server data communication failure: " + err))
         .finally(() => {
-            btn.innerHTML = origText;
+            btn.innerHTML = "🔄 Sync Master Sheet";
             btn.disabled = false;
         });
     }
@@ -338,7 +306,7 @@
             tr.innerHTML = `
                 <td class="fw-bold">${row.customerName}</td>
                 <td><span class="badge bg-light text-dark border">${row.piNo}</span></td>
-                <td class="font-monospace fw-bold">${row.partNumber}</td>
+                <td class="font-monospace fw-bold text-dark">${row.partNumber}</td>
                 <td><small class="text-muted">${row.customerNo || '-'}</small></td>
                 <td><strong>${row.qtyOrder}</strong> <small class="text-muted">${row.unit || 'PCS'}</small></td>
                 <td><span class="badge bg-info text-dark">${row.qtyCollected}</span></td>
@@ -366,15 +334,15 @@
     }
 
     function selectTargetRowByRowId(rowId) {
-        const internalIdx = ordersCache.findIndex(o => o.rowId === rowId);
-        if(internalIdx !== -1) selectTargetRow(internalIdx);
+        const index = ordersCache.findIndex(o => o.rowId === rowId);
+        if(index !== -1) selectTargetRow(index);
     }
 
     function selectTargetRow(cacheIdx) {
         document.querySelectorAll('#masterTableBody tr').forEach(el => el.classList.remove('highlight-row'));
         
         const target = ordersCache[cacheIdx];
-        selectedRowIdx = target.rowId;
+        selectedRowIdx = target.rowId; // Lock target layout securely to row index parameter
         
         const activeRow = document.getElementById(`row-target-id-${target.rowId}`);
         if(activeRow) activeRow.classList.add('highlight-row');
@@ -395,7 +363,7 @@
         document.getElementById('workspaceLayout').classList.remove('d-none');
         setDepartment(activeDept);
         
-        // Auto-scroll context helper for mobile screens optimization view transitions
+        // Smooth scroll view context frame layout alignment helper for mobile touch terminals
         if(window.innerWidth < 992) {
             document.getElementById('workspaceLayout').scrollIntoView({ behavior: 'smooth' });
         }
@@ -409,74 +377,25 @@
         });
         document.getElementById('formHeadline').innerText = `${dept} Department Actions Entry Form`;
 
-        const currentTarget = ordersCache.find(o => o.rowId === selectedRowIdx);
-        
-        // Reset defaults cleanly
+        // Clear dynamic elements clean
         document.getElementById('formQty').value = '';
         document.getElementById('formValidationErrorAlert').classList.add('d-none');
         
+        // Restore standard button footprint defaults cleanly
         const submitBtn = document.getElementById('formSubmitBtn');
         submitBtn.disabled = false;
         submitBtn.innerHTML = "💾 Save Transaction Log Row";
         submitBtn.className = "btn btn-success btn-lg w-100 fw-bold shadow-sm py-3";
 
-        document.getElementById('fieldLaserSourceSelect').classList.add('d-none');
-        document.getElementById('laserSourceAlert').classList.add('d-none');
-        document.querySelectorAll('.field-standard').forEach(el => el.classList.remove('d-none'));
         document.querySelectorAll('.field-supplier').forEach(el => el.classList.add('d-none'));
+        document.getElementById('lblBox').innerText = `${dept.toUpperCase()} BOX ID`;
+        document.getElementById('lblPallet').innerText = `${dept.toUpperCase()} Pallet No.`;
 
-        // Requirement Fix: Injected date and routing data points for both Store and QC tabs cleanly
+        // Requirement Fix: Enable Supplier Info Inputs conditionally for Store and QC tabs
         if (dept === 'Store' || dept === 'QC') {
             document.querySelectorAll('.field-supplier').forEach(el => el.classList.remove('d-none'));
-            document.getElementById('lblBox').innerText = `${dept.toUpperCase()} BOX ID`;
-            document.getElementById('lblPallet').innerText = `${dept.toUpperCase()} Pallet No.`;
-            
-            // Default current date string directly into interface field for convenience
             document.getElementById('formReceivedDate').value = new Date().toISOString().split('T')[0];
-        } 
-        else if (dept === 'Packing') {
-            document.getElementById('lblBox').innerText = `PACKING BOX ID`;
-            document.getElementById('lblPallet').innerText = `PACKING Pallet No.`;
         }
-        else if (dept === 'Laser') {
-            document.getElementById('fieldLaserSourceSelect').classList.remove('d-none');
-            document.getElementById('laserSourceAlert').classList.remove('d-none');
-            document.getElementById('lblBox').innerText = `LASER BOX ID`;
-            document.getElementById('lblPallet').innerText = `LASER Pallet No.`;
-
-            // Filter historical package paths isolating specific line indexes strictly via rowId
-            const packingLogs = logsCache.filter(log => 
-                log.piNo === currentTarget.piNo && 
-                log.partNo === currentTarget.partNumber && 
-                log.dept === 'Packing' &&
-                (log.rowId === undefined || log.rowId === currentTarget.rowId)
-            );
-
-            const selector = document.getElementById('formLaserSourceBatch');
-            selector.innerHTML = '<option value="">-- Choose Active Packed Item Drop Container --</option>';
-            
-            if(packingLogs.length === 0) {
-                selector.innerHTML = '<option value="">⚠️ No specific packing output history logs identified for this line yet!</option>';
-            } else {
-                packingLogs.forEach((log) => {
-                    const opt = document.createElement('option');
-                    opt.value = JSON.stringify({ qty: log.qty, box: log.boxId, pallet: log.palletNo });
-                    opt.innerText = `Box: ${log.boxId || 'N/A'} | Pallet: ${log.palletNo || 'N/A'} (${log.qty} Pcs available) - Staff: ${log.operator}`;
-                    selector.appendChild(opt);
-                });
-            }
-        }
-    }
-
-    function autoFillLaserFromPackingBatch() {
-        const valStr = document.getElementById('formLaserSourceBatch').value;
-        if(!valStr) return;
-        const batchObj = JSON.parse(valStr);
-        
-        document.getElementById('formQty').value = batchObj.qty;
-        document.getElementById('formBox').value = batchObj.box || '';
-        document.getElementById('formPallet').value = batchObj.pallet || '';
-        validateLiveInputLimit();
     }
 
     function validateLiveInputLimit() {
@@ -488,33 +407,23 @@
         const submitBtn = document.getElementById('formSubmitBtn');
         
         let isValid = true;
-        let errorMessage = "";
+        let errMsg = "";
 
         if (activeDept === 'Store' || activeDept === 'QC') {
             if (inputQty > target.shortQty) {
                 isValid = false;
-                errorMessage = `⛔ Over-Input Constraint Blocked: Entered ${inputQty} Pcs exceeds maximum allowed Remaining Short target allocation limit (${target.shortQty} Pcs).`;
+                errMsg = `⚠️ Over-Input Limit Blocked: Entered qty (${inputQty}) exceeds the maximum Short QTY remaining balance (${target.shortQty}).`;
             }
         } 
         else if (activeDept === 'Packing') {
             if (inputQty > target.pendingPacking) {
                 isValid = false;
-                errorMessage = `⛔ Over-Input Constraint Blocked: Entered ${inputQty} Pcs exceeds maximum current dynamic Pending Packing availability pool (${target.pendingPacking} Pcs).`;
-            }
-        }
-        else if (activeDept === 'Laser') {
-            const batchVal = document.getElementById('formLaserSourceBatch').value;
-            if (batchVal) {
-                const maxAvailableInSelectedBatch = JSON.parse(batchVal).qty;
-                if (inputQty > maxAvailableInSelectedBatch) {
-                    isValid = false;
-                    errorMessage = `⛔ Over-Input Constraint Blocked: Entered ${inputQty} Pcs exceeds physical bounds container configuration footprint size limit (${maxAvailableInSelectedBatch} Pcs).`;
-                }
+                errMsg = `⚠️ Over-Input Limit Blocked: Entered qty (${inputQty}) exceeds the allowed Pending Packing limit balance (${target.pendingPacking}).`;
             }
         }
 
         if (!isValid) {
-            alertPanel.innerText = errorMessage;
+            alertPanel.innerText = errMsg;
             alertPanel.classList.remove('d-none');
             submitBtn.disabled = true;
             return false;
@@ -532,7 +441,7 @@
         const target = ordersCache.find(o => o.rowId === selectedRowIdx);
         const submitBtn = document.getElementById('formSubmitBtn');
         
-        // Anti-Duplicate Multi-Click Hardening Injection Layer Strategy
+        // Anti-Duplicate Multi-Click Hardening Filter
         submitBtn.disabled = true;
         submitBtn.innerHTML = "⏳ Processing Transaction... Please Wait...";
         submitBtn.className = "btn btn-secondary btn-lg w-100 fw-bold shadow-sm py-3";
@@ -540,8 +449,7 @@
         const payload = {
             action: 'saveTransaction',
             data: {
-                // Hardened Core Identity Parameters binding sequence maps row explicitly
-                rowId: target.rowId, 
+                rowId: target.rowId, // Pass strict isolated reference link parameter index map
                 piNo: target.piNo,
                 partNumber: target.partNumber,
                 department: activeDept,
@@ -567,14 +475,12 @@
                 document.getElementById('formRemark').value = '';
                 fetchData();
             } else {
-                alert("Database submission layer rejected request context parameters: " + res.message);
-                submitBtn.disabled = false;
+                alert("Sheet update operation rejected: " + res.message);
                 setDepartment(activeDept);
             }
         })
         .catch(err => {
-            alert("Network dropped transaction confirmation cycle context frames: " + err);
-            submitBtn.disabled = false;
+            alert("Network timeout or connection error: " + err);
             setDepartment(activeDept);
         });
     }
@@ -589,7 +495,7 @@
         customers.forEach(cust => {
             const btn = document.createElement('button');
             btn.className = "list-group-item list-group-item-action fw-bold py-2 customer-report-btn small";
-            btn.innerText = cust;
+            btn.innerText = bg = cust;
             btn.onclick = () => selectCustomerForReportView(cust, btn);
             container.appendChild(btn);
         });
@@ -615,7 +521,7 @@
         const uniquePiNumbers = [...new Set(filteredOrders.map(o => o.piNo))];
         
         const selector = document.getElementById('reportPiSelector');
-        selector.innerHTML = '<option value="">ALL Lines Combined</option>';
+        selector.innerHTML = '<option value="">ALL Lines</option>';
         uniquePiNumbers.forEach(pi => {
             const opt = document.createElement('option');
             opt.value = pi;
@@ -639,12 +545,12 @@
     function renderFilteredCustomerPIReport(lines) {
         const container = document.getElementById('reportDetailsContainer');
         if(lines.length === 0) {
-            container.innerHTML = `<div class="text-center py-4 text-muted">No matching metrics tracked found.</div>`;
+            container.innerHTML = `<div class="text-center py-4 text-muted">No tracking metrics matched found.</div>`;
             return;
         }
         
         container.innerHTML = `
-            <h5 class="fw-bold mb-3 text-dark">Profile Context: <span class="text-primary">${selectedCustomerForReport}</span></h5>
+            <h6 class="fw-bold mb-3 text-dark">Active Profiling Target Entity: <span class="text-primary">${selectedCustomerForReport}</span></h6>
             <div class="table-responsive border rounded">
                 <table class="table table-bordered table-striped mb-0 text-nowrap table-sm small">
                     <thead class="table-primary">
@@ -680,29 +586,16 @@
         `;
     }
 
-    function renderAnalyticsView() {
-        populateLedgerTable(logsCache);
-    }
-
     function populateLedgerTable(logs) {
-        const todayStr = new Date().toISOString().split('T')[0];
-        let storeVol = 0, laserVol = 0, packVol = 0, qcVol = 0;
         const tbody = document.getElementById('analyticsTableBody');
         tbody.innerHTML = '';
 
         if(logs.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted py-4">No logged history metrics found...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted py-4">No database logs registered...</td></tr>`;
             return;
         }
 
         logs.forEach(log => {
-            if(log.dateStr === todayStr) {
-                if(log.dept === 'Store') storeVol += Number(log.qty) || 0;
-                if(log.dept === 'Laser') laserVol += Number(log.qty) || 0;
-                if(log.dept === 'Packing') packVol += Number(log.qty) || 0;
-                if(log.dept === 'QC') qcVol += Number(log.qty) || 0;
-            }
-
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><small>${log.dateStr || '-'}</small></td>
@@ -719,11 +612,6 @@
             `;
             tbody.appendChild(tr);
         });
-
-        document.getElementById('dayStoreTotal').innerText = storeVol;
-        document.getElementById('dayPackingTotal').innerText = packVol;
-        document.getElementById('dayLaserTotal').innerText = laserVol;
-        document.getElementById('dayQCTotal').innerText = qcVol;
     }
 
     function filterLedgerTable() {
