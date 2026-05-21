@@ -49,7 +49,7 @@
         <div class="card p-3 mb-4 border-0 shadow-sm">
             <div class="row g-2 align-items-center">
                 <div class="col-12 col-md-9">
-                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Type Customer, P/I No, or Part Number to filter lines instantly..." onkeyup="filterMasterTable()">
+                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Type Customer, P/I No, or Part Number to filter lines..." onkeyup="filterMasterTable()">
                 </div>
                 <div class="col-12 col-md-3">
                     <span class="badge bg-dark p-2 fs-6 w-100 py-3">Lines Matching: <span id="matchCount">0</span></span>
@@ -120,7 +120,7 @@
                         </div>
                         <div class="col-12 col-md-6 field-supplier d-none">
                             <label class="form-label fw-bold text-primary">Supplier / Production Origin Name</label>
-                            <input type="text" id="formReceivedFrom" class="form-control border-primary" placeholder="Factory origin or supplier vendor name">
+                            <input type="text" id="formReceivedFrom" class="form-control border-primary" placeholder="Supplier vendor name">
                         </div>
                         
                         <div class="col-12"><label class="form-label text-muted small">Transaction Remark</label><input type="text" id="formRemark" class="form-control"></div>
@@ -190,7 +190,7 @@
         <div class="card p-3 shadow-sm border-0">
             <div class="d-flex flex-column gap-2 flex-md-row justify-content-between align-items-md-center mb-3 border-bottom pb-2">
                 <h5 class="fw-bold mb-0">📋 Ledger Log Audit Stream Feed</h5>
-                <input type="text" id="ledgerSearchInput" class="form-control style-holder" style="max-width: 400px;" placeholder="Filter logs by P/I, Staff, Supplier, or Part..." onkeyup="filterLedgerTable()">
+                <input type="text" id="ledgerSearchInput" class="form-control style-holder" style="max-width: 400px;" placeholder="Filter logs..." onkeyup="filterLedgerTable()">
             </div>
             <div class="table-responsive">
                 <table class="table table-striped align-middle table-sm text-nowrap">
@@ -219,7 +219,6 @@
 </div>
 
 <script>
-    // CORE SCRIPT CONFIGURATIONS
     const API_URL = "https://script.google.com/macros/s/AKfycbyX8GVe3UveSNefswgCcE-1_UeyD0UZFcLkv1Lo2ajYX2qB_13xgnZV5uz43UbgY8CeVg/exec";
     
     let activeDept = "Store";
@@ -240,7 +239,7 @@
     function resetReportView() {
         selectedCustomerForReport = "";
         document.getElementById('piFilterWrapper').setAttribute("style", "display: none !important;");
-        document.getElementById('reportDetailsContainer').innerHTML = `<div class="text-center py-5 text-muted">Select a profile card options row.</div>`;
+        document.getElementById('reportDetailsContainer').innerHTML = `<div class="text-center py-5 text-muted">Select an index row options card.</div>`;
     }
 
     function fetchData() {
@@ -333,7 +332,6 @@
         document.getElementById('ctxPI').innerText = target.piNo;
         document.getElementById('ctxPart').innerText = `${target.partNumber} (${target.unit || 'PCS'})`;
 
-        // Direct property lookup mapped directly from Backend configuration definitions
         document.getElementById('metOrder').innerText = target.qtyOrder || 0;
         document.getElementById('metCollected').innerText = target.qtyCollected || 0;
         document.getElementById('metLaser').innerText = target.qtyLaser || 0;
@@ -390,7 +388,6 @@
         let isValid = true;
         let errMsg = "";
 
-        // Safe numerical normalization fallbacks
         const allowedShortBalance = Number(target.shortQty) || 0;
         const allowedPackingBalance = Number(target.pendingPacking) || 0;
 
@@ -601,7 +598,6 @@
         populateLedgerTable(filtered);
     }
 
-    // Auto-fetch data rows on initialization load
     window.onload = fetchData;
 </script>
 </body>
