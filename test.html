@@ -16,7 +16,6 @@
         .sticky-thead th { position: sticky; top: 0; background-color: #212529; color: white; z-index: 1; }
         .highlight-row { background-color: #e2f0fe !important; font-weight: 500; }
         .metric-card { border-left: 5px solid; text-align: center; background: #fff; padding: 15px; border-radius: 8px; }
-        .feed-item { border-left: 4px solid #ccd1d9; padding-left: 12px; }
     </style>
 </head>
 <body>
@@ -97,7 +96,7 @@
                         <div class="col-md-8"><label class="form-label fw-bold">Operator / Staff Name</label><input type="text" id="formOperator" class="form-control form-control-lg" required placeholder="Name of employee"></div>
                         <div class="col-md-6 field-standard"><label id="lblBox" class="form-label fw-bold">STORE BOX ID</label><input type="text" id="formBox" class="form-control"></div>
                         <div class="col-md-6 field-standard"><label id="lblPallet" class="form-label fw-bold">STORE Pallet No.</label><input type="text" id="formPallet" class="form-control"></div>
-                        <div class="col-md-12 field-qc d-none"><label class="form-label fw-bold">QC Source Context Reference</label><input type="text" id="formReceivedFrom" class="form-control" placeholder="Supplier incoming / inspection parameters"></div>
+                        <div class="col-md-12 field-qc d-none"><label class="form-label fw-bold">QC Source Context Reference</label><input type="text" id="formReceivedFrom" class="form-control" placeholder="Supplier incoming parameters"></div>
                         <div class="col-md-12"><label class="form-label text-muted">Transaction Remark</label><input type="text" id="formRemark" class="form-control"></div>
                         <div class="col-12 mt-4"><button type="submit" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">💾 Save Transaction Log Row</button></div>
                     </form>
@@ -129,15 +128,24 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="card p-3 mb-4">
-                    <h5 class="fw-bold mb-3">🌐 Select Customer</h5>
-                    <div class="list-group" id="reportCustomerList" style="max-height: 450px; overflow-y:auto;">
+                    <h5 class="fw-bold mb-2">🌐 Search & Select Customer</h5>
+                    <input type="text" id="customerSearchInput" class="form-control mb-3" placeholder="Search customer name..." onkeyup="filterReportCustomerList()">
+                    <div class="list-group" id="reportCustomerList" style="max-height: 400px; overflow-y:auto;">
                         <button class="list-group-item list-group-item-action text-muted text-center py-3">Sync data to load customers...</button>
                     </div>
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="card p-4">
-                    <h5 class="fw-bold mb-3 text-primary">📑 Order Summary Report by P/I No.</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold text-primary mb-0">📑 Order Summary Report</h5>
+                        <div class="d-flex align-items-center" id="piFilterWrapper" style="display: none !important;">
+                            <label class="me-2 fw-bold text-nowrap small text-secondary">Filter by P/I No:</label>
+                            <select id="reportPiSelector" class="form-select form-select-sm" onchange="applyReportPiFilter()">
+                                <option value="">ALL P/I Numbers</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="reportDetailsContainer">
                         <div class="text-center py-5 text-muted">Select a customer from the left panel to generate their line-by-line status breakdown sheet.</div>
                     </div>
@@ -155,7 +163,12 @@
         </div>
 
         <div class="card p-4 shadow-sm">
-            <h5 class="fw-bold mb-3 border-bottom pb-2">📋 Complete Transaction Audit Ledger Feed</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h5 class="fw-bold mb-0">📋 Complete Transaction Audit Ledger Feed</h5>
+                <div style="width: 350px;">
+                    <input type="text" id="ledgerSearchInput" class="form-control" placeholder="Search logs by P/I, Part, Dept, or Operator..." onkeyup="filterLedgerTable()">
+                </div>
+            </div>
             <div class="table-responsive" style="max-height: 450px;">
                 <table class="table table-striped align-middle table-sm text-nowrap">
                     <thead class="table-dark">
@@ -182,11 +195,12 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyXLp6sCHhAFbJpfRrGsAlfs_M4gMmpKV8ROMxx0ruaRs6aLqHKiC-bJbs_eVlbJvI5sA/exec";
+    const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
     let activeDept = "Store";
     let ordersCache = [];
     let logsCache = [];
     let selectedRowIdx = null;
+    let selectedCustomerForReport = "";
 
     function switchMainTab(tabId) {
         document.querySelectorAll('.app-tab-content').forEach(el => el.classList.add('d-none'));
@@ -195,8 +209,14 @@
         document.getElementById(`tab-${tabId}`).classList.remove('d-none');
         event.currentTarget.classList.add('active');
         
-        if (tabId === 'reports') renderCustomerListReport();
+        if (tabId === 'reports') { renderCustomerListReport(); resetReportView(); }
         if (tabId === 'analytics') renderAnalyticsView();
+    }
+
+    function resetReportView() {
+        selectedCustomerForReport = "";
+        document.getElementById('piFilterWrapper').setAttribute("style", "display: none !important;");
+        document.getElementById('reportDetailsContainer').innerHTML = `<div class="text-center py-5 text-muted">Select a customer from the left panel to generate their line-by-line status breakdown sheet.</div>`;
     }
 
     function fetchData() {
@@ -231,9 +251,10 @@
         document.getElementById('matchCount').innerText = data.length;
 
         data.forEach((row, idx) => {
+            const originalIdx = ordersCache.findIndex(o => o.piNo === row.piNo && o.partNumber === row.partNumber);
             const tr = document.createElement('tr');
-            tr.id = `row-idx-${idx}`;
-            if(selectedRowIdx === idx) tr.className = "highlight-row";
+            tr.id = `row-idx-${originalIdx}`;
+            if(selectedRowIdx === originalIdx) tr.className = "highlight-row";
             
             let badgeClass = row.currentStatus === 'Completed' ? 'bg-success' : (row.currentStatus === 'Processing' ? 'bg-info text-dark' : 'bg-secondary');
 
@@ -249,7 +270,7 @@
                 <td><span class="badge bg-warning text-dark">${row.qtyQC}</span></td>
                 <td class="text-danger fw-bold">${row.pendingQty}</td>
                 <td><span class="badge ${badgeClass}">${row.currentStatus}</span></td>
-                <td><button class="btn btn-sm btn-dark px-3" onclick="selectTargetRow(${idx})">Select</button></td>
+                <td><button class="btn btn-sm btn-dark px-3" onclick="selectTargetRow(${originalIdx})">Select</button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -341,34 +362,75 @@
     }
 
     // ==========================================
-    // REPORT GENERATION ENGINE LOGIC
+    // CUSTOMER STATUS ENGINE (WITH PI FILTER & SEARCH)
     // ==========================================
     function renderCustomerListReport() {
         const container = document.getElementById('reportCustomerList');
         if(ordersCache.length === 0) return;
         
-        // Extract unique customers
         const customers = [...new Set(ordersCache.map(o => o.customerName))];
         container.innerHTML = '';
         
         customers.forEach(cust => {
             const btn = document.createElement('button');
-            btn.className = "list-group-item list-group-item-action fw-bold py-2";
+            btn.className = "list-group-item list-group-item-action fw-bold py-2 customer-report-btn";
             btn.innerText = cust;
-            btn.onclick = () => renderCustomerPIReport(cust, btn);
+            btn.onclick = () => selectCustomerForReportView(cust, btn);
             container.appendChild(btn);
         });
     }
 
-    function renderCustomerPIReport(customerName, selectedBtn) {
+    function filterReportCustomerList() {
+        const q = document.getElementById('customerSearchInput').value.toLowerCase().trim();
+        document.querySelectorAll('.customer-report-btn').forEach(btn => {
+            if(btn.innerText.toLowerCase().includes(q)) {
+                btn.classList.remove('d-none');
+            } else {
+                btn.classList.add('d-none');
+            }
+        });
+    }
+
+    function selectCustomerForReportView(customerName, selectedBtn) {
         document.querySelectorAll('#reportCustomerList .list-group-item').forEach(b => b.classList.remove('active'));
         selectedBtn.classList.add('active');
+        selectedCustomerForReport = customerName;
 
+        // Populate P/I Filter Dropdown dynamically for this specific customer
         const filteredOrders = ordersCache.filter(o => o.customerName === customerName);
+        const uniquePiNumbers = [...new Set(filteredOrders.map(o => o.piNo))];
+        
+        const selector = document.getElementById('reportPiSelector');
+        selector.innerHTML = '<option value="">ALL P/I Numbers</option>';
+        uniquePiNumbers.forEach(pi => {
+            const opt = document.createElement('option');
+            opt.value = pi;
+            opt.innerText = pi;
+            selector.appendChild(opt);
+        });
+
+        document.getElementById('piFilterWrapper').setAttribute("style", "display: flex !important;");
+        renderFilteredCustomerPIReport(filteredOrders);
+    }
+
+    function applyReportPiFilter() {
+        const selectedPi = document.getElementById('reportPiSelector').value;
+        let filtered = ordersCache.filter(o => o.customerName === selectedCustomerForReport);
+        if(selectedPi) {
+            filtered = filtered.filter(o => o.piNo === selectedPi);
+        }
+        renderFilteredCustomerPIReport(filtered);
+    }
+
+    function renderFilteredCustomerPIReport(lines) {
         const container = document.getElementById('reportDetailsContainer');
+        if(lines.length === 0) {
+            container.innerHTML = `<div class="text-center py-4 text-muted">No line records matched the filter criteria.</div>`;
+            return;
+        }
         
         container.innerHTML = `
-            <h4 class="fw-bold mb-4 text-dark">Customer Profile: ${customerName}</h4>
+            <h4 class="fw-bold mb-4 text-dark">Customer Profile: ${selectedCustomerForReport}</h4>
             <div class="table-responsive border rounded">
                 <table class="table table-bordered table-striped mb-0 text-nowrap">
                     <thead class="table-primary">
@@ -384,7 +446,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${filteredOrders.map(o => `
+                        ${lines.map(o => `
                             <tr>
                                 <td class="fw-bold">${o.piNo}</td>
                                 <td>${o.partNumber}</td>
@@ -403,17 +465,24 @@
     }
 
     // ==========================================
-    // DAILY LOGS ANALYTICS VIEW
+    // DAILY LOGS ANALYTICS VIEW WITH SEARCH FILTER
     // ==========================================
     function renderAnalyticsView() {
+        populateLedgerTable(logsCache);
+    }
+
+    function populateLedgerTable(logs) {
         const todayStr = new Date().toISOString().split('T')[0];
-        
-        // Filter daily totals running metrics
         let storeVol = 0, laserVol = 0, packVol = 0, qcVol = 0;
         const tbody = document.getElementById('analyticsTableBody');
         tbody.innerHTML = '';
 
-        logsCache.forEach(log => {
+        if(logs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4">No logged history found...</td></tr>`;
+            return;
+        }
+
+        logs.forEach(log => {
             if(log.dateStr === todayStr) {
                 if(log.dept === 'Store') storeVol += log.qty;
                 if(log.dept === 'Laser') laserVol += log.qty;
@@ -440,6 +509,22 @@
         document.getElementById('dayLaserTotal').innerText = laserVol;
         document.getElementById('dayPackingTotal').innerText = packVol;
         document.getElementById('dayQCTotal').innerText = qcVol;
+    }
+
+    function filterLedgerTable() {
+        const q = document.getElementById('ledgerSearchInput').value.toLowerCase().trim();
+        if(!q) {
+            populateLedgerTable(logsCache);
+            return;
+        }
+
+        const filtered = logsCache.filter(log => 
+            log.piNo.toLowerCase().includes(q) ||
+            log.partNo.toLowerCase().includes(q) ||
+            log.dept.toLowerCase().includes(q) ||
+            log.operator.toLowerCase().includes(q)
+        );
+        populateLedgerTable(filtered);
     }
 </script>
 </body>
