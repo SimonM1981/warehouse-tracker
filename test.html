@@ -232,7 +232,9 @@
         document.querySelectorAll('.app-tab-content').forEach(el => el.classList.add('d-none'));
         document.querySelectorAll('#mainAppTabs .nav-link').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${tabId}`).classList.remove('d-none');
-        event.currentTarget.classList.add('active');
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
         if (tabId === 'reports') { renderCustomerListReport(); resetReportView(); }
         if (tabId === 'analytics') populateLedgerTable(logsCache);
     }
@@ -341,7 +343,6 @@
         document.getElementById('metShort').innerText = target.shortQty || 0;
         document.getElementById('metPendingPacking').innerText = target.pendingPacking || 0;
         
-        // Dynamic Sidebar Status Class Allocation
         const finalStatus = target.currentStatus || "Pending";
         const statusBadge = document.getElementById('metStatus');
         statusBadge.innerText = finalStatus;
@@ -572,7 +573,6 @@
         `;
     }
 
-    // Ledger Log Processing Aligned with Server Map Index Layout
     function populateLedgerTable(logs) {
         const tbody = document.getElementById('analyticsTableBody');
         tbody.innerHTML = '';
