@@ -29,6 +29,11 @@
             --warning-glow: rgba(255, 193, 7, 0.15);
             --danger-glow: rgba(220, 53, 69, 0.15);
             --info-glow: rgba(13, 110, 253, 0.15);
+            --ready-store: #d1f2eb;
+            --ready-laser: #d6eaf8;
+            --ready-packing: #d5f5e3;
+            --ready-qc: #fdebd0;
+            --blocked-row: #fadbd8;
         }
 
         [data-theme="dark"] {
@@ -53,6 +58,11 @@
             --warning-glow: rgba(234, 179, 8, 0.2);
             --danger-glow: rgba(239, 68, 68, 0.2);
             --info-glow: rgba(59, 130, 246, 0.2);
+            --ready-store: #064e3b;
+            --ready-laser: #1e3a5f;
+            --ready-packing: #064e3b;
+            --ready-qc: #78350f;
+            --blocked-row: #7f1d1d;
         }
 
         body {
@@ -134,6 +144,24 @@
         .highlight-row {
             background-color: var(--highlight-row) !important;
             font-weight: 500;
+        }
+
+        /* Department Queue Row Colors */
+        .row-ready-store {
+            background-color: var(--ready-store) !important;
+        }
+        .row-ready-laser {
+            background-color: var(--ready-laser) !important;
+        }
+        .row-ready-packing {
+            background-color: var(--ready-packing) !important;
+        }
+        .row-ready-qc {
+            background-color: var(--ready-qc) !important;
+        }
+        .row-blocked {
+            background-color: var(--blocked-row) !important;
+            opacity: 0.7;
         }
 
         .brand-logo {
@@ -474,6 +502,175 @@
         .badge {
             font-weight: 600;
         }
+
+        /* NEW: Department Filter Buttons */
+        .dept-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .dept-filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .dept-filter-btn:hover {
+            border-color: var(--pipeline-active);
+            color: var(--pipeline-active);
+            transform: translateY(-1px);
+        }
+
+        .dept-filter-btn.active {
+            background: var(--pipeline-active);
+            color: white;
+            border-color: var(--pipeline-active);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .dept-filter-btn .count-badge {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .dept-filter-btn.active .count-badge {
+            background: white;
+            color: var(--pipeline-active);
+        }
+
+        /* NEW: Department Queue Panel */
+        .queue-panel {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .queue-item:hover {
+            background: var(--highlight-row);
+            border-color: var(--pipeline-active);
+            transform: translateX(4px);
+        }
+
+        .queue-item.ready-store { background: var(--ready-store); }
+        .queue-item.ready-laser { background: var(--ready-laser); }
+        .queue-item.ready-packing { background: var(--ready-packing); }
+        .queue-item.ready-qc { background: var(--ready-qc); }
+
+        .queue-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .queue-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .queue-item-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .queue-item-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .queue-item-qty {
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--bg-body);
+        }
+
+        .queue-section-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .queue-empty {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-secondary);
+        }
+
+        .queue-empty i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Legend */
+        .legend-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
     </style>
 <base target="_blank">
 </head>
@@ -494,7 +691,7 @@
                 <img class="brand-logo" src="MG.png" alt="MG Logo" onerror="this.style.display='none'">
                 <h4 class="mb-0 fw-bold text-dark me-3">MG Order Tracking System</h4>
                 <span class="badge bg-primary px-3 py-2" style="border-radius: 50px;">
-                    <i class="fas fa-industry me-1"></i> v2.0 Laser Enhanced
+                    <i class="fas fa-industry me-1"></i> v2.1 Dept Queue
                 </span>
             </div>
             <ul class="nav main-nav" id="mainAppTabs">
@@ -531,7 +728,40 @@
                 </div>
             </div>
 
-            <div class="table-responsive mt-3 border rounded">
+            <!-- NEW: Department Filter Bar -->
+            <div class="mt-3">
+                <div class="legend-bar">
+                    <span class="fw-bold me-2"><i class="fas fa-eye me-1"></i> Show items ready for:</span>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-store)"></div> Store</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-laser)"></div> Laser</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-packing)"></div> Packing</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-qc)"></div> QC</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--blocked-row)"></div> Blocked</div>
+                </div>
+                <div class="dept-filter-bar" id="deptFilterBar">
+                    <button class="dept-filter-btn active" onclick="setDeptFilter('all', this)">
+                        <i class="fas fa-th-large"></i> All Items
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('Store', this)">
+                        <i class="fas fa-warehouse"></i> Store
+                        <span class="count-badge" id="countStore">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('Laser', this)">
+                        <i class="fas fa-bolt"></i> Laser
+                        <span class="count-badge" id="countLaser">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('Packing', this)">
+                        <i class="fas fa-box"></i> Packing
+                        <span class="count-badge" id="countPacking">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('QC', this)">
+                        <i class="fas fa-microscope"></i> QC
+                        <span class="count-badge" id="countQC">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-2 border rounded">
                 <table class="table table-hover align-middle mb-0 text-nowrap">
                     <thead class="sticky-thead">
                         <tr>
@@ -562,7 +792,42 @@
         </div>
 
         <div id="workspaceLayout" class="row g-3 d-none">
-            <div class="col-12 col-lg-7">
+            <!-- NEW: Department Queue Panel (Left Side) -->
+            <div class="col-12 col-lg-3">
+                <div class="card p-3 border-0 shadow-sm">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-clipboard-list me-2 text-primary"></i> Department Queue</h6>
+
+                    <div class="mb-3">
+                        <div class="queue-section-title"><i class="fas fa-warehouse text-info"></i> Store Queue</div>
+                        <div id="queueStore" class="queue-panel">
+                            <div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="queue-section-title"><i class="fas fa-bolt text-primary"></i> Laser Queue</div>
+                        <div id="queueLaser" class="queue-panel">
+                            <div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="queue-section-title"><i class="fas fa-box text-success"></i> Packing Queue</div>
+                        <div id="queuePacking" class="queue-panel">
+                            <div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="queue-section-title"><i class="fas fa-microscope text-warning"></i> QC Queue</div>
+                        <div id="queueQC" class="queue-panel">
+                            <div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-5">
                 <div class="card p-3 p-sm-4 mb-4 border-0 shadow-sm">
 
                     <!-- Context Bar -->
@@ -665,7 +930,7 @@
                 </div>
             </div>
 
-            <div class="col-12 col-lg-5">
+            <div class="col-12 col-lg-4">
                 <div class="card p-3 p-sm-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;">
                     <h5 class="fw-bold text-warning border-bottom border-secondary pb-2 mb-3">
                         <i class="fas fa-tachometer-alt me-2"></i> Selected Line Metrics
@@ -736,6 +1001,15 @@
                         <span class="text-muted small"><i class="fas fa-flag me-1"></i> Current Milestone:</span>
                         <span id="metStatus" class="badge bg-light text-dark px-3 py-2 fs-6">Pending</span>
                     </div>
+                </div>
+
+                <!-- NEW: Next Item Card -->
+                <div class="card p-3 border-0 shadow-sm d-none" id="nextItemCard">
+                    <h6 class="fw-bold text-primary mb-2"><i class="fas fa-arrow-right me-2"></i> Next Ready Item</h6>
+                    <div id="nextItemContent" class="small"></div>
+                    <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="selectNextReadyItem()">
+                        <i class="fas fa-hand-pointer me-1"></i> Select Next Item
+                    </button>
                 </div>
             </div>
         </div>
@@ -830,6 +1104,8 @@
     let selectedRowIdx = null; 
     let selectedCustomerForReport = "";
     let currentLaserRequired = false;
+    let currentDeptFilter = 'all';
+    let lastDeptQueueCounts = {};
 
     // Theme Management
     function initTheme() {
@@ -906,6 +1182,8 @@
                 logsCache = res.allLogs || [];
 
                 renderMasterTable(ordersCache);
+                updateDeptQueueCounts();
+                renderDeptQueues();
                 document.getElementById('lastSyncTime').innerHTML = 
                     '<i class="fas fa-check-circle me-1 text-success"></i> Sync: ' + new Date().toLocaleTimeString();
 
@@ -928,21 +1206,162 @@
         });
     }
 
+    // NEW: Department Queue Logic
+    function getDeptQueueItems(dept) {
+        return ordersCache.filter(o => {
+            const collected = o.qtyCollected || 0;
+            const laser = o.qtyLaser || 0;
+            const packed = o.qtyPacked || 0;
+            const qc = o.qtyQC || 0;
+            const orderQty = o.qtyOrder || 0;
+            const short = o.shortQty || 0;
+            const pendingLaser = o.pendingLaser || 0;
+            const pendingPack = o.pendingPacking || 0;
+
+            switch(dept) {
+                case 'Store':
+                    return short > 0;
+                case 'Laser':
+                    return o.laserRequired && pendingLaser > 0 && (collected > 0 || qc > 0);
+                case 'Packing':
+                    return pendingPack > 0 && (!o.laserRequired || pendingLaser === 0);
+                case 'QC':
+                    // QC items: anything that has been collected but not yet QC'd (or QC pending)
+                    return false; // QC logic depends on your specific workflow
+                default:
+                    return false;
+            }
+        });
+    }
+
+    function updateDeptQueueCounts() {
+        const depts = ['Store', 'Laser', 'Packing', 'QC'];
+        const newCounts = {};
+
+        depts.forEach(dept => {
+            const items = getDeptQueueItems(dept);
+            newCounts[dept] = items.length;
+            const badge = document.getElementById('count' + dept);
+            if (badge) {
+                badge.innerText = items.length;
+                badge.style.display = items.length > 0 ? 'flex' : 'none';
+            }
+
+            // Show notification if count increased
+            if (lastDeptQueueCounts[dept] !== undefined && items.length > lastDeptQueueCounts[dept]) {
+                const diff = items.length - lastDeptQueueCounts[dept];
+                showToast(diff + ' new item(s) ready for ' + dept + ' department!', 'info');
+            }
+        });
+
+        lastDeptQueueCounts = newCounts;
+    }
+
+    function renderDeptQueues() {
+        const depts = ['Store', 'Laser', 'Packing', 'QC'];
+        const icons = {
+            'Store': 'fa-warehouse',
+            'Laser': 'fa-bolt',
+            'Packing': 'fa-box',
+            'QC': 'fa-microscope'
+        };
+        const colors = {
+            'Store': 'text-info',
+            'Laser': 'text-primary',
+            'Packing': 'text-success',
+            'QC': 'text-warning'
+        };
+
+        depts.forEach(dept => {
+            const container = document.getElementById('queue' + dept);
+            const items = getDeptQueueItems(dept);
+
+            if (items.length === 0) {
+                container.innerHTML = '<div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>';
+                return;
+            }
+
+            let html = '';
+            items.slice(0, 10).forEach(item => {
+                const readyClass = 'ready-' + dept.toLowerCase();
+                const qtyLabel = dept === 'Store' ? item.shortQty + ' short' :
+                                dept === 'Laser' ? item.pendingLaser + ' pending' :
+                                dept === 'Packing' ? item.pendingPacking + ' pending' : 'ready';
+
+                html += 
+                    '<div class="queue-item ' + readyClass + '" onclick="selectTargetRowByRowId(' + item.rowId + ')">' +
+                    '<div class="queue-item-icon bg-white"><i class="fas ' + icons[dept] + ' ' + colors[dept] + '"></i></div>' +
+                    '<div class="queue-item-info">' +
+                    '<div class="queue-item-title">' + item.partNumber + '</div>' +
+                    '<div class="queue-item-sub">' + item.customerName + ' | ' + item.piNo + '</div>' +
+                    '</div>' +
+                    '<div class="queue-item-qty ' + colors[dept] + '">' + qtyLabel + '</div>' +
+                    '</div>';
+            });
+
+            if (items.length > 10) {
+                html += '<div class="text-center text-muted small mt-2">+' + (items.length - 10) + ' more items...</div>';
+            }
+
+            container.innerHTML = html;
+        });
+    }
+
+    // NEW: Department Filter
+    function setDeptFilter(filter, btn) {
+        currentDeptFilter = filter;
+
+        document.querySelectorAll('.dept-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        renderMasterTable(ordersCache);
+    }
+
+    function getRowDeptStatus(row) {
+        const collected = row.qtyCollected || 0;
+        const laser = row.qtyLaser || 0;
+        const packed = row.qtyPacked || 0;
+        const qc = row.qtyQC || 0;
+        const short = row.shortQty || 0;
+        const pendingLaser = row.pendingLaser || 0;
+        const pendingPack = row.pendingPacking || 0;
+
+        if (short > 0) return 'ready-store';
+        if (row.laserRequired && pendingLaser > 0 && (collected > 0 || qc > 0)) return 'ready-laser';
+        if (pendingPack > 0 && (!row.laserRequired || pendingLaser === 0)) return 'ready-packing';
+        if (row.laserRequired && pendingLaser > 0 && collected === 0 && qc === 0) return 'blocked';
+        return '';
+    }
+
     function renderMasterTable(data) {
         const tbody = document.getElementById('masterTableBody');
         tbody.innerHTML = '';
-        document.getElementById('matchCount').innerText = data.length;
 
-        if (data.length === 0) {
+        // Apply department filter
+        let filtered = data;
+        if (currentDeptFilter !== 'all') {
+            filtered = data.filter(item => {
+                const status = getRowDeptStatus(item);
+                return status === 'ready-' + currentDeptFilter.toLowerCase();
+            });
+        }
+
+        document.getElementById('matchCount').innerText = filtered.length;
+
+        if (filtered.length === 0) {
             tbody.innerHTML = 
-                '<tr><td colspan="14" class="text-center py-5 text-muted"><i class="fas fa-search fa-2x mb-3 d-block"></i>No orders found matching your search.</td></tr>';
+                '<tr><td colspan="14" class="text-center py-5 text-muted"><i class="fas fa-search fa-2x mb-3 d-block"></i>No orders found matching your filter.</td></tr>';
             return;
         }
 
-        data.forEach((row) => {
+        filtered.forEach((row) => {
             const tr = document.createElement('tr');
             tr.id = 'row-target-id-' + row.rowId;
-            if(selectedRowIdx === row.rowId) tr.className = "highlight-row";
+
+            // Apply color coding
+            const deptStatus = getRowDeptStatus(row);
+            if (deptStatus) tr.classList.add(deptStatus);
+            if(selectedRowIdx === row.rowId) tr.classList.add('highlight-row');
 
             let statusClass = 'bg-secondary';
             let statusIcon = 'fa-clock';
@@ -979,12 +1398,24 @@
 
     function filterMasterTable() {
         const query = document.getElementById('searchInput').value.toLowerCase().trim();
-        if(!query) { renderMasterTable(ordersCache); return; }
-        const filtered = ordersCache.filter(item => 
-            item.customerName.toLowerCase().includes(query) ||
-            item.piNo.toLowerCase().includes(query) ||
-            item.partNumber.toLowerCase().includes(query)
-        );
+        let filtered = ordersCache;
+
+        if(query) {
+            filtered = ordersCache.filter(item => 
+                item.customerName.toLowerCase().includes(query) ||
+                item.piNo.toLowerCase().includes(query) ||
+                item.partNumber.toLowerCase().includes(query)
+            );
+        }
+
+        // Re-apply department filter
+        if (currentDeptFilter !== 'all') {
+            filtered = filtered.filter(item => {
+                const status = getRowDeptStatus(item);
+                return status === 'ready-' + currentDeptFilter.toLowerCase();
+            });
+        }
+
         renderMasterTable(filtered);
     }
 
@@ -1027,6 +1458,9 @@
         // Update pipeline visualization
         updatePipelineVisualization(target);
 
+        // Update next item card
+        updateNextItemCard(target);
+
         const finalStatus = target.currentStatus || "Pending";
         const statusBadge = document.getElementById('metStatus');
         statusBadge.innerText = finalStatus;
@@ -1044,6 +1478,42 @@
 
         if(window.innerWidth < 992) {
             document.getElementById('workspaceLayout').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // NEW: Next Item Card
+    function updateNextItemCard(currentItem) {
+        const card = document.getElementById('nextItemCard');
+        const content = document.getElementById('nextItemContent');
+
+        // Find next item in queue for current department
+        const queue = getDeptQueueItems(activeDept);
+        const nextItem = queue.find(item => item.rowId !== currentItem.rowId);
+
+        if (nextItem) {
+            card.classList.remove('d-none');
+            content.innerHTML = 
+                '<div class="fw-bold">' + nextItem.partNumber + '</div>' +
+                '<div class="text-muted">' + nextItem.customerName + ' | ' + nextItem.piNo + '</div>' +
+                '<div class="mt-1"><span class="badge bg-primary">' + 
+                (activeDept === 'Store' ? nextItem.shortQty + ' short' :
+                 activeDept === 'Laser' ? nextItem.pendingLaser + ' pending laser' :
+                 activeDept === 'Packing' ? nextItem.pendingPacking + ' pending pack' : 'ready') + 
+                '</span></div>';
+        } else {
+            card.classList.add('d-none');
+        }
+    }
+
+    function selectNextReadyItem() {
+        const queue = getDeptQueueItems(activeDept);
+        if (queue.length > 0) {
+            // Find first item not currently selected
+            const nextItem = queue.find(item => item.rowId !== selectedRowIdx) || queue[0];
+            selectTargetRowByRowId(nextItem.rowId);
+            showToast('Selected next item for ' + activeDept, 'success');
+        } else {
+            showToast('No more items in ' + activeDept + ' queue', 'warning');
         }
     }
 
@@ -1140,6 +1610,12 @@
                 laserNotRequired.classList.add('d-none');
             }
         }
+
+        // Update next item card for new department
+        if (selectedRowIdx !== null) {
+            const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+            if (target) updateNextItemCard(target);
+        }
     }
 
     function validateLiveInputLimit() {
@@ -1235,7 +1711,13 @@
                 document.getElementById('formPallet').value = '';
                 document.getElementById('formReceivedFrom').value = '';
                 document.getElementById('formRemark').value = '';
-                showToast('Transaction saved successfully!', 'success');
+                showToast('Transaction saved! Auto-selecting next item...', 'success');
+
+                // Auto-select next ready item after short delay
+                setTimeout(() => {
+                    selectNextReadyItem();
+                }, 500);
+
                 fetchData();
             } else {
                 showToast("Sheet update rejected: " + res.message, 'error');
