@@ -16,7 +16,7 @@
         .sticky-thead th { position: sticky; top: 0; background-color: #212529; color: white; z-index: 1; }
         .highlight-row { background-color: #e2f0fe !important; font-weight: 500; }
         .metric-card { border-left: 5px solid; text-align: center; background: #fff; padding: 15px; border-radius: 8px; }
-        .brand-logo { height: 42px; width: auto; object-fit: contain; margin-right: 12px; }
+        .brand-logo { height: 48px; width: auto; object-fit: contain; margin-right: 14px; }
     </style>
 </head>
 <body>
@@ -24,7 +24,7 @@
 <div class="bg-white shadow-sm mb-4">
     <div class="container-fluid px-4 py-3 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <img class="brand-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABwKC9vAAAASFBMVEUAAAA0NTRERERVVVVcXFxkZGRra2tzc3N7e3uHh4eTk5OcnJylpaWtra21tbW9vb3GxsbPz8/b29vn5+fv7+/39/f///8AAACpkywXAAAAn0lEQVRoge2V2w6AIAxDvS9wioK///9b0YshmptreXAn7bIuYwshhBBCCCGEEELIQwghhPAnorU3gMAnA9A6wG8HwMoR6gBfGgErA6AawIsBwK7zH6O7f/bE2Nof47w/gS/Gef63GOf5VTD8Kpiu99gMvhp9K9gN9gK7wR7f3P8f2KOPWqOJao3vWqNZY7vWOFGtsV1rjFrju9Zo1vC6VpS0D95WBoV9b3coAAAAAElFTkSuQmCC" alt="MG Logo">
+            <img class="brand-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABwKC9vAAAAwFBMVEVHcEwBAQEJCQkVFRUWFhYWFhYWFhYGBgYKCgoODg4KCgoKCgoKCgoLCwsNDQ0ODg4PDw8QEBAQEBAQEBAQEBAWFhYVFRUKCgoQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBDe897VAAAAAnRSTlMAAQGU/08AAAGZSURBVGjI7ZXZSgMxEEUhS9SujmsVq6u4W9///39tSAXv9EwmgXToB88hId8ckmSSTGZ6vV6v16u9fD8fT00S7bZ6b8f3w9fD8epYAt0S76WvV6P77vhqWIvEulGfL0bUoM8XfNf5I0XfPZf6S0b6NujgC30T9XbYId7Sre/8C926f6p6K3wT9fDNcCHqIeqhHqIeoh7qIepBPdQbUT3UG1E91BtRPdQbUT3UG1E9qId6iHqoN6Ieoh7qIeqhHqIeoh7UQ70R1UO9EdVDvRHVQ70R1UO9EdWDeqiHqId6I+oh6qEeoh7qIeqhHqIe1EO9EdVDvRHVQ70R1UO9EdVDvRHVg3qoh6iHeiPqIeqhHqIe6iHqoR6iHtRDvRHVQ70R1UO9EdVDvRHVQ70R1YN6qIeoh3oj6iHqoR6iHuoh6qEeevyf6Inon+iD6IEohKiDKIIogKiPKHqoeyh6KHooaih6KHp6vV6v9vIDbO9W16vxeHIsgbw9nZok7mby0TfS/v7ZAt1MvXpbe9Xv96u9/ABY1C89f9I63gAAAABJRU5ErkJggg==" alt="MG Logo">
             <h3 class="mb-0 fw-bold text-dark me-4">MG Order Tracking System</h3>
             <ul class="nav main-nav" id="mainAppTabs">
                 <li class="nav-item"><button class="nav-link active" onclick="switchMainTab('ops')">🏭 Operations Workspace</button></li>
@@ -143,7 +143,7 @@
                         <div class="col-4"><div class="metric-card border-danger"><small class="text-muted d-block text-uppercase font-monospace">Short QTY</small><h3 id="metShort" class="fw-bold text-danger mb-0">0</h3></div></div>
                     </div>
                     <div class="row g-2 mt-2">
-                        <div class="col-12"><div class="metric-card border-light bg-secondary text-white py-2"><small class="text-white-50 d-block text-uppercase font-monospace">Pending Packing Balance</small><h4 id="metPendingPacking" class="fw-bold text-white mb-0">0</h4></div></div>
+                        <div class="col-12"><div class="metric-card border-warning bg-secondary text-white py-2"><small class="text-white-50 d-block text-uppercase font-monospace">Pending Packing Balance</small><h4 id="metPendingPacking" class="fw-bold text-warning mb-0">0</h4></div></div>
                     </div>
                     <div class="mt-3 text-center border-top border-secondary pt-3">
                         <span class="fs-6 text-muted">Line Milestone Status: </span><span id="metStatus" class="badge bg-light text-dark px-3 py-2 ms-2 fs-6">Pending</span>
@@ -226,7 +226,6 @@
 </div>
 
 <script>
-    // Live Endpoint Target Connection URL
     const API_URL = "https://script.google.com/macros/s/AKfycbyXLp6sCHhAFbJpfRrGsAlfs_M4gMmpKV8ROMxx0ruaRs6aLqHKiC-bJbs_eVlbJvI5sA/exec";
     let activeDept = "Store";
     let ordersCache = [];
@@ -342,8 +341,6 @@
         document.getElementById('metStatus').innerText = target.currentStatus;
 
         document.getElementById('workspaceLayout').classList.remove('d-none');
-        
-        // Refresh component parameters
         setDepartment(activeDept);
     }
 
@@ -357,7 +354,6 @@
 
         const currentTarget = ordersCache[selectedRowIdx];
         
-        // Clear past entries
         document.getElementById('formQty').value = '';
         document.getElementById('formValidationErrorAlert').classList.add('d-none');
         document.getElementById('formSubmitBtn').disabled = false;
@@ -415,7 +411,7 @@
         validateLiveInputLimit();
     }
 
-    // STRICT OVER-INPUT HARDENING RULES ENGINE
+    // STRICT OVER-INPUT INTERCEPT ENGINE
     function validateLiveInputLimit() {
         if (selectedRowIdx === null) return true;
         
@@ -428,17 +424,15 @@
         let errorMessage = "";
 
         if (activeDept === 'Store' || activeDept === 'QC') {
-            // Cannot log an input collection that exceeds the current remaining balance on the invoice
             if (inputQty > target.shortQty) {
                 isValid = false;
-                errorMessage = `⛔ Over-Input Blocked: Entered ${inputQty} Pcs, but current Short QTY balance is only ${target.shortQty} Pcs. Extra quantity not allowed.`;
+                errorMessage = `⛔ Over-Input Blocked: Received Extra is Not Allowed! Entered: ${inputQty} Pcs | Current Remaining Short QTY: ${target.shortQty} Pcs.`;
             }
         } 
         else if (activeDept === 'Packing') {
-            // Cannot pack items that do not exist or haven't been accounted for by inputs
             if (inputQty > target.pendingPacking) {
                 isValid = false;
-                errorMessage = `⛔ Over-Input Blocked: Entered ${inputQty} Pcs, but current Pending Packing stock on floor is only ${target.pendingPacking} Pcs.`;
+                errorMessage = `⛔ Over-Input Blocked: Received Extra is Not Allowed! Entered: ${inputQty} Pcs | Current Available Pending Packing: ${target.pendingPacking} Pcs.`;
             }
         }
         else if (activeDept === 'Laser') {
@@ -447,7 +441,7 @@
                 const maxAvailableInSelectedBatch = JSON.parse(batchVal).qty;
                 if (inputQty > maxAvailableInSelectedBatch) {
                     isValid = false;
-                    errorMessage = `⛔ Over-Input Blocked: Entered ${inputQty} Pcs, but this specific packed source container only contains ${maxAvailableInSelectedBatch} Pcs.`;
+                    errorMessage = `⛔ Over-Input Blocked: Entered ${inputQty} Pcs exceeds the original quantity allocated inside this specific packed source container (${maxAvailableInSelectedBatch} Pcs).`;
                 }
             }
         }
@@ -466,8 +460,6 @@
 
     function handleTransactionSubmit(e) {
         e.preventDefault();
-        
-        // Run a final hard validation intercept before allowing save routing execution
         if (!validateLiveInputLimit()) return;
 
         const target = ordersCache[selectedRowIdx];
