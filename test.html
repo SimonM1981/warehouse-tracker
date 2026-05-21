@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Order Tracking Ecosystem</title>
+    <title>MG Order Tracking System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f3f5f9; font-family: system-ui, -apple-system, sans-serif; }
@@ -12,10 +12,11 @@
         .dept-pills .nav-link { font-weight: 600; padding: 10px 20px; color: #495057; border: 1px solid #ced4da; margin-right: 8px; }
         .dept-pills .nav-link.active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
         .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-radius: 10px; }
-        .table-responsive { max-height: 350px; overflow-y: auto; }
+        .table-responsive { max-height: 380px; overflow-y: auto; }
         .sticky-thead th { position: sticky; top: 0; background-color: #212529; color: white; z-index: 1; }
         .highlight-row { background-color: #e2f0fe !important; font-weight: 500; }
         .metric-card { border-left: 5px solid; text-align: center; background: #fff; padding: 15px; border-radius: 8px; }
+        .brand-logo { height: 42px; width: auto; object-fit: contain; margin-right: 12px; }
     </style>
 </head>
 <body>
@@ -23,7 +24,8 @@
 <div class="bg-white shadow-sm mb-4">
     <div class="container-fluid px-4 py-3 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <h3 class="mb-0 fw-bold text-dark me-4">📦 Order Tracking Ecosystem</h3>
+            <img class="brand-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABwKC9vAAAASFBMVEUAAAA0NTRERERVVVVcXFxkZGRra2tzc3N7e3uHh4eTk5OcnJylpaWtra21tbW9vb3GxsbPz8/b29vn5+fv7+/39/f///8AAACpkywXAAAAn0lEQVRoge2V2w6AIAxDvS9wioK///9b0YshmptreXAn7bIuYwshhBBCCCGEEELIQwghhPAnorU3gMAnA9A6wG8HwMoR6gBfGgErA6AawIsBwK7zH6O7f/bE2Nof47w/gS/Gef63GOf5VTD8Kpiu99gMvhp9K9gN9gK7wR7f3P8f2KOPWqOJao3vWqNZY7vWOFGtsV1rjFrju9Zo1vC6VpS0D95WBoV9b3coAAAAAElFTkSuQmCC" alt="MG Logo">
+            <h3 class="mb-0 fw-bold text-dark me-4">MG Order Tracking System</h3>
             <ul class="nav main-nav" id="mainAppTabs">
                 <li class="nav-item"><button class="nav-link active" onclick="switchMainTab('ops')">🏭 Operations Workspace</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="switchMainTab('reports')">📊 Customer Status Reports</button></li>
@@ -63,13 +65,14 @@
                             <th>Laser Done</th>
                             <th>Packed</th>
                             <th>QC Arrival</th>
-                            <th>Pending</th>
+                            <th class="text-warning">Pending Packing</th>
+                            <th class="text-danger">Short QTY</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="masterTableBody">
-                        <tr><td colspan="12" class="text-center py-4 text-muted">Click "Sync Master Sheet" above to load data...</td></tr>
+                        <tr><td colspan="13" class="text-center py-4 text-muted">Click "Sync Master Sheet" above to pull system rows...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -92,6 +95,10 @@
 
                     <h5 id="formHeadline" class="fw-bold text-primary mb-3">Store Department Actions Entry Form</h5>
                     
+                    <div id="formValidationErrorAlert" class="alert alert-danger d-none py-2 mb-3 fw-bold">
+                        ⚠️ Over-input error context blocked!
+                    </div>
+
                     <div id="laserSourceAlert" class="alert alert-warning d-none py-2 mb-3">
                         ℹ️ <strong>Laser Dependency Flow:</strong> Choose which packed box/pallet batch you are pulled from below.
                     </div>
@@ -105,7 +112,10 @@
                             </select>
                         </div>
 
-                        <div class="col-md-4"><label class="form-label fw-bold">Action Quantity</label><input type="number" id="formQty" class="form-control form-control-lg text-center" required min="1"></div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Action Quantity</label>
+                            <input type="number" id="formQty" class="form-control form-control-lg text-center" required min="1" oninput="validateLiveInputLimit()">
+                        </div>
                         <div class="col-md-8"><label class="form-label fw-bold">Operator / Staff Name</label><input type="text" id="formOperator" class="form-control form-control-lg" required placeholder="Name of employee"></div>
                         
                         <div class="col-md-6 field-standard"><label id="lblBox" class="form-label fw-bold">STORE BOX ID</label><input type="text" id="formBox" class="form-control"></div>
@@ -114,7 +124,7 @@
                         <div class="col-md-12 field-supplier"><label class="form-label fw-bold text-primary">Supplier / Production Origin Name</label><input type="text" id="formReceivedFrom" class="form-control" placeholder="E.g., MCHANIX Factory, External Vendor Co."></div>
                         
                         <div class="col-md-12"><label class="form-label text-muted">Transaction Remark</label><input type="text" id="formRemark" class="form-control"></div>
-                        <div class="col-12 mt-4"><button type="submit" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">💾 Save Transaction Log Row</button></div>
+                        <div class="col-12 mt-4"><button type="submit" id="formSubmitBtn" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">💾 Save Transaction Log Row</button></div>
                     </form>
                 </div>
             </div>
@@ -130,7 +140,10 @@
                     <div class="row g-2">
                         <div class="col-4"><div class="metric-card border-primary"><small class="text-muted d-block text-uppercase font-monospace">Laser Run</small><h3 id="metLaser" class="fw-bold text-primary mb-0">0</h3></div></div>
                         <div class="col-4"><div class="metric-card border-warning"><small class="text-muted d-block text-uppercase font-monospace">QC Arrival</small><h3 id="metQC" class="fw-bold text-warning mb-0">0</h3></div></div>
-                        <div class="col-4"><div class="metric-card border-danger"><small class="text-muted d-block text-uppercase font-monospace">Pending</small><h3 id="metPending" class="fw-bold text-danger mb-0">0</h3></div></div>
+                        <div class="col-4"><div class="metric-card border-danger"><small class="text-muted d-block text-uppercase font-monospace">Short QTY</small><h3 id="metShort" class="fw-bold text-danger mb-0">0</h3></div></div>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-12"><div class="metric-card border-light bg-secondary text-white py-2"><small class="text-white-50 d-block text-uppercase font-monospace">Pending Packing Balance</small><h4 id="metPendingPacking" class="fw-bold text-white mb-0">0</h4></div></div>
                     </div>
                     <div class="mt-3 text-center border-top border-secondary pt-3">
                         <span class="fs-6 text-muted">Line Milestone Status: </span><span id="metStatus" class="badge bg-light text-dark px-3 py-2 ms-2 fs-6">Pending</span>
@@ -213,6 +226,7 @@
 </div>
 
 <script>
+    // Live Endpoint Target Connection URL
     const API_URL = "https://script.google.com/macros/s/AKfycbyXLp6sCHhAFbJpfRrGsAlfs_M4gMmpKV8ROMxx0ruaRs6aLqHKiC-bJbs_eVlbJvI5sA/exec";
     let activeDept = "Store";
     let ordersCache = [];
@@ -256,7 +270,7 @@
                 alert("Error calling backend API: " + res.message);
             }
         })
-        .catch(err => alert("Ecosystem routing error context details: " + err))
+        .catch(err => alert("System routing error context details: " + err))
         .finally(() => {
             btn.innerText = "🔄 Sync Master Sheet";
             btn.disabled = false;
@@ -286,7 +300,8 @@
                 <td><span class="badge bg-primary">${row.qtyLaser}</span></td>
                 <td><span class="badge bg-success">${row.qtyPacked}</span></td>
                 <td><span class="badge bg-warning text-dark">${row.qtyQC}</span></td>
-                <td class="text-danger fw-bold">${row.pendingQty}</td>
+                <td class="text-warning fw-bold">${row.pendingPacking}</td>
+                <td class="text-danger fw-bold">${row.shortQty}</td>
                 <td><span class="badge ${badgeClass}">${row.currentStatus}</span></td>
                 <td><button class="btn btn-sm btn-dark px-3" onclick="selectTargetRow(${originalIdx})">Select</button></td>
             `;
@@ -322,12 +337,13 @@
         document.getElementById('metLaser').innerText = target.qtyLaser;
         document.getElementById('metPacked').innerText = target.qtyPacked;
         document.getElementById('metQC').innerText = target.qtyQC;
-        document.getElementById('metPending').innerText = target.pendingQty;
+        document.getElementById('metShort').innerText = target.shortQty;
+        document.getElementById('metPendingPacking').innerText = target.pendingPacking;
         document.getElementById('metStatus').innerText = target.currentStatus;
 
         document.getElementById('workspaceLayout').classList.remove('d-none');
         
-        // Refresh department tab rules to capture changes instantly
+        // Refresh component parameters
         setDepartment(activeDept);
     }
 
@@ -340,15 +356,18 @@
         document.getElementById('formHeadline').innerText = `${dept} Department Actions Entry Form`;
 
         const currentTarget = ordersCache[selectedRowIdx];
+        
+        // Clear past entries
+        document.getElementById('formQty').value = '';
+        document.getElementById('formValidationErrorAlert').classList.add('d-none');
+        document.getElementById('formSubmitBtn').disabled = false;
 
-        // Reset display visibilities 
         document.getElementById('fieldLaserSourceSelect').classList.add('d-none');
         document.getElementById('laserSourceAlert').classList.add('d-none');
         document.querySelectorAll('.field-standard').forEach(el => el.classList.remove('d-none'));
         document.querySelectorAll('.field-supplier').forEach(el => el.classList.add('d-none'));
 
         if (dept === 'Store' || dept === 'QC') {
-            // Show extra tracking parameters for input channels
             document.querySelectorAll('.field-supplier').forEach(el => el.classList.remove('d-none'));
             document.getElementById('lblBox').innerText = `${dept.toUpperCase()} BOX ID`;
             document.getElementById('lblPallet').innerText = `${dept.toUpperCase()} Pallet No.`;
@@ -358,13 +377,11 @@
             document.getElementById('lblPallet').innerText = `PACKING Pallet No.`;
         }
         else if (dept === 'Laser') {
-            // CASCADING RULE: Laser draws items out of what packing provided
             document.getElementById('fieldLaserSourceSelect').classList.remove('d-none');
             document.getElementById('laserSourceAlert').classList.remove('d-none');
             document.getElementById('lblBox').innerText = `LASER BOX ID`;
             document.getElementById('lblPallet').innerText = `LASER Pallet No.`;
 
-            // Build dynamic choice selectors from the log arrays
             const packingLogs = logsCache.filter(log => 
                 log.piNo === currentTarget.piNo && 
                 log.partNo === currentTarget.partNumber && 
@@ -377,10 +394,10 @@
             if(packingLogs.length === 0) {
                 selector.innerHTML = '<option value="">⚠️ No Packing output found for this line yet!</option>';
             } else {
-                packingLogs.forEach((log, lIdx) => {
+                packingLogs.forEach((log) => {
                     const opt = document.createElement('option');
                     opt.value = JSON.stringify({ qty: log.qty, box: log.boxId, pallet: log.palletNo });
-                    opt.innerText = `Box: ${log.boxId || 'N/A'} | Pallet: ${log.palletNo || 'N/A'} (Qty Available: ${log.qty} Pcs) - Packed by ${log.operator}`;
+                    opt.innerText = `Box: ${log.boxId || 'N/A'} | Pallet: ${log.palletNo || 'N/A'} (${log.qty} Pcs available) - Packed by ${log.operator}`;
                     selector.appendChild(opt);
                 });
             }
@@ -392,14 +409,67 @@
         if(!valStr) return;
         const batchObj = JSON.parse(valStr);
         
-        // Auto-populate form inputs to maintain chain of custody
         document.getElementById('formQty').value = batchObj.qty;
         document.getElementById('formBox').value = batchObj.box || '';
         document.getElementById('formPallet').value = batchObj.pallet || '';
+        validateLiveInputLimit();
+    }
+
+    // STRICT OVER-INPUT HARDENING RULES ENGINE
+    function validateLiveInputLimit() {
+        if (selectedRowIdx === null) return true;
+        
+        const target = ordersCache[selectedRowIdx];
+        const inputQty = Number(document.getElementById('formQty').value) || 0;
+        const alertPanel = document.getElementById('formValidationErrorAlert');
+        const submitBtn = document.getElementById('formSubmitBtn');
+        
+        let isValid = true;
+        let errorMessage = "";
+
+        if (activeDept === 'Store' || activeDept === 'QC') {
+            // Cannot log an input collection that exceeds the current remaining balance on the invoice
+            if (inputQty > target.shortQty) {
+                isValid = false;
+                errorMessage = `⛔ Over-Input Blocked: Entered ${inputQty} Pcs, but current Short QTY balance is only ${target.shortQty} Pcs. Extra quantity not allowed.`;
+            }
+        } 
+        else if (activeDept === 'Packing') {
+            // Cannot pack items that do not exist or haven't been accounted for by inputs
+            if (inputQty > target.pendingPacking) {
+                isValid = false;
+                errorMessage = `⛔ Over-Input Blocked: Entered ${inputQty} Pcs, but current Pending Packing stock on floor is only ${target.pendingPacking} Pcs.`;
+            }
+        }
+        else if (activeDept === 'Laser') {
+            const batchVal = document.getElementById('formLaserSourceBatch').value;
+            if (batchVal) {
+                const maxAvailableInSelectedBatch = JSON.parse(batchVal).qty;
+                if (inputQty > maxAvailableInSelectedBatch) {
+                    isValid = false;
+                    errorMessage = `⛔ Over-Input Blocked: Entered ${inputQty} Pcs, but this specific packed source container only contains ${maxAvailableInSelectedBatch} Pcs.`;
+                }
+            }
+        }
+
+        if (!isValid) {
+            alertPanel.innerText = errorMessage;
+            alertPanel.classList.remove('d-none');
+            submitBtn.disabled = true;
+            return false;
+        } else {
+            alertPanel.classList.add('d-none');
+            submitBtn.disabled = false;
+            return true;
+        }
     }
 
     function handleTransactionSubmit(e) {
         e.preventDefault();
+        
+        // Run a final hard validation intercept before allowing save routing execution
+        if (!validateLiveInputLimit()) return;
+
         const target = ordersCache[selectedRowIdx];
         const payload = {
             action: 'saveTransaction',
@@ -511,7 +581,8 @@
                             <th>Laser</th>
                             <th>Packed</th>
                             <th>QC Injected</th>
-                            <th>Remaining Pending</th>
+                            <th>Pending Packing</th>
+                            <th>Short QTY</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -524,7 +595,8 @@
                                 <td class="table-primary">${o.qtyLaser}</td>
                                 <td class="table-success">${o.qtyPacked}</td>
                                 <td class="table-warning">${o.qtyQC}</td>
-                                <td class="text-danger fw-bold">${o.pendingQty}</td>
+                                <td class="table-light fw-bold text-warning">${o.pendingPacking}</td>
+                                <td class="text-danger fw-bold">${o.shortQty}</td>
                             </tr>
                         `).join('')}
                     </tbody>
