@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG Order Tracking System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f3f5f9;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --table-header-bg: #212529;
+            --table-header-text: #ffffff;
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --metric-bg: #ffffff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --highlight-row: #e2f0fe;
+            --pipeline-active: #0d6efd;
+            --pipeline-inactive: #e9ecef;
+            --pipeline-text: #ffffff;
+            --pipeline-text-inactive: #6c757d;
+            --success-glow: rgba(25, 135, 84, 0.15);
+            --warning-glow: rgba(255, 193, 7, 0.15);
+            --danger-glow: rgba(220, 53, 69, 0.15);
+            --info-glow: rgba(13, 110, 253, 0.15);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-header: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --table-header-bg: #0f172a;
+            --table-header-text: #f1f5f9;
+            --input-bg: #334155;
+            --input-border: #475569;
+            --metric-bg: #1e293b;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --highlight-row: #1e3a5f;
+            --pipeline-active: #3b82f6;
+            --pipeline-inactive: #334155;
+            --pipeline-text: #ffffff;
+            --pipeline-text-inactive: #94a3b8;
+            --success-glow: rgba(34, 197, 94, 0.2);
+            --warning-glow: rgba(234, 179, 8, 0.2);
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --info-glow: rgba(59, 130, 246, 0.2);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .bg-white, .card {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .shadow-sm {
+            box-shadow: var(--shadow) !important;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        .text-dark {
+            color: var(--text-primary) !important;
+        }
+
+        .bg-light {
+            background-color: var(--bg-body) !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .list-group-item {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .list-group-item.active {
+            background-color: var(--pipeline-active);
+            border-color: var(--pipeline-active);
+            color: #fff;
+        }
+
+        .table {
+            color: var(--text-primary);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--highlight-row);
+        }
+
+        .sticky-thead th {
+            position: sticky;
+            top: 0;
+            background-color: var(--table-header-bg);
+            color: var(--table-header-text);
+            z-index: 2;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .highlight-row {
+            background-color: var(--highlight-row) !important;
+            font-weight: 500;
+        }
+
+        .brand-logo {
+            height: 28px;
+            width: auto;
+            object-fit: contain;
+            margin-right: 12px;
+        }
+
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        @media(min-width: 992px) {
+            .header-container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .main-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .main-nav .nav-link {
+            font-weight: 600;
+            padding: 10px 16px;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            transition: all 0.2s ease;
+        }
+
+        .main-nav .nav-link:hover {
+            color: var(--pipeline-active);
+        }
+
+        .main-nav .nav-link.active {
+            color: var(--pipeline-active);
+            border-bottom-color: var(--pipeline-active);
+            background: transparent;
+        }
+
+        .dept-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dept-pills .nav-link {
+            font-weight: 600;
+            padding: 10px 20px;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            transition: all 0.2s ease;
+        }
+
+        .dept-pills .nav-link:hover {
+            border-color: var(--pipeline-active);
+            color: var(--pipeline-active);
+        }
+
+        .dept-pills .nav-link.active {
+            background-color: var(--pipeline-active);
+            color: white;
+            border-color: var(--pipeline-active);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .dept-pills .nav-link.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .table-responsive {
+            max-height: 480px;
+            overflow-y: auto;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+        }
+
+        .metric-card {
+            border-left: 4px solid;
+            text-align: center;
+            background: var(--metric-bg);
+            padding: 16px 12px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .metric-card.border-secondary { border-left-color: #6c757d; box-shadow: 0 4px 12px rgba(108, 117, 125, 0.15); }
+        .metric-card.border-info { border-left-color: #0dcaf0; box-shadow: 0 4px 12px var(--info-glow); }
+        .metric-card.border-success { border-left-color: #198754; box-shadow: 0 4px 12px var(--success-glow); }
+        .metric-card.border-primary { border-left-color: #0d6efd; box-shadow: 0 4px 12px var(--info-glow); }
+        .metric-card.border-warning { border-left-color: #ffc107; box-shadow: 0 4px 12px var(--warning-glow); }
+        .metric-card.border-danger { border-left-color: #dc3545; box-shadow: 0 4px 12px var(--danger-glow); }
+        .metric-card.border-purple { border-left-color: #6f42c1; box-shadow: 0 4px 12px rgba(111, 66, 193, 0.15); }
+
+        .pipeline-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: var(--pipeline-inactive);
+            color: var(--pipeline-text-inactive);
+            font-weight: 600;
+            font-size: 0.85rem;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%, 10px 50%);
+            margin-right: -5px;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .pipeline-step:first-child {
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+            padding-left: 20px;
+        }
+
+        .pipeline-step:last-child {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10px 50%);
+            margin-right: 0;
+        }
+
+        .pipeline-step.active {
+            background: var(--pipeline-active);
+            color: var(--pipeline-text);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .pipeline-step.completed {
+            background: #198754;
+            color: white;
+        }
+
+        .pipeline-step i {
+            margin-right: 6px;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--pipeline-active);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.5);
+        }
+
+        .laser-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .laser-badge.yes {
+            background: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .laser-badge.no {
+            background: rgba(25, 135, 84, 0.15);
+            color: #198754;
+            border: 1px solid rgba(25, 135, 84, 0.3);
+        }
+
+        .status-pipeline-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .alert-enhanced {
+            border-radius: 12px;
+            border: none;
+            padding: 16px;
+            font-weight: 500;
+        }
+
+        .btn-sync {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-sync:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4);
+        }
+
+        .btn-sync:disabled {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .form-section {
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .context-bar {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .context-bar .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .context-bar .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .sync-time {
+            background: var(--bg-body);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+
+        .match-badge {
+            background: linear-gradient(135deg, #212529 0%, #495057 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .pipeline-step {
+                font-size: 0.75rem;
+                padding: 8px 12px;
+                min-width: 80px;
+            }
+            .metric-card {
+                padding: 12px 8px;
+            }
+            .metric-card h4 {
+                font-size: 1.2rem;
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .custom-toast {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 10px;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) > * {
+            background-color: var(--bg-body);
+        }
+
+        .table-bordered {
+            border-color: var(--border-color);
+        }
+
+        .table-bordered > :not(caption) > * > * {
+            border-color: var(--border-color);
+        }
+
+        .badge {
+            font-weight: 600;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body data-theme="light">
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle Day/Night Mode">
+    <i class="fas fa-moon" id="themeIcon"></i>
+</button>
+
+<div class="bg-white shadow-sm mb-4">
+    <div class="container-fluid px-3 py-3 header-container">
+        <div class="d-flex flex-column gap-2 align-items-start flex-grow-1">
+            <div class="d-flex align-items-center flex-wrap">
+                <img class="brand-logo" src="MG.png" alt="MG Logo" onerror="this.style.display='none'">
+                <h4 class="mb-0 fw-bold text-dark me-3">MG Order Tracking System</h4>
+                <span class="badge bg-primary px-3 py-2" style="border-radius: 50px;">
+                    <i class="fas fa-industry me-1"></i> v2.0 Laser Enhanced
+                </span>
+            </div>
+            <ul class="nav main-nav" id="mainAppTabs">
+                <li class="nav-item"><button class="nav-link active" onclick="switchMainTab('ops')"><i class="fas fa-industry me-1"></i> Operations Workspace</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('reports')"><i class="fas fa-chart-bar me-1"></i> Customer Status Reports</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('analytics')"><i class="fas fa-history me-1"></i> Transaction Audit Logs</button></li>
+            </ul>
+        </div>
+        <div class="d-flex align-items-center justify-content-between gap-3 mt-2 mt-lg-0">
+            <span id="lastSyncTime" class="sync-time"><i class="fas fa-clock me-1"></i> Not Synced</span>
+            <button id="refreshBtn" class="btn btn-primary fw-bold px-4 py-2 btn-sync" onclick="fetchData()">
+                <i class="fas fa-sync-alt me-2"></i> Sync Master Sheet
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid px-3">
+    <!-- OPERATIONS TAB -->
+    <div id="tab-ops" class="app-tab-content">
+        <div class="card p-3 mb-4 border-0 shadow-sm">
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white border-primary"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Search Customer, P/I No, or Part Number..." onkeyup="filterMasterTable()">
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="match-badge d-flex align-items-center justify-content-between">
+                        <span><i class="fas fa-list-ol me-2"></i>Lines Matching</span>
+                        <span id="matchCount" class="fs-5 fw-bold">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-3 border rounded">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="sticky-thead">
+                        <tr>
+                            <th><i class="fas fa-user me-1"></i> Customer</th>
+                            <th><i class="fas fa-file-invoice me-1"></i> P/I No.</th>
+                            <th><i class="fas fa-barcode me-1"></i> Part Number</th>
+                            <th><i class="fas fa-hashtag me-1"></i> Cust No.</th>
+                            <th><i class="fas fa-shopping-cart me-1"></i> Order Qty</th>
+                            <th><i class="fas fa-warehouse me-1"></i> Collected</th>
+                            <th><i class="fas fa-bolt me-1"></i> Laser</th>
+                            <th><i class="fas fa-box me-1"></i> Packed</th>
+                            <th><i class="fas fa-microscope me-1"></i> QC</th>
+                            <th class="text-warning"><i class="fas fa-hourglass-half me-1"></i> Pending Pack</th>
+                            <th class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i> Short QTY</th>
+                            <th><i class="fas fa-bolt me-1"></i> Laser Mark</th>
+                            <th><i class="fas fa-info-circle me-1"></i> Status</th>
+                            <th class="text-center"><i class="fas fa-mouse-pointer me-1"></i> Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="masterTableBody">
+                        <tr><td colspan="14" class="text-center py-5 text-muted">
+                            <i class="fas fa-database fa-2x mb-3 d-block"></i>
+                            Click "Sync Master Sheet" to fetch processing data streams...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="workspaceLayout" class="row g-3 d-none">
+            <div class="col-12 col-lg-7">
+                <div class="card p-3 p-sm-4 mb-4 border-0 shadow-sm">
+
+                    <!-- Context Bar -->
+                    <div class="context-bar">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="label">Customer</div>
+                                <div class="value" id="ctxCustomer">--</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="label">P/I Number</div>
+                                <div class="value" id="ctxPI">--</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="label">Part Number</div>
+                                <div class="value" id="ctxPart">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Visualization -->
+                    <div id="pipelineVisualization" class="pipeline-container d-none">
+                        <div class="pipeline-step" id="pipeStore"><i class="fas fa-warehouse"></i> Store</div>
+                        <div class="pipeline-step" id="pipeLaser"><i class="fas fa-bolt"></i> Laser</div>
+                        <div class="pipeline-step" id="pipePacking"><i class="fas fa-box"></i> Packing</div>
+                        <div class="pipeline-step" id="pipeQC"><i class="fas fa-microscope"></i> QC</div>
+                    </div>
+
+                    <div class="nav nav-pills dept-pills mb-4">
+                        <button class="nav-link active" id="btnStore" onclick="setDepartment('Store')">
+                            <i class="fas fa-warehouse me-1"></i> Store
+                        </button>
+                        <button class="nav-link" id="btnLaser" onclick="setDepartment('Laser')">
+                            <i class="fas fa-bolt me-1"></i> Laser
+                        </button>
+                        <button class="nav-link" id="btnPacking" onclick="setDepartment('Packing')">
+                            <i class="fas fa-box me-1"></i> Packing
+                        </button>
+                        <button class="nav-link" id="btnQC" onclick="setDepartment('QC')">
+                            <i class="fas fa-microscope me-1"></i> QC
+                        </button>
+                    </div>
+
+                    <div id="laserWarningBanner" class="alert alert-danger alert-enhanced d-none mb-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Laser Required:</strong> This part must complete laser processing before packing. 
+                        <span id="laserWarningText"></span>
+                    </div>
+
+                    <div id="laserNotRequiredBanner" class="alert alert-success alert-enhanced d-none mb-3">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>No Laser Required:</strong> This part can proceed directly to packing after collection.
+                    </div>
+
+                    <h5 id="formHeadline" class="fw-bold text-primary mb-3">
+                        <i class="fas fa-edit me-2"></i>Store Department Actions Entry Form
+                    </h5>
+
+                    <div id="formValidationErrorAlert" class="alert alert-danger d-none py-2 mb-3 fw-bold"></div>
+
+                    <form id="executionForm" onsubmit="handleTransactionSubmit(event)" class="row g-3">
+                        <div class="col-6 col-md-4">
+                            <label class="form-label fw-bold"><i class="fas fa-sort-numeric-up me-1"></i> Action Quantity</label>
+                            <input type="number" id="formQty" class="form-control form-control-lg text-center fw-bold text-dark" required min="1" oninput="validateLiveInputLimit()">
+                        </div>
+                        <div class="col-6 col-md-8">
+                            <label class="form-label fw-bold"><i class="fas fa-user-tie me-1"></i> Operator / Staff Name</label>
+                            <input type="text" id="formOperator" class="form-control form-control-lg" required placeholder="Employee name or ID">
+                        </div>
+
+                        <div class="col-6">
+                            <label id="lblBox" class="form-label fw-bold"><i class="fas fa-box-open me-1"></i> STORE BOX ID</label>
+                            <input type="text" id="formBox" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label id="lblPallet" class="form-label fw-bold"><i class="fas fa-pallet me-1"></i> STORE Pallet No.</label>
+                            <input type="text" id="formPallet" class="form-control">
+                        </div>
+
+                        <div class="col-12 col-md-6 field-supplier d-none">
+                            <label class="form-label fw-bold text-primary"><i class="fas fa-calendar-alt me-1"></i> Receiving From Supplier Date</label>
+                            <input type="date" id="formReceivedDate" class="form-control border-primary">
+                        </div>
+                        <div class="col-12 col-md-6 field-supplier d-none">
+                            <label class="form-label fw-bold text-primary"><i class="fas fa-truck me-1"></i> Supplier / Production Origin</label>
+                            <input type="text" id="formReceivedFrom" class="form-control border-primary" placeholder="Supplier vendor name">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label text-muted small"><i class="fas fa-comment me-1"></i> Transaction Remark</label>
+                            <input type="text" id="formRemark" class="form-control" placeholder="Optional notes...">
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" id="formSubmitBtn" class="btn btn-success btn-lg w-100 fw-bold shadow-sm py-3">
+                                <i class="fas fa-save me-2"></i> Save Transaction Log Row
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-5">
+                <div class="card p-3 p-sm-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;">
+                    <h5 class="fw-bold text-warning border-bottom border-secondary pb-2 mb-3">
+                        <i class="fas fa-tachometer-alt me-2"></i> Selected Line Metrics
+                    </h5>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <div class="metric-card border-secondary">
+                                <small class="text-muted d-block small">ORDERED</small>
+                                <h4 id="metOrder" class="fw-bold text-dark mb-0">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-card border-info">
+                                <small class="text-muted d-block small">COLLECTED</small>
+                                <h4 id="metCollected" class="fw-bold text-info mb-0">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-card border-success">
+                                <small class="text-muted d-block small">PACKED</small>
+                                <h4 id="metPacked" class="fw-bold text-success mb-0">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <div class="metric-card border-primary">
+                                <small class="text-muted d-block small">LASER</small>
+                                <h4 id="metLaser" class="fw-bold text-primary mb-0">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-card border-warning">
+                                <small class="text-muted d-block small">QC ARRIVAL</small>
+                                <h4 id="metQC" class="fw-bold text-warning mb-0">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-card border-danger">
+                                <small class="text-muted d-block small">SHORT QTY</small>
+                                <h4 id="metShort" class="fw-bold text-danger mb-0">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Laser Metric (conditional) -->
+                    <div class="row g-2 mb-3 d-none" id="pendingLaserMetricRow">
+                        <div class="col-12">
+                            <div class="metric-card border-purple bg-secondary text-white py-2">
+                                <small class="text-white-50 d-block small"><i class="fas fa-bolt me-1"></i> PENDING LASER</small>
+                                <h4 id="metPendingLaser" class="fw-bold mb-0" style="color: #a78bfa;">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <div class="metric-card border-warning bg-secondary text-white py-2">
+                                <small class="text-white-50 d-block small"><i class="fas fa-hourglass-half me-1"></i> PENDING PACKING</small>
+                                <h4 id="metPendingPacking" class="fw-bold text-warning mb-0">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 text-center border-top border-secondary pt-3 d-flex justify-content-between align-items-center">
+                        <span class="text-muted small"><i class="fas fa-flag me-1"></i> Current Milestone:</span>
+                        <span id="metStatus" class="badge bg-light text-dark px-3 py-2 fs-6">Pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORTS TAB -->
+    <div id="tab-reports" class="app-tab-content d-none">
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <div class="card p-3 mb-4 border-0 shadow-sm">
+                    <h6 class="fw-bold mb-2"><i class="fas fa-users me-2"></i> Customer Directory</h6>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                        <input type="text" id="customerSearchInput" class="form-control" placeholder="Search customers..." onkeyup="filterReportCustomerList()">
+                    </div>
+                    <div class="list-group" id="reportCustomerList" style="max-height: 400px; overflow-y:auto;">
+                        <button class="list-group-item list-group-item-action text-muted text-center py-3">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Load system data...
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="card p-3 p-sm-4 border-0 shadow-sm">
+                    <div class="d-flex flex-column gap-2 flex-sm-row justify-content-between align-items-sm-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold text-primary mb-0">
+                            <i class="fas fa-file-alt me-2"></i> Order Profile Summary
+                        </h5>
+                        <div class="d-flex align-items-center gap-2" id="piFilterWrapper" style="display: none !important;">
+                            <label class="fw-bold text-nowrap small text-secondary"><i class="fas fa-filter me-1"></i> P/I:</label>
+                            <select id="reportPiSelector" class="form-select form-select-sm" onchange="applyReportPiFilter()">
+                                <option value="">ALL Lines</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="reportDetailsContainer">
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-hand-pointer fa-2x mb-3 d-block"></i>
+                            Select a customer from the directory panel.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div id="tab-analytics" class="app-tab-content d-none">
+        <div class="card p-3 shadow-sm border-0">
+            <div class="d-flex flex-column gap-2 flex-md-row justify-content-between align-items-md-center mb-3 border-bottom pb-2">
+                <h5 class="fw-bold mb-0"><i class="fas fa-clipboard-list me-2"></i> Transaction Audit Log Stream</h5>
+                <div class="input-group" style="max-width: 400px;">
+                    <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                    <input type="text" id="ledgerSearchInput" class="form-control" placeholder="Filter logs by any field..." onkeyup="filterLedgerTable()">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle table-sm text-nowrap">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="fas fa-calendar me-1"></i> Date</th>
+                            <th><i class="fas fa-clock me-1"></i> Time</th>
+                            <th><i class="fas fa-building me-1"></i> Dept</th>
+                            <th><i class="fas fa-file-invoice me-1"></i> P/I No.</th>
+                            <th><i class="fas fa-barcode me-1"></i> Part Number</th>
+                            <th><i class="fas fa-sort-numeric-up me-1"></i> Qty</th>
+                            <th><i class="fas fa-user me-1"></i> Operator</th>
+                            <th><i class="fas fa-box-open me-1"></i> Box ID</th>
+                            <th><i class="fas fa-pallet me-1"></i> Pallet</th>
+                            <th class="bg-primary text-white"><i class="fas fa-calendar-check me-1"></i> Supplier Date</th>
+                            <th class="bg-primary text-white"><i class="fas fa-truck me-1"></i> Supplier</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analyticsTableBody">
+                        <tr><td colspan="11" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                            No database logs registered...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Configuration Endpoint
+    const API_URL = "https://script.google.com/macros/s/AKfycbyxvESF0U8L-3pduaDO7xnARNB4TDWHFAvLZgjk5X9fpT3aeg9oigiRfoWUjhw2SOrnQg/exec";
+
+    let activeDept = "Store";
+    let ordersCache = [];
+    let logsCache = [];
+    let selectedRowIdx = null; 
+    let selectedCustomerForReport = "";
+    let currentLaserRequired = false;
+
+    // Theme Management
+    function initTheme() {
+        const savedTheme = localStorage.getItem('mg-theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+    }
+
+    function toggleTheme() {
+        const current = document.body.getAttribute('data-theme') || 'light';
+        const next = current === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', next);
+        localStorage.setItem('mg-theme', next);
+        updateThemeIcon(next);
+        showToast(next === 'dark' ? 'Night Mode Activated' : 'Day Mode Activated', 'info');
+    }
+
+    function updateThemeIcon(theme) {
+        const icon = document.getElementById('themeIcon');
+        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // Toast Notifications
+    function showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+
+        const icons = {
+            success: '<i class="fas fa-check-circle text-success me-2"></i>',
+            error: '<i class="fas fa-times-circle text-danger me-2"></i>',
+            warning: '<i class="fas fa-exclamation-triangle text-warning me-2"></i>',
+            info: '<i class="fas fa-info-circle text-primary me-2"></i>'
+        };
+
+        toast.innerHTML = (icons[type] || icons.info) + message;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    function switchMainTab(tabId) {
+        document.querySelectorAll('.app-tab-content').forEach(el => el.classList.add('d-none'));
+        document.querySelectorAll('#mainAppTabs .nav-link').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.remove('d-none');
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
+        if (tabId === 'reports') { renderCustomerListReport(); resetReportView(); }
+        if (tabId === 'analytics') populateLedgerTable(logsCache);
+    }
+
+    function resetReportView() {
+        selectedCustomerForReport = "";
+        document.getElementById('piFilterWrapper').setAttribute("style", "display: none !important;");
+        document.getElementById('reportDetailsContainer').innerHTML = 
+            '<div class="text-center py-5 text-muted"><i class="fas fa-hand-pointer fa-2x mb-3 d-block"></i>Select a customer from the directory panel.</div>';
+    }
+
+    function fetchData() {
+        const btn = document.getElementById('refreshBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Syncing...';
+        btn.disabled = true;
+
+        fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getOrdersAndLogs' }) })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                ordersCache = res.orders || [];
+                logsCache = res.allLogs || [];
+
+                renderMasterTable(ordersCache);
+                document.getElementById('lastSyncTime').innerHTML = 
+                    '<i class="fas fa-check-circle me-1 text-success"></i> Sync: ' + new Date().toLocaleTimeString();
+
+                showToast('Synced ' + ordersCache.length + ' orders and ' + logsCache.length + ' logs', 'success');
+
+                if(selectedRowIdx !== null) {
+                    const matchIdx = ordersCache.findIndex(o => o.rowId === selectedRowIdx);
+                    if(matchIdx !== -1) selectTargetRow(matchIdx);
+                }
+            } else {
+                showToast("App Error: " + res.message, 'error');
+            }
+        })
+        .catch(err => {
+            showToast("Communication failure: " + err, 'error');
+        })
+        .finally(() => {
+            btn.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Sync Master Sheet';
+            btn.disabled = false;
+        });
+    }
+
+    function renderMasterTable(data) {
+        const tbody = document.getElementById('masterTableBody');
+        tbody.innerHTML = '';
+        document.getElementById('matchCount').innerText = data.length;
+
+        if (data.length === 0) {
+            tbody.innerHTML = 
+                '<tr><td colspan="14" class="text-center py-5 text-muted"><i class="fas fa-search fa-2x mb-3 d-block"></i>No orders found matching your search.</td></tr>';
+            return;
+        }
+
+        data.forEach((row) => {
+            const tr = document.createElement('tr');
+            tr.id = 'row-target-id-' + row.rowId;
+            if(selectedRowIdx === row.rowId) tr.className = "highlight-row";
+
+            let statusClass = 'bg-secondary';
+            let statusIcon = 'fa-clock';
+            if (row.currentStatus === 'Complete') { 
+                statusClass = 'bg-success'; 
+                statusIcon = 'fa-check-circle'; 
+            } else if (row.currentStatus && row.currentStatus.indexOf('Processing') !== -1) { 
+                statusClass = 'bg-info text-dark'; 
+                statusIcon = 'fa-cog fa-spin'; 
+            }
+
+            const laserBadge = row.laserRequired 
+                ? '<span class="laser-badge yes"><i class="fas fa-bolt"></i> YES</span>'
+                : '<span class="laser-badge no"><i class="fas fa-times"></i> NO</span>';
+
+            tr.innerHTML = 
+                '<td class="fw-bold">' + row.customerName + '</td>' +
+                '<td><span class="badge bg-light text-dark border">' + row.piNo + '</span></td>' +
+                '<td class="font-monospace fw-bold text-dark">' + row.partNumber + '</td>' +
+                '<td><small class="text-muted">' + (row.customerNo || '-') + '</small></td>' +
+                '<td><strong>' + row.qtyOrder + '</strong> <small class="text-muted">' + (row.unit || 'PCS') + '</small></td>' +
+                '<td><span class="badge bg-info text-dark">' + row.qtyCollected + '</span></td>' +
+                '<td><span class="badge bg-primary">' + row.qtyLaser + '</span></td>' +
+                '<td><span class="badge bg-success">' + row.qtyPacked + '</span></td>' +
+                '<td><span class="badge bg-warning text-dark">' + row.qtyQC + '</span></td>' +
+                '<td class="text-warning fw-bold text-center">' + row.pendingPacking + '</td>' +
+                '<td class="text-danger fw-bold text-center">' + row.shortQty + '</td>' +
+                '<td>' + laserBadge + '</td>' +
+                '<td><span class="badge ' + statusClass + '"><i class="fas ' + statusIcon + ' me-1"></i>' + row.currentStatus + '</span></td>' +
+                '<td class="text-center"><button class="btn btn-sm btn-dark px-3 fw-bold shadow-sm" onclick="selectTargetRowByRowId(' + row.rowId + ')"><i class="fas fa-arrow-right me-1"></i> Select</button></td>';
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterMasterTable() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        if(!query) { renderMasterTable(ordersCache); return; }
+        const filtered = ordersCache.filter(item => 
+            item.customerName.toLowerCase().includes(query) ||
+            item.piNo.toLowerCase().includes(query) ||
+            item.partNumber.toLowerCase().includes(query)
+        );
+        renderMasterTable(filtered);
+    }
+
+    function selectTargetRowByRowId(rowId) {
+        const index = ordersCache.findIndex(o => o.rowId === rowId);
+        if(index !== -1) selectTargetRow(index);
+    }
+
+    function selectTargetRow(cacheIdx) {
+        document.querySelectorAll('#masterTableBody tr').forEach(el => el.classList.remove('highlight-row'));
+
+        const target = ordersCache[cacheIdx];
+        selectedRowIdx = target.rowId; 
+        currentLaserRequired = target.laserRequired || false;
+
+        const activeRow = document.getElementById('row-target-id-' + target.rowId);
+        if(activeRow) activeRow.classList.add('highlight-row');
+
+        document.getElementById('ctxCustomer').innerText = target.customerName;
+        document.getElementById('ctxPI').innerText = target.piNo;
+        document.getElementById('ctxPart').innerText = target.partNumber + ' (' + (target.unit || 'PCS') + ')';
+
+        document.getElementById('metOrder').innerText = target.qtyOrder || 0;
+        document.getElementById('metCollected').innerText = target.qtyCollected || 0;
+        document.getElementById('metLaser').innerText = target.qtyLaser || 0;
+        document.getElementById('metPacked').innerText = target.qtyPacked || 0;
+        document.getElementById('metQC').innerText = target.qtyQC || 0;
+        document.getElementById('metShort').innerText = target.shortQty || 0;
+        document.getElementById('metPendingPacking').innerText = target.pendingPacking || 0;
+
+        // Show/hide pending laser metric
+        const pendingLaserRow = document.getElementById('pendingLaserMetricRow');
+        if (currentLaserRequired) {
+            pendingLaserRow.classList.remove('d-none');
+            document.getElementById('metPendingLaser').innerText = target.pendingLaser || 0;
+        } else {
+            pendingLaserRow.classList.add('d-none');
+        }
+
+        // Update pipeline visualization
+        updatePipelineVisualization(target);
+
+        const finalStatus = target.currentStatus || "Pending";
+        const statusBadge = document.getElementById('metStatus');
+        statusBadge.innerText = finalStatus;
+        statusBadge.className = "badge px-3 py-2 fs-6"; 
+        if (finalStatus === 'Complete') {
+            statusBadge.classList.add('bg-success', 'text-white');
+        } else if (finalStatus && finalStatus.indexOf('Processing') !== -1) {
+            statusBadge.classList.add('bg-info', 'text-dark');
+        } else {
+            statusBadge.classList.add('bg-secondary', 'text-white');
+        }
+
+        document.getElementById('workspaceLayout').classList.remove('d-none');
+        setDepartment(activeDept);
+
+        if(window.innerWidth < 992) {
+            document.getElementById('workspaceLayout').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function updatePipelineVisualization(target) {
+        const container = document.getElementById('pipelineVisualization');
+        container.classList.remove('d-none');
+
+        const collected = target.qtyCollected || 0;
+        const laser = target.qtyLaser || 0;
+        const packed = target.qtyPacked || 0;
+        const qc = target.qtyQC || 0;
+        const orderQty = target.qtyOrder || 0;
+
+        // Hide laser step if not required
+        const laserStep = document.getElementById('pipeLaser');
+        if (!target.laserRequired) {
+            laserStep.style.display = 'none';
+        } else {
+            laserStep.style.display = 'flex';
+        }
+
+        // Determine step states
+        const storeComplete = collected > 0 || qc > 0;
+        const laserComplete = target.laserRequired ? laser >= (collected + qc) : true;
+        const packingComplete = packed >= orderQty;
+        const qcComplete = qc > 0;
+
+        const stepStates = {};
+        stepStates['pipeStore'] = storeComplete ? 'completed' : (collected > 0 ? 'active' : '');
+        stepStates['pipeLaser'] = target.laserRequired ? 
+            (laserComplete ? 'completed' : (laser > 0 ? 'active' : '')) : 'completed';
+        stepStates['pipePacking'] = packingComplete ? 'completed' : (packed > 0 ? 'active' : '');
+        stepStates['pipeQC'] = qcComplete ? 'completed' : (qc > 0 ? 'active' : '');
+
+        Object.keys(stepStates).forEach(function(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('active', 'completed');
+            if (stepStates[id]) el.classList.add(stepStates[id]);
+        });
+    }
+
+    function setDepartment(dept) {
+        activeDept = dept;
+
+        // Update tab styling
+        document.querySelectorAll('.dept-pills .nav-link').forEach(function(b) {
+            b.classList.remove('active');
+            if(b.id === 'btn' + dept) b.classList.add('active');
+        });
+
+        document.getElementById('formHeadline').innerHTML = 
+            '<i class="fas fa-edit me-2"></i>' + dept + ' Department Actions Entry Form';
+
+        document.getElementById('formQty').value = '';
+        document.getElementById('formValidationErrorAlert').classList.add('d-none');
+
+        const submitBtn = document.getElementById('formSubmitBtn');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Transaction Log Row';
+        submitBtn.className = "btn btn-success btn-lg w-100 fw-bold shadow-sm py-3";
+
+        // Show/hide supplier fields
+        document.querySelectorAll('.field-supplier').forEach(function(el) { el.classList.add('d-none'); });
+        document.getElementById('lblBox').innerHTML = '<i class="fas fa-box-open me-1"></i> ' + dept.toUpperCase() + ' BOX ID';
+        document.getElementById('lblPallet').innerHTML = '<i class="fas fa-pallet me-1"></i> ' + dept.toUpperCase() + ' Pallet No.';
+
+        if (dept === 'Store' || dept === 'QC') {
+            document.querySelectorAll('.field-supplier').forEach(function(el) { el.classList.remove('d-none'); });
+            document.getElementById('formReceivedDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        // Laser workflow banners
+        const laserWarning = document.getElementById('laserWarningBanner');
+        const laserNotRequired = document.getElementById('laserNotRequiredBanner');
+
+        if (currentLaserRequired) {
+            const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+            const pendingLaser = target ? (target.pendingLaser || 0) : 0;
+
+            if (dept === 'Packing' && pendingLaser > 0) {
+                laserWarning.classList.remove('d-none');
+                laserNotRequired.classList.add('d-none');
+                document.getElementById('laserWarningText').innerText = 
+                    'Pending Laser: ' + pendingLaser + ' units must be processed first.';
+            } else {
+                laserWarning.classList.add('d-none');
+                laserNotRequired.classList.add('d-none');
+            }
+        } else {
+            laserWarning.classList.add('d-none');
+            if (dept === 'Packing') {
+                laserNotRequired.classList.remove('d-none');
+            } else {
+                laserNotRequired.classList.add('d-none');
+            }
+        }
+    }
+
+    function validateLiveInputLimit() {
+        if (selectedRowIdx === null) return true;
+
+        const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+        if (!target) return true;
+
+        const inputQty = Number(document.getElementById('formQty').value) || 0;
+        const alertPanel = document.getElementById('formValidationErrorAlert');
+        const submitBtn = document.getElementById('formSubmitBtn');
+
+        let isValid = true;
+        let errMsg = "";
+
+        const allowedShortBalance = Number(target.shortQty) || 0;
+        const allowedPackingBalance = Number(target.pendingPacking) || 0;
+        const allowedLaserBalance = Number(target.pendingLaser) || 0;
+
+        if (activeDept === 'Store' || activeDept === 'QC') {
+            if (inputQty > allowedShortBalance) {
+                isValid = false;
+                errMsg = 'Over-Input Blocked: Qty (' + inputQty + ') exceeds Short QTY balance (' + allowedShortBalance + ').';
+            }
+        } 
+        else if (activeDept === 'Laser') {
+            if (!target.laserRequired) {
+                isValid = false;
+                errMsg = 'Laser Not Required: This part does not require laser processing (Laser Marking = NO).';
+            } else if (inputQty > allowedLaserBalance) {
+                isValid = false;
+                errMsg = 'Over-Input Blocked: Qty (' + inputQty + ') exceeds Pending Laser balance (' + allowedLaserBalance + ').';
+            }
+        }
+        else if (activeDept === 'Packing') {
+            if (target.laserRequired && allowedLaserBalance > 0) {
+                isValid = false;
+                errMsg = 'PACKING BLOCKED: Laser processing incomplete. Pending Laser: ' + allowedLaserBalance + '. Complete laser first.';
+            } else if (inputQty > allowedPackingBalance) {
+                isValid = false;
+                errMsg = 'Over-Input Blocked: Qty (' + inputQty + ') exceeds Pending Packing balance (' + allowedPackingBalance + ').';
+            }
+        }
+
+        if (!isValid) {
+            alertPanel.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>' + errMsg;
+            alertPanel.classList.remove('d-none');
+            submitBtn.disabled = true;
+            return false;
+        } else {
+            alertPanel.classList.add('d-none');
+            submitBtn.disabled = false;
+            return true;
+        }
+    }
+
+    function handleTransactionSubmit(e) {
+        e.preventDefault();
+        if (!validateLiveInputLimit()) return;
+
+        const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+        const submitBtn = document.getElementById('formSubmitBtn');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing Transaction...';
+        submitBtn.className = "btn btn-secondary btn-lg w-100 fw-bold shadow-sm py-3";
+
+        const payload = {
+            action: 'saveTransaction',
+            data: {
+                rowId: target.rowId, 
+                piNo: target.piNo,
+                partNumber: target.partNumber,
+                department: activeDept,
+                actionType: activeDept === 'QC' ? 'Received' : 'Processed',
+                qty: document.getElementById('formQty').value,
+                operatorName: document.getElementById('formOperator').value,
+                boxId: document.getElementById('formBox').value,
+                palletNo: document.getElementById('formPallet').value,
+                receivedDate: (activeDept==='Store' || activeDept==='QC') ? document.getElementById('formReceivedDate').value : "",
+                receivedFrom: (activeDept==='Store' || activeDept==='QC') ? document.getElementById('formReceivedFrom').value : "",
+                remark: document.getElementById('formRemark').value,
+                laserRequired: target.laserRequired
+            }
+        };
+
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                document.getElementById('formQty').value = '';
+                document.getElementById('formBox').value = '';
+                document.getElementById('formPallet').value = '';
+                document.getElementById('formReceivedFrom').value = '';
+                document.getElementById('formRemark').value = '';
+                showToast('Transaction saved successfully!', 'success');
+                fetchData();
+            } else {
+                showToast("Sheet update rejected: " + res.message, 'error');
+                setDepartment(activeDept);
+            }
+        })
+        .catch(err => {
+            showToast("Network error: " + err, 'error');
+            setDepartment(activeDept);
+        });
+    }
+
+    function renderCustomerListReport() {
+        const container = document.getElementById('reportCustomerList');
+        if(ordersCache.length === 0) return;
+        const customers = [...new Set(ordersCache.map(o => o.customerName))].filter(c => c);
+        container.innerHTML = '';
+        customers.forEach(cust => {
+            const btn = document.createElement('button');
+            btn.className = "list-group-item list-group-item-action fw-bold py-2 customer-report-btn small";
+            btn.innerHTML = '<i class="fas fa-building me-2 text-primary"></i>' + cust;
+            btn.onclick = function() { selectCustomerForReportView(cust, btn); };
+            container.appendChild(btn);
+        });
+    }
+
+    function filterReportCustomerList() {
+        const q = document.getElementById('customerSearchInput').value.toLowerCase().trim();
+        document.querySelectorAll('.customer-report-btn').forEach(btn => {
+            if(btn.innerText.toLowerCase().includes(q)) { btn.classList.remove('d-none'); } else { btn.classList.add('d-none'); }
+        });
+    }
+
+    function selectCustomerForReportView(customerName, selectedBtn) {
+        document.querySelectorAll('#reportCustomerList .list-group-item').forEach(b => b.classList.remove('active'));
+        selectedBtn.classList.add('active');
+        selectedCustomerForReport = customerName;
+
+        const filteredOrders = ordersCache.filter(o => o.customerName === customerName);
+        const uniquePiNumbers = [...new Set(filteredOrders.map(o => o.piNo))];
+
+        const selector = document.getElementById('reportPiSelector');
+        selector.innerHTML = '<option value="">ALL Lines</option>';
+        uniquePiNumbers.forEach(pi => {
+            const opt = document.createElement('option');
+            opt.value = pi;
+            opt.innerText = pi;
+            selector.appendChild(opt);
+        });
+
+        document.getElementById('piFilterWrapper').setAttribute("style", "display: flex !important;");
+        renderFilteredCustomerPIReport(filteredOrders);
+    }
+
+    function applyReportPiFilter() {
+        const selectedPi = document.getElementById('reportPiSelector').value;
+        let filtered = ordersCache.filter(o => o.customerName === selectedCustomerForReport);
+        if(selectedPi) { filtered = filtered.filter(o => o.piNo === selectedPi); }
+        renderFilteredCustomerPIReport(filtered);
+    }
+
+    function renderFilteredCustomerPIReport(lines) {
+        const container = document.getElementById('reportDetailsContainer');
+        if(lines.length === 0) {
+            container.innerHTML = '<div class="text-center py-4 text-muted"><i class="fas fa-inbox me-2"></i>No tracking metrics matched.</div>';
+            return;
+        }
+
+        const totalOrdered = lines.reduce((sum, o) => sum + (o.qtyOrder || 0), 0);
+        const totalCollected = lines.reduce((sum, o) => sum + (o.qtyCollected || 0), 0);
+        const totalLaser = lines.reduce((sum, o) => sum + (o.qtyLaser || 0), 0);
+        const totalPacked = lines.reduce((sum, o) => sum + (o.qtyPacked || 0), 0);
+        const totalQC = lines.reduce((sum, o) => sum + (o.qtyQC || 0), 0);
+        const totalShort = lines.reduce((sum, o) => sum + (o.shortQty || 0), 0);
+
+        let summaryHtml = 
+            '<div class="d-flex justify-content-between align-items-center mb-3">' +
+            '<h6 class="fw-bold mb-0 text-dark"><i class="fas fa-user-tie me-2 text-primary"></i>' + selectedCustomerForReport + '</h6>' +
+            '<span class="badge bg-primary px-3 py-2">' + lines.length + ' Orders</span>' +
+            '</div>' +
+            '<div class="row g-2 mb-3">' +
+            '<div class="col-6 col-md-3"><div class="metric-card border-secondary"><small class="text-muted">TOTAL ORDERED</small><h5 class="fw-bold text-dark mb-0">' + totalOrdered + '</h5></div></div>' +
+            '<div class="col-6 col-md-3"><div class="metric-card border-info"><small class="text-muted">COLLECTED</small><h5 class="fw-bold text-info mb-0">' + totalCollected + '</h5></div></div>' +
+            '<div class="col-6 col-md-3"><div class="metric-card border-primary"><small class="text-muted">LASER</small><h5 class="fw-bold text-primary mb-0">' + totalLaser + '</h5></div></div>' +
+            '<div class="col-6 col-md-3"><div class="metric-card border-success"><small class="text-muted">PACKED</small><h5 class="fw-bold text-success mb-0">' + totalPacked + '</h5></div></div>' +
+            '</div>';
+
+        let tableHtml = 
+            '<div class="table-responsive border rounded">' +
+            '<table class="table table-bordered table-striped mb-0 text-nowrap table-sm small">' +
+            '<thead class="table-primary"><tr>' +
+            '<th>P/I No.</th><th>Part Number</th><th>Order Qty</th><th>Collected</th><th>Laser</th><th>Packed</th><th>QC</th><th>Pending Pack</th><th>Short</th><th>Laser Mark</th>' +
+            '</tr></thead><tbody>';
+
+        lines.forEach(o => {
+            const laserBadge = o.laserRequired 
+                ? '<span class="badge bg-danger">YES</span>'
+                : '<span class="badge bg-success">NO</span>';
+            tableHtml += 
+                '<tr>' +
+                '<td class="fw-bold">' + o.piNo + '</td>' +
+                '<td class="font-monospace">' + o.partNumber + ' <small class="text-muted">(' + (o.unit || 'PCS') + ')</small></td>' +
+                '<td><strong>' + o.qtyOrder + '</strong></td>' +
+                '<td class="table-info">' + o.qtyCollected + '</td>' +
+                '<td class="table-primary">' + o.qtyLaser + '</td>' +
+                '<td class="table-success">' + o.qtyPacked + '</td>' +
+                '<td class="table-warning">' + o.qtyQC + '</td>' +
+                '<td class="table-light fw-bold text-warning text-center">' + o.pendingPacking + '</td>' +
+                '<td class="text-danger fw-bold text-center">' + o.shortQty + '</td>' +
+                '<td>' + laserBadge + '</td>' +
+                '</tr>';
+        });
+
+        tableHtml += '</tbody></table></div>';
+        container.innerHTML = summaryHtml + tableHtml;
+    }
+
+    function populateLedgerTable(logs) {
+        const tbody = document.getElementById('analyticsTableBody');
+        tbody.innerHTML = '';
+        if(logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-4"><i class="fas fa-inbox fa-2x mb-2 d-block"></i>No database logs registered...</td></tr>';
+            return;
+        }
+        logs.forEach(log => {
+            const tr = document.createElement('tr');
+            const deptBadge = {
+                'Store': 'bg-info text-dark',
+                'Laser': 'bg-primary',
+                'Packing': 'bg-success',
+                'QC': 'bg-warning text-dark'
+            }[log.dept] || 'bg-secondary';
+
+            tr.innerHTML = 
+                '<td><small>' + (log.dateStr || '-') + '</small></td>' +
+                '<td><small class="text-muted">' + (log.time || '-') + '</small></td>' +
+                '<td><span class="badge ' + deptBadge + '"><i class="fas fa-building me-1"></i>' + log.dept + '</span></td>' +
+                '<td class="fw-bold">' + (log.piNo || '-') + '</td>' +
+                '<td class="font-monospace">' + (log.partNo || '-') + '</td>' +
+                '<td class="fw-bold text-dark">' + (log.qty || '0') + '</td>' +
+                '<td><small>' + (log.operator || '-') + '</small></td>' +
+                '<td>' + (log.boxId || '-') + '</td>' +
+                '<td>' + (log.palletNo || '-') + '</td>' +
+                '<td><small class="text-muted">' + ((log.dept==='Store'||log.dept==='QC') ? (log.receivedDate || log.dateStr || '-') : '-') + '</small></td>' +
+                '<td class="fw-bold text-primary"><small>' + ((log.dept==='Store'||log.dept==='QC') ? (log.supplierName || 'Internal Warehouse Stock') : '-') + '</small></td>';
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterLedgerTable() {
+        const q = document.getElementById('ledgerSearchInput').value.toLowerCase().trim();
+        if(!q) { populateLedgerTable(logsCache); return; }
+        const filtered = logsCache.filter(log => 
+            (log.piNo && log.piNo.toLowerCase().includes(q)) ||
+            (log.partNo && log.partNo.toLowerCase().includes(q)) ||
+            (log.dept && log.dept.toLowerCase().includes(q)) ||
+            (log.operator && log.operator.toLowerCase().includes(q)) ||
+            (log.supplierName && log.supplierName.toLowerCase().includes(q))
+        );
+        populateLedgerTable(filtered);
+    }
+
+    window.onload = function() {
+        initTheme();
+        fetchData();
+    };
+</script>
+</body>
+</html>
