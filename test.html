@@ -219,7 +219,8 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyz_tlF7IB4UxHH_fYBrAC_16J_gs2tQrnDx_gf2-1Pjw_aoKtjxAbG_R07MQATIjOJzw/exec";
+    // CORE SCRIPT CONFIGURATIONS
+    const API_URL = "https://script.google.com/macros/s/AKfycbyX8GVe3UveSNefswgCcE-1_UeyD0UZFcLkv1Lo2ajYX2qB_13xgnZV5uz43UbgY8CeVg/exec";
     
     let activeDept = "Store";
     let ordersCache = [];
@@ -251,17 +252,15 @@
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
-                ordersCache = res.orders.map((order) => {
-                    return order;
-                });
+                ordersCache = res.orders || [];
                 logsCache = res.allLogs || [];
                 
                 renderMasterTable(ordersCache);
                 document.getElementById('lastSyncTime').innerText = "Sync: " + new Date().toLocaleTimeString();
                 
                 if(selectedRowIdx !== null) {
-                    const matchIndex = ordersCache.findIndex(o => o.rowId === selectedRowIdx);
-                    if(matchIndex !== -1) selectTargetRow(matchIndex);
+                    const matchIdx = ordersCache.findIndex(o => o.rowId === selectedRowIdx);
+                    if(matchIdx !== -1) selectTargetRow(matchIdx);
                 }
             } else {
                 alert("App Error: " + res.message);
@@ -334,15 +333,15 @@
         document.getElementById('ctxPI').innerText = target.piNo;
         document.getElementById('ctxPart').innerText = `${target.partNumber} (${target.unit || 'PCS'})`;
 
-        // FIXED CASING ASSIGNMENT HOOKS HERE:
-        document.getElementById('metOrder').innerText = target.qtyOrder;
-        document.getElementById('metCollected').innerText = target.qtyCollected;
-        document.getElementById('metLaser').innerText = target.qtyLaser;
-        document.getElementById('metPacked').innerText = target.qtyPacked;
-        document.getElementById('metQC').innerText = target.qtyQC;
-        document.getElementById('metShort').innerText = target.shortQty;
-        document.getElementById('metPendingPacking').innerText = target.pendingPacking;
-        document.getElementById('metStatus').innerText = target.currentStatus;
+        // Direct property lookup mapped directly from Backend configuration definitions
+        document.getElementById('metOrder').innerText = target.qtyOrder || 0;
+        document.getElementById('metCollected').innerText = target.qtyCollected || 0;
+        document.getElementById('metLaser').innerText = target.qtyLaser || 0;
+        document.getElementById('metPacked').innerText = target.qtyPacked || 0;
+        document.getElementById('metQC').innerText = target.qtyQC || 0;
+        document.getElementById('metShort').innerText = target.shortQty || 0;
+        document.getElementById('metPendingPacking').innerText = target.pendingPacking || 0;
+        document.getElementById('metStatus').innerText = target.currentStatus || "Pending";
 
         document.getElementById('workspaceLayout').classList.remove('d-none');
         setDepartment(activeDept);
@@ -382,6 +381,8 @@
         if (selectedRowIdx === null) return true;
         
         const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+        if (!target) return true;
+
         const inputQty = Number(document.getElementById('formQty').value) || 0;
         const alertPanel = document.getElementById('formValidationErrorAlert');
         const submitBtn = document.getElementById('formSubmitBtn');
@@ -389,17 +390,20 @@
         let isValid = true;
         let errMsg = "";
 
-        // FIXED PARAMETER ASSIGNMENT EVALUATORS HERE:
+        // Safe numerical normalization fallbacks
+        const allowedShortBalance = Number(target.shortQty) || 0;
+        const allowedPackingBalance = Number(target.pendingPacking) || 0;
+
         if (activeDept === 'Store' || activeDept === 'QC') {
-            if (inputQty > target.shortQty) {
+            if (inputQty > allowedShortBalance) {
                 isValid = false;
-                errMsg = `⚠️ Over-Input Limit Blocked: Entered qty (${inputQty}) exceeds the maximum Short QTY remaining balance (${target.shortQty}).`;
+                errMsg = `⚠️ Over-Input Limit Blocked: Entered qty (${inputQty}) exceeds the maximum Short QTY remaining balance (${allowedShortBalance}).`;
             }
         } 
         else if (activeDept === 'Packing') {
-            if (inputQty > target.pendingPacking) {
+            if (inputQty > allowedPackingBalance) {
                 isValid = false;
-                errMsg = `⚠️ Over-Input Limit Blocked: Entered qty (${inputQty}) exceeds the allowed Pending Packing limit balance (${target.pendingPacking}).`;
+                errMsg = `⚠️ Over-Input Limit Blocked: Entered qty (${inputQty}) exceeds the allowed Pending Packing limit balance (${allowedPackingBalance}).`;
             }
         }
 
@@ -471,6 +475,7 @@
         const customers = [...new Set(ordersCache.map(o => o.customerName))];
         container.innerHTML = '';
         customers.forEach(cust => {
+            if(!cust) return;
             const btn = document.createElement('button');
             btn.className = "list-group-item list-group-item-action fw-bold py-2 customer-report-btn small";
             btn.innerText = cust;
@@ -595,6 +600,9 @@
         );
         populateLedgerTable(filtered);
     }
+
+    // Auto-fetch data rows on initialization load
+    window.onload = fetchData;
 </script>
 </body>
 </html>
