@@ -220,7 +220,7 @@
 
 <script>
     // Configuration Endpoint
-    const API_URL = "https://script.google.com/macros/s/AKfycbyQ1GoS_fOrIVfBebY3HMj4gNxUj3aJdfCXJ2_zmstfCXq2ZQVKK_2N27LKqSJwIvWBJw/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwdGx6Qc764WDvNzjo984EtDs4Wb8fWQowiLHHPGcRL355PTPsHUnvmwZC8Jr_IlFwVRw/exec";
     
     let activeDept = "Store";
     let ordersCache = [];
@@ -283,7 +283,7 @@
             tr.id = `row-target-id-${row.rowId}`;
             if(selectedRowIdx === row.rowId) tr.className = "highlight-row";
             
-            let badgeClass = row.currentStatus === 'Completed' ? 'bg-success' : (row.currentStatus === 'Processing' ? 'bg-info text-dark' : 'bg-secondary');
+            let badgeClass = row.currentStatus === 'Complete' ? 'bg-success text-white' : (row.currentStatus === 'Processing' ? 'bg-info text-dark' : 'bg-secondary text-white');
 
             tr.innerHTML = `
                 <td class="fw-bold">${row.customerName}</td>
@@ -340,7 +340,19 @@
         document.getElementById('metQC').innerText = target.qtyQC || 0;
         document.getElementById('metShort').innerText = target.shortQty || 0;
         document.getElementById('metPendingPacking').innerText = target.pendingPacking || 0;
-        document.getElementById('metStatus').innerText = target.currentStatus || "Pending";
+        
+        // Dynamic Sidebar Status Class Allocation
+        const finalStatus = target.currentStatus || "Pending";
+        const statusBadge = document.getElementById('metStatus');
+        statusBadge.innerText = finalStatus;
+        statusBadge.className = "badge px-3 py-2 fs-6"; 
+        if (finalStatus === 'Complete') {
+            statusBadge.classList.add('bg-success', 'text-white');
+        } else if (finalStatus === 'Processing') {
+            statusBadge.classList.add('bg-info', 'text-dark');
+        } else {
+            statusBadge.classList.add('bg-secondary', 'text-white');
+        }
 
         document.getElementById('workspaceLayout').classList.remove('d-none');
         setDepartment(activeDept);
@@ -560,6 +572,7 @@
         `;
     }
 
+    // Ledger Log Processing Aligned with Server Map Index Layout
     function populateLedgerTable(logs) {
         const tbody = document.getElementById('analyticsTableBody');
         tbody.innerHTML = '';
