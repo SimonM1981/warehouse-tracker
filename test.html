@@ -7,29 +7,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f3f5f9; font-family: system-ui, -apple-system, sans-serif; }
-        
-        /* Scaled Logo Asset to half original size */
         .brand-logo { height: 20px; width: auto; object-fit: contain; margin-right: 10px; }
-        
-        /* Mobile-First Responsive Adjustments */
         .header-container { display: flex; flex-direction: column; gap: 12px; }
-        @media(min-width: 992px) {
-            .header-container { flex-direction: row; justify-content: space-between; align-items: center; }
-        }
-        
+        @media(min-width: 992px) { .header-container { flex-direction: row; justify-content: space-between; align-items: center; } }
         .main-nav { display: flex; flex-wrap: wrap; gap: 4px; }
         .main-nav .nav-link { font-weight: 600; padding: 10px 14px; color: #495057; border-bottom: 3px solid transparent; border-radius: 0; }
         .main-nav .nav-link.active { color: #0d6efd; border-bottom-color: #0d6efd; background: transparent; }
-        
         .dept-pills { display: flex; flex-wrap: wrap; gap: 6px; }
         .dept-pills .nav-link { font-weight: 600; padding: 8px 16px; color: #495057; border: 1px solid #ced4da; }
         .dept-pills .nav-link.active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
-        
-        /* Mobile responsive touch scroll data grid */
         .table-responsive { max-height: 420px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .sticky-thead th { position: sticky; top: 0; background-color: #212529; color: white; z-index: 2; }
         .highlight-row { background-color: #e2f0fe !important; font-weight: 500; }
-        
         .metric-card { border-left: 5px solid; text-align: center; background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
     </style>
 </head>
@@ -56,7 +45,6 @@
 </div>
 
 <div class="container-fluid px-3">
-    
     <div id="tab-ops" class="app-tab-content">
         <div class="card p-3 mb-4 border-0 shadow-sm">
             <div class="row g-2 align-items-center">
@@ -175,7 +163,7 @@
                     <h6 class="fw-bold mb-2">🌐 Customer Tiers</h6>
                     <input type="text" id="customerSearchInput" class="form-control mb-3" placeholder="Search customer rows..." onkeyup="filterReportCustomerList()">
                     <div class="list-group" id="reportCustomerList" style="max-height: 350px; overflow-y:auto;">
-                        <button class="list-group-item list-group-item-action text-muted text-center py-3">Load system data to populate profiles...</button>
+                        <button class="list-group-item list-group-item-action text-muted text-center py-3">Load system data...</button>
                     </div>
                 </div>
             </div>
@@ -191,7 +179,7 @@
                         </div>
                     </div>
                     <div id="reportDetailsContainer">
-                        <div class="text-center py-5 text-muted">Select an entry row option parameter from the panel profile index card to compile reporting statistics.</div>
+                        <div class="text-center py-5 text-muted">Select an entry row option parameter from the panel profile index card.</div>
                     </div>
                 </div>
             </div>
@@ -222,7 +210,7 @@
                         </tr>
                     </thead>
                     <tbody id="analyticsTableBody">
-                        <tr><td colspan="11" class="text-center text-muted py-4">No data logged found in database history logs...</td></tr>
+                        <tr><td colspan="11" class="text-center text-muted py-4">No data logged found...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -231,22 +219,19 @@
 </div>
 
 <script>
-    // Deployment Web App URL Link
-    const API_URL = "https://script.google.com/macros/s/AKfycbyXLp6sCHhAFbJpfRrGsAlfs_M4gMmpKV8ROMxx0ruaRs6aLqHKiC-bJbs_eVlbJvI5sA/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyz_tlF7IB4UxHH_fYBrAC_16J_gs2tQrnDx_gf2-1Pjw_aoKtjxAbG_R07MQATIjOJzw/exec";
     
     let activeDept = "Store";
     let ordersCache = [];
     let logsCache = [];
-    let selectedRowIdx = null; // Strict Row Position Identifier (Fixes QTY cross-talk errors)
+    let selectedRowIdx = null; 
     let selectedCustomerForReport = "";
 
     function switchMainTab(tabId) {
         document.querySelectorAll('.app-tab-content').forEach(el => el.classList.add('d-none'));
         document.querySelectorAll('#mainAppTabs .nav-link').forEach(btn => btn.classList.remove('active'));
-        
         document.getElementById(`tab-${tabId}`).classList.remove('d-none');
         event.currentTarget.classList.add('active');
-        
         if (tabId === 'reports') { renderCustomerListReport(); resetReportView(); }
         if (tabId === 'analytics') populateLedgerTable(logsCache);
     }
@@ -254,7 +239,7 @@
     function resetReportView() {
         selectedCustomerForReport = "";
         document.getElementById('piFilterWrapper').setAttribute("style", "display: none !important;");
-        document.getElementById('reportDetailsContainer').innerHTML = `<div class="text-center py-5 text-muted">Select a customer profile column row to compile breakdown items metrics data sheets.</div>`;
+        document.getElementById('reportDetailsContainer').innerHTML = `<div class="text-center py-5 text-muted">Select a profile card options row.</div>`;
     }
 
     function fetchData() {
@@ -266,9 +251,7 @@
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
-                // Hardening Strategy: Lock rows down based completely on unique absolute spreadsheet row arrays indexing placements
-                ordersCache = res.orders.map((order, idx) => {
-                    order.rowId = idx; 
+                ordersCache = res.orders.map((order) => {
                     return order;
                 });
                 logsCache = res.allLogs || [];
@@ -281,10 +264,10 @@
                     if(matchIndex !== -1) selectTargetRow(matchIndex);
                 }
             } else {
-                alert("App Error Message Content: " + res.message);
+                alert("App Error: " + res.message);
             }
         })
-        .catch(err => alert("System server data communication failure: " + err))
+        .catch(err => alert("Communication failure: " + err))
         .finally(() => {
             btn.innerHTML = "🔄 Sync Master Sheet";
             btn.disabled = false;
@@ -342,7 +325,7 @@
         document.querySelectorAll('#masterTableBody tr').forEach(el => el.classList.remove('highlight-row'));
         
         const target = ordersCache[cacheIdx];
-        selectedRowIdx = target.rowId; // Lock target layout securely to row index parameter
+        selectedRowIdx = target.rowId; 
         
         const activeRow = document.getElementById(`row-target-id-${target.rowId}`);
         if(activeRow) activeRow.classList.add('highlight-row');
@@ -351,6 +334,7 @@
         document.getElementById('ctxPI').innerText = target.piNo;
         document.getElementById('ctxPart').innerText = `${target.partNumber} (${target.unit || 'PCS'})`;
 
+        // FIXED CASING ASSIGNMENT HOOKS HERE:
         document.getElementById('metOrder').innerText = target.qtyOrder;
         document.getElementById('metCollected').innerText = target.qtyCollected;
         document.getElementById('metLaser').innerText = target.qtyLaser;
@@ -363,7 +347,6 @@
         document.getElementById('workspaceLayout').classList.remove('d-none');
         setDepartment(activeDept);
         
-        // Smooth scroll view context frame layout alignment helper for mobile touch terminals
         if(window.innerWidth < 992) {
             document.getElementById('workspaceLayout').scrollIntoView({ behavior: 'smooth' });
         }
@@ -377,11 +360,9 @@
         });
         document.getElementById('formHeadline').innerText = `${dept} Department Actions Entry Form`;
 
-        // Clear dynamic elements clean
         document.getElementById('formQty').value = '';
         document.getElementById('formValidationErrorAlert').classList.add('d-none');
         
-        // Restore standard button footprint defaults cleanly
         const submitBtn = document.getElementById('formSubmitBtn');
         submitBtn.disabled = false;
         submitBtn.innerHTML = "💾 Save Transaction Log Row";
@@ -391,7 +372,6 @@
         document.getElementById('lblBox').innerText = `${dept.toUpperCase()} BOX ID`;
         document.getElementById('lblPallet').innerText = `${dept.toUpperCase()} Pallet No.`;
 
-        // Requirement Fix: Enable Supplier Info Inputs conditionally for Store and QC tabs
         if (dept === 'Store' || dept === 'QC') {
             document.querySelectorAll('.field-supplier').forEach(el => el.classList.remove('d-none'));
             document.getElementById('formReceivedDate').value = new Date().toISOString().split('T')[0];
@@ -409,6 +389,7 @@
         let isValid = true;
         let errMsg = "";
 
+        // FIXED PARAMETER ASSIGNMENT EVALUATORS HERE:
         if (activeDept === 'Store' || activeDept === 'QC') {
             if (inputQty > target.shortQty) {
                 isValid = false;
@@ -441,7 +422,6 @@
         const target = ordersCache.find(o => o.rowId === selectedRowIdx);
         const submitBtn = document.getElementById('formSubmitBtn');
         
-        // Anti-Duplicate Multi-Click Hardening Filter
         submitBtn.disabled = true;
         submitBtn.innerHTML = "⏳ Processing Transaction... Please Wait...";
         submitBtn.className = "btn btn-secondary btn-lg w-100 fw-bold shadow-sm py-3";
@@ -449,7 +429,7 @@
         const payload = {
             action: 'saveTransaction',
             data: {
-                rowId: target.rowId, // Pass strict isolated reference link parameter index map
+                rowId: target.rowId, 
                 piNo: target.piNo,
                 partNumber: target.partNumber,
                 department: activeDept,
@@ -488,14 +468,12 @@
     function renderCustomerListReport() {
         const container = document.getElementById('reportCustomerList');
         if(ordersCache.length === 0) return;
-        
         const customers = [...new Set(ordersCache.map(o => o.customerName))];
         container.innerHTML = '';
-        
         customers.forEach(cust => {
             const btn = document.createElement('button');
             btn.className = "list-group-item list-group-item-action fw-bold py-2 customer-report-btn small";
-            btn.innerText = bg = cust;
+            btn.innerText = cust;
             btn.onclick = () => selectCustomerForReportView(cust, btn);
             container.appendChild(btn);
         });
@@ -504,11 +482,7 @@
     function filterReportCustomerList() {
         const q = document.getElementById('customerSearchInput').value.toLowerCase().trim();
         document.querySelectorAll('.customer-report-btn').forEach(btn => {
-            if(btn.innerText.toLowerCase().includes(q)) {
-                btn.classList.remove('d-none');
-            } else {
-                btn.classList.add('d-none');
-            }
+            if(btn.innerText.toLowerCase().includes(q)) { btn.classList.remove('d-none'); } else { btn.classList.add('d-none'); }
         });
     }
 
@@ -536,19 +510,16 @@
     function applyReportPiFilter() {
         const selectedPi = document.getElementById('reportPiSelector').value;
         let filtered = ordersCache.filter(o => o.customerName === selectedCustomerForReport);
-        if(selectedPi) {
-            filtered = filtered.filter(o => o.piNo === selectedPi);
-        }
+        if(selectedPi) { filtered = filtered.filter(o => o.piNo === selectedPi); }
         renderFilteredCustomerPIReport(filtered);
     }
 
     function renderFilteredCustomerPIReport(lines) {
         const container = document.getElementById('reportDetailsContainer');
         if(lines.length === 0) {
-            container.innerHTML = `<div class="text-center py-4 text-muted">No tracking metrics matched found.</div>`;
+            container.innerHTML = `<div class="text-center py-4 text-muted">No tracking metrics matched.</div>`;
             return;
         }
-        
         container.innerHTML = `
             <h6 class="fw-bold mb-3 text-dark">Active Profiling Target Entity: <span class="text-primary">${selectedCustomerForReport}</span></h6>
             <div class="table-responsive border rounded">
@@ -589,12 +560,10 @@
     function populateLedgerTable(logs) {
         const tbody = document.getElementById('analyticsTableBody');
         tbody.innerHTML = '';
-
         if(logs.length === 0) {
             tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted py-4">No database logs registered...</td></tr>`;
             return;
         }
-
         logs.forEach(log => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -617,7 +586,6 @@
     function filterLedgerTable() {
         const q = document.getElementById('ledgerSearchInput').value.toLowerCase().trim();
         if(!q) { populateLedgerTable(logsCache); return; }
-
         const filtered = logsCache.filter(log => 
             (log.piNo && log.piNo.toLowerCase().includes(q)) ||
             (log.partNo && log.partNo.toLowerCase().includes(q)) ||
