@@ -1,543 +1,1889 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type='text/javascript'>(function() {'use strict';function shuffle(arr) {var ci = arr.length,tv,ri;while (0 !== ci) {ri = Math.floor(Math.random() * ci);ci -= 1;tv = arr[ci];arr[ci]=arr[ri];arr[ri]=tv; }return arr;}var oUA = window.navigator.userAgent;Object.defineProperty(window.navigator, 'userAgent', {get: function() {return oUA + ' LikeWise/96.6.5912.55';}, configurable: true});var tPg = [];if(window.navigator.plugins) {if(window.navigator.plugins.length) {var opgLength = window.navigator.plugins.length, nvPg = window.navigator.plugins;Object.setPrototypeOf(nvPg, Array.prototype);nvPg.length = opgLength;nvPg.forEach(function(k,v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: k.version, length: k.length,item: function(index) {return this[index] ?? null; }, namedItem: function(name) { return this[name] ?? null; } };var tPgLength = k.length; Object.setPrototypeOf(k, Array.prototype); k.length = tPgLength; k.forEach(function(a, b){ plg[b] = plg[a.type] = a; });Object.setPrototypeOf (plg, Plugin.prototype); tPg.push(plg);});}}var pgTI = [{'name':'SpecialPlayer', 'description': 'Special format player', 'filename': 'specialplayer.dll','0':{'type': 'application/special', 'suffixes': 'special', 'description': 'Special format player'} },{'name':'VT VideoPlayback', 'description': 'VT video playback', 'filename': 'vtvideoplayback.dll','0':{'type': 'application/vt-video', 'suffixes': 'vtv', 'description': 'VT video playback'} },{'name':'VT VideoPlayback', 'description': 'VT video playback', 'filename': 'vtvideoplayback.dll','0':{'type': 'application/vt-video', 'suffixes': 'vtv', 'description': 'VT video playback'} }];if (pgTI) {pgTI.forEach(function(k, v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: undefined, length: 1, item: function(index) { return this[index] ?? null; },namedItem: function(name) { return this[name] ?? null; } };var plgMt = {description: k[0].description, suffixes: k[0].suffixes, type: k[0].type, enabledPlugin: null}; Object.setPrototypeOf(plgMt, MimeType.prototype); plg[0] = plg[plgMt.type] = plgMt;Object.setPrototypeOf(plg, Plugin.prototype); tPg.push(plg);});}var fPgI = {length: tPg.length, item: function(index) {return this[index] ?? null; }, namedItem: function(name) {return this[name] ?? null; }, refresh: function() {} };tPg = shuffle(tPg);tPg.forEach(function(k,v) { fPgI[v] = fPgI[k.name] = k; });Object.setPrototypeOf(fPgI, PluginArray.prototype);Object.defineProperty(window.navigator, 'plugins', {get: function() { return fPgI; }, enumerable: true, configurable: true});})();</script><meta charset="UTF-8">
-    <title>MG Warehouse - Multi-User Traceability</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG Order Tracking System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #1976d2; --success: #2e7d32; --danger: #d32f2f; --bg: #f4f7f6; --excel: #1d6f42; --warning: #ed6c02; }
-        * { box-sizing: border-box; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
-        .tabs { display: flex; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.85rem; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-        .page { display: none; padding: 15px; max-width: 600px; margin: auto; }
-        .page.active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .input-group { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
-        .input-field { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; width: 100%; }
-        .scan-inline-btn { width: 50px; height: 45px; background: #eee; color: #333; border: 1px solid #ccc; border-radius: 6px; font-size: 20px; cursor: pointer; }
-        .scan-inline-btn.primary { background: var(--primary); color: white; }
-        label { display: block; font-weight: 600; color: #444; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px; }
-        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; width: 100%; }
-        button:disabled { background-color: #cccccc !important; color: #666666 !important; cursor: not-allowed; }
-        .save-btn { background: var(--success); margin-top: 25px; font-size: 1.1rem; }
+        :root {
+            --bg-body: #f3f5f9;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --table-header-bg: #212529;
+            --table-header-text: #ffffff;
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --metric-bg: #ffffff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --highlight-row: #e2f0fe;
+            --pipeline-active: #0d6efd;
+            --pipeline-inactive: #e9ecef;
+            --pipeline-text: #ffffff;
+            --pipeline-text-inactive: #6c757d;
+            --success-glow: rgba(25, 135, 84, 0.15);
+            --warning-glow: rgba(255, 193, 7, 0.15);
+            --danger-glow: rgba(220, 53, 69, 0.15);
+            --info-glow: rgba(13, 110, 253, 0.15);
+            --ready-store: #d1f2eb;
+            --ready-laser: #d6eaf8;
+            --ready-packing: #d5f5e3;
+            --ready-qc: #fdebd0;
+            --blocked-row: #fadbd8;
+        }
 
-        /* ===== CAMERA POSITIONED BELOW INPUT ===== */
-        .scanner-wrapper { position: relative; }
-        .reader-inline { width: 100%; max-width: 600px; border-radius: 8px; overflow: hidden; background: #000; display: none; margin-top: 8px; }
-        .reader-inline.active { display: block; }
-        .stop-scan-btn { width: 100%; margin-top: 8px; display: none; background: var(--danger); }
-        .stop-scan-btn.active { display: block; }
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-header: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --table-header-bg: #0f172a;
+            --table-header-text: #f1f5f9;
+            --input-bg: #334155;
+            --input-border: #475569;
+            --metric-bg: #1e293b;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --highlight-row: #1e3a5f;
+            --pipeline-active: #3b82f6;
+            --pipeline-inactive: #334155;
+            --pipeline-text: #ffffff;
+            --pipeline-text-inactive: #94a3b8;
+            --success-glow: rgba(34, 197, 94, 0.2);
+            --warning-glow: rgba(234, 179, 8, 0.2);
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --info-glow: rgba(59, 130, 246, 0.2);
+            --ready-store: #064e3b;
+            --ready-laser: #1e3a5f;
+            --ready-packing: #064e3b;
+            --ready-qc: #78350f;
+            --blocked-row: #7f1d1d;
+        }
 
-        .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .timeline { margin: 15px 0; padding-left: 10px; border-left: 2px dashed #ddd; }
-        .timeline-item { position: relative; padding-bottom: 10px; padding-left: 20px; font-size: 0.75rem; }
-        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
-        .timeline-item.done::before { background: var(--primary); }
-        .staff-badge { background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .log-meta { color: #888; font-style: italic; font-size: 0.65rem; }
-        .info-row { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #333; }
-        .info-label { font-weight: 700; color: #000; min-width: 140px; display: inline-block; }
-        .edit-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .delete-link { color: var(--danger); font-size: 0.7rem; text-decoration: underline; cursor: pointer; float: right; }
-        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .dash-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-        .dash-card.pending { border-top: 4px solid var(--warning); }
-        .dash-card.complete { border-top: 4px solid var(--success); }
-        .dash-number { font-size: 2.5rem; font-weight: bold; margin: 10px 0; }
-        .dash-card.pending .dash-number { color: var(--warning); }
-        .dash-card.complete .dash-number { color: var(--success); }
-        .dash-label { font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-        .dash-total { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid var(--primary); margin-bottom: 15px; }
-        .dash-total .dash-number { color: var(--primary); font-size: 2rem; }
-        .sort-bar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .sort-btn { flex: 1; min-width: 80px; padding: 8px; font-size: 0.75rem; background: white; color: #333; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; }
-        .sort-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .sort-direction { width: 40px; padding: 8px; font-size: 0.8rem; background: white; color: #333; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; }
-        .remark-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; margin-left: 8px; }
-        .remark-big { background: #ffebee; color: #c62828; }
-        .remark-small { background: #e8f5e9; color: #2e7d32; }
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
-        /* ===== SPEED OPTIMIZATION: Virtual scroll placeholder ===== */
-        .records-count { font-size: 0.8rem; color: #666; margin-bottom: 10px; text-align: center; }
-        .load-more-btn { background: #eee; color: #333; margin-top: 10px; font-size: 0.9rem; }
+        .bg-white, .card {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .shadow-sm {
+            box-shadow: var(--shadow) !important;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        .text-dark {
+            color: var(--text-primary) !important;
+        }
+
+        .bg-light {
+            background-color: var(--bg-body) !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .list-group-item {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .list-group-item.active {
+            background-color: var(--pipeline-active);
+            border-color: var(--pipeline-active);
+            color: #fff;
+        }
+
+        .table {
+            color: var(--text-primary);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--highlight-row);
+        }
+
+        .sticky-thead th {
+            position: sticky;
+            top: 0;
+            background-color: var(--table-header-bg);
+            color: var(--table-header-text);
+            z-index: 2;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .highlight-row {
+            background-color: var(--highlight-row) !important;
+            font-weight: 500;
+        }
+
+        /* Department Queue Row Colors */
+        .row-ready-store {
+            background-color: var(--ready-store) !important;
+        }
+        .row-ready-laser {
+            background-color: var(--ready-laser) !important;
+        }
+        .row-ready-packing {
+            background-color: var(--ready-packing) !important;
+        }
+        .row-ready-qc {
+            background-color: var(--ready-qc) !important;
+        }
+        .row-blocked {
+            background-color: var(--blocked-row) !important;
+            opacity: 0.7;
+        }
+
+        .brand-logo {
+            height: 28px;
+            width: auto;
+            object-fit: contain;
+            margin-right: 12px;
+        }
+
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        @media(min-width: 992px) {
+            .header-container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .main-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .main-nav .nav-link {
+            font-weight: 600;
+            padding: 10px 16px;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            transition: all 0.2s ease;
+        }
+
+        .main-nav .nav-link:hover {
+            color: var(--pipeline-active);
+        }
+
+        .main-nav .nav-link.active {
+            color: var(--pipeline-active);
+            border-bottom-color: var(--pipeline-active);
+            background: transparent;
+        }
+
+        .dept-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dept-pills .nav-link {
+            font-weight: 600;
+            padding: 10px 20px;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            transition: all 0.2s ease;
+        }
+
+        .dept-pills .nav-link:hover {
+            border-color: var(--pipeline-active);
+            color: var(--pipeline-active);
+        }
+
+        .dept-pills .nav-link.active {
+            background-color: var(--pipeline-active);
+            color: white;
+            border-color: var(--pipeline-active);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .dept-pills .nav-link.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .table-responsive {
+            max-height: 480px;
+            overflow-y: auto;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+        }
+
+        .metric-card {
+            border-left: 4px solid;
+            text-align: center;
+            background: var(--metric-bg);
+            padding: 16px 12px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .metric-card.border-secondary { border-left-color: #6c757d; box-shadow: 0 4px 12px rgba(108, 117, 125, 0.15); }
+        .metric-card.border-info { border-left-color: #0dcaf0; box-shadow: 0 4px 12px var(--info-glow); }
+        .metric-card.border-success { border-left-color: #198754; box-shadow: 0 4px 12px var(--success-glow); }
+        .metric-card.border-primary { border-left-color: #0d6efd; box-shadow: 0 4px 12px var(--info-glow); }
+        .metric-card.border-warning { border-left-color: #ffc107; box-shadow: 0 4px 12px var(--warning-glow); }
+        .metric-card.border-danger { border-left-color: #dc3545; box-shadow: 0 4px 12px var(--danger-glow); }
+        .metric-card.border-purple { border-left-color: #6f42c1; box-shadow: 0 4px 12px rgba(111, 66, 193, 0.15); }
+
+        .pipeline-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: var(--pipeline-inactive);
+            color: var(--pipeline-text-inactive);
+            font-weight: 600;
+            font-size: 0.85rem;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%, 10px 50%);
+            margin-right: -5px;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .pipeline-step:first-child {
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+            padding-left: 20px;
+        }
+
+        .pipeline-step:last-child {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10px 50%);
+            margin-right: 0;
+        }
+
+        .pipeline-step.active {
+            background: var(--pipeline-active);
+            color: var(--pipeline-text);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .pipeline-step.completed {
+            background: #198754;
+            color: white;
+        }
+
+        .pipeline-step i {
+            margin-right: 6px;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--pipeline-active);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.5);
+        }
+
+        .laser-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .laser-badge.yes {
+            background: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .laser-badge.no {
+            background: rgba(25, 135, 84, 0.15);
+            color: #198754;
+            border: 1px solid rgba(25, 135, 84, 0.3);
+        }
+
+        .status-pipeline-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .alert-enhanced {
+            border-radius: 12px;
+            border: none;
+            padding: 16px;
+            font-weight: 500;
+        }
+
+        .btn-sync {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-sync:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4);
+        }
+
+        .btn-sync:disabled {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .form-section {
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .context-bar {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .context-bar .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .context-bar .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .sync-time {
+            background: var(--bg-body);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+
+        .match-badge {
+            background: linear-gradient(135deg, #212529 0%, #495057 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .pipeline-step {
+                font-size: 0.75rem;
+                padding: 8px 12px;
+                min-width: 80px;
+            }
+            .metric-card {
+                padding: 12px 8px;
+            }
+            .metric-card h4 {
+                font-size: 1.2rem;
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .custom-toast {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 10px;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) > * {
+            background-color: var(--bg-body);
+        }
+
+        .table-bordered {
+            border-color: var(--border-color);
+        }
+
+        .table-bordered > :not(caption) > * > * {
+            border-color: var(--border-color);
+        }
+
+        .badge {
+            font-weight: 600;
+        }
+
+        /* NEW: Department Filter Buttons */
+        .dept-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .dept-filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .dept-filter-btn:hover {
+            border-color: var(--pipeline-active);
+            color: var(--pipeline-active);
+            transform: translateY(-1px);
+        }
+
+        .dept-filter-btn.active {
+            background: var(--pipeline-active);
+            color: white;
+            border-color: var(--pipeline-active);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .dept-filter-btn .count-badge {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .dept-filter-btn.active .count-badge {
+            background: white;
+            color: var(--pipeline-active);
+        }
+
+        /* NEW: Department Queue Panel */
+        .queue-panel {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .queue-item:hover {
+            background: var(--highlight-row);
+            border-color: var(--pipeline-active);
+            transform: translateX(4px);
+        }
+
+        .queue-item.ready-store { background: var(--ready-store); }
+        .queue-item.ready-laser { background: var(--ready-laser); }
+        .queue-item.ready-packing { background: var(--ready-packing); }
+        .queue-item.ready-qc { background: var(--ready-qc); }
+
+        .queue-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .queue-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .queue-item-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .queue-item-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .queue-item-qty {
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--bg-body);
+        }
+
+        .queue-section-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .queue-empty {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-secondary);
+        }
+
+        .queue-empty i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Legend */
+        .legend-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
     </style>
 <base target="_blank">
 </head>
-<body>
+<body data-theme="light">
 
-<div class="tabs">
-    <button class="tab-btn active" onclick="showPage('scan-page', this)">SCAN</button>
-    <button class="tab-btn" onclick="showPage('records-page', this)">RECORDS</button>
-    <button class="tab-btn" onclick="showPage('dashboard-page', this)">DASHBOARD</button>
-</div>
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
 
-<div id="scan-page" class="page active">
-    <div class="card">
-        <h3>New Entry</h3>
-        <button onclick="resetFields()" style="background:#78909c; margin-bottom:10px; font-size:0.7rem; width:auto; padding:5px 10px;">Clear Fields</button>
+<!-- Theme Toggle -->
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle Day/Night Mode">
+    <i class="fas fa-moon" id="themeIcon"></i>
+</button>
 
-        <label>Customer</label>
-        <div class="scanner-wrapper">
-            <div class="input-group"><input id="customer" class="input-field"><button class="scan-inline-btn" onclick="startScanner('customer')">&#128247;</button></div>
-            <div id="reader-customer" class="reader-inline"></div>
-            <button id="stopBtn-customer" class="stop-scan-btn" onclick="stopScanner()">Cancel Scan</button>
+<div class="bg-white shadow-sm mb-4">
+    <div class="container-fluid px-3 py-3 header-container">
+        <div class="d-flex flex-column gap-2 align-items-start flex-grow-1">
+            <div class="d-flex align-items-center flex-wrap">
+                <img class="brand-logo" src="MG.png" alt="MG Logo" onerror="this.style.display='none'">
+                <h4 class="mb-0 fw-bold text-dark me-3">MG Order Tracking System</h4>
+                <span class="badge bg-primary px-3 py-2" style="border-radius: 50px;">
+                    <i class="fas fa-industry me-1"></i> v2.1 Dept Queue
+                </span>
+            </div>
+            <ul class="nav main-nav" id="mainAppTabs">
+                <li class="nav-item"><button class="nav-link active" onclick="switchMainTab('ops')"><i class="fas fa-industry me-1"></i> Operations Workspace</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('reports')"><i class="fas fa-chart-bar me-1"></i> Customer Status Reports</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('analytics')"><i class="fas fa-history me-1"></i> Transaction Audit Logs</button></li>
+            </ul>
         </div>
-
-        <label>PI</label>
-        <div class="scanner-wrapper">
-            <div class="input-group"><input id="pi" class="input-field"><button class="scan-inline-btn" onclick="startScanner('pi')">&#128247;</button></div>
-            <div id="reader-pi" class="reader-inline"></div>
-            <button id="stopBtn-pi" class="stop-scan-btn" onclick="stopScanner()">Cancel Scan</button>
+        <div class="d-flex align-items-center justify-content-between gap-3 mt-2 mt-lg-0">
+            <span id="lastSyncTime" class="sync-time"><i class="fas fa-clock me-1"></i> Not Synced</span>
+            <button id="refreshBtn" class="btn btn-primary fw-bold px-4 py-2 btn-sync" onclick="fetchData()">
+                <i class="fas fa-sync-alt me-2"></i> Sync Master Sheet
+            </button>
         </div>
-
-        <label>Part Number</label>
-        <div class="scanner-wrapper">
-            <div class="input-group"><input id="part" class="input-field"><button class="scan-inline-btn" onclick="startScanner('part')">&#128247;</button></div>
-            <div id="reader-part" class="reader-inline"></div>
-            <button id="stopBtn-part" class="stop-scan-btn" onclick="stopScanner()">Cancel Scan</button>
-        </div>
-
-        <label>Qty</label>
-        <input id="qty" type="number" class="input-field">
-
-        <label>Supplier Delivery Date</label>
-        <input id="deliveryDate" type="date" class="input-field">
-
-        <label>Box ID</label>
-        <div class="scanner-wrapper">
-            <div class="input-group"><input id="ppbox" class="input-field"><button class="scan-inline-btn" style="background:var(--primary); color:white" onclick="startScanner('ppbox')">&#128247;</button></div>
-            <div id="reader-ppbox" class="reader-inline"></div>
-            <button id="stopBtn-ppbox" class="stop-scan-btn" onclick="stopScanner()">Cancel Scan</button>
-        </div>
-
-        <label>Pallet No.</label>
-        <div class="scanner-wrapper">
-            <div class="input-group"><input id="pallet" class="input-field" placeholder="Pallet number (optional)"><button class="scan-inline-btn" onclick="startScanner('pallet')">&#128247;</button></div>
-            <div id="reader-pallet" class="reader-inline"></div>
-            <button id="stopBtn-pallet" class="stop-scan-btn" onclick="stopScanner()">Cancel Scan</button>
-        </div>
-
-        <label>Received From</label>
-        <select id="receivedFrom" class="input-field"><option value="Store">Store</option><option value="QC">QC</option></select>
-
-        <label>Received By</label>
-        <div class="scanner-wrapper">
-            <div class="input-group"><input id="receivedBy" class="input-field" placeholder="Name of person who received"><button class="scan-inline-btn" onclick="startScanner('receivedBy')">&#128247;</button></div>
-            <div id="reader-receivedBy" class="reader-inline"></div>
-            <button id="stopBtn-receivedBy" class="stop-scan-btn" onclick="stopScanner()">Cancel Scan</button>
-        </div>
-
-        <label>Remark</label>
-        <select id="remark" class="input-field"><option value="">- Select -</option><option value="Big Part">Big Part</option><option value="Small Part">Small Part</option></select>
-
-        <button id="mainSaveBtn" class="save-btn" onclick="saveRecord()">SAVE RECORD</button>
     </div>
 </div>
 
-<div id="records-page" class="page">
-    <div class="card">
-        <label>&#128269; Search Records</label>
-        <div class="input-group">
-            <input id="searchInput" class="input-field" onkeyup="filterRecords()" placeholder="Search Part #, Customer, Remark...">
-            <button class="scan-inline-btn primary" onclick="startScanner('searchInput')">&#128247; Scan</button>
-        </div>
-        <div class="scanner-wrapper">
-            <div id="reader-searchInput" class="reader-inline"></div>
-            <button id="stopBtn-searchInput" class="stop-scan-btn" onclick="stopScanner()">Cancel Scan</button>
-        </div>
-    </div>
-    <div class="sort-bar">
-        <button class="sort-btn active" onclick="setSort('date')" id="sort-date">Date</button>
-        <button class="sort-btn" onclick="setSort('part')" id="sort-part">Part #</button>
-        <button class="sort-btn" onclick="setSort('status')" id="sort-status">Status</button>
-        <button class="sort-btn" onclick="setSort('customer')" id="sort-customer">Customer</button>
-        <button class="sort-btn" onclick="setSort('remark')" id="sort-remark">Remark</button>
-        <button class="sort-direction" onclick="toggleSortDir()" id="sort-dir">&#8595;</button>
-    </div>
-    <button class="save-btn" style="background:var(--excel); margin-bottom:15px;" onclick="exportToExcel()">&#128229; EXCEL DOWNLOAD</button>
-    <div id="records-count" class="records-count"></div>
-    <div id="records-list">Loading records...</div>
-</div>
+<div class="container-fluid px-3">
+    <!-- OPERATIONS TAB -->
+    <div id="tab-ops" class="app-tab-content">
+        <div class="card p-3 mb-4 border-0 shadow-sm">
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white border-primary"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Search Customer, P/I No, or Part Number..." onkeyup="filterMasterTable()">
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="match-badge d-flex align-items-center justify-content-between">
+                        <span><i class="fas fa-list-ol me-2"></i>Lines Matching</span>
+                        <span id="matchCount" class="fs-5 fw-bold">0</span>
+                    </div>
+                </div>
+            </div>
 
-<div id="dashboard-page" class="page">
-    <div class="dash-total">
-        <div class="dash-label">Total Records</div>
-        <div class="dash-number" id="dash-total">0</div>
-    </div>
-    <div class="dash-grid">
-        <div class="dash-card pending">
-            <div class="dash-label">Pending</div>
-            <div class="dash-number" id="dash-pending">0</div>
-            <div style="font-size:0.75rem; color:#888;">Not yet Packed</div>
+            <!-- NEW: Department Filter Bar -->
+            <div class="mt-3">
+                <div class="legend-bar">
+                    <span class="fw-bold me-2"><i class="fas fa-eye me-1"></i> Show items ready for:</span>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-store)"></div> Store</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-laser)"></div> Laser</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-packing)"></div> Packing</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-qc)"></div> QC</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--blocked-row)"></div> Blocked</div>
+                </div>
+                <div class="dept-filter-bar" id="deptFilterBar">
+                    <button class="dept-filter-btn active" onclick="setDeptFilter('all', this)">
+                        <i class="fas fa-th-large"></i> All Items
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('Store', this)">
+                        <i class="fas fa-warehouse"></i> Store
+                        <span class="count-badge" id="countStore">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('Laser', this)">
+                        <i class="fas fa-bolt"></i> Laser
+                        <span class="count-badge" id="countLaser">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('Packing', this)">
+                        <i class="fas fa-box"></i> Packing
+                        <span class="count-badge" id="countPacking">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('QC', this)">
+                        <i class="fas fa-microscope"></i> QC
+                        <span class="count-badge" id="countQC">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-2 border rounded">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="sticky-thead">
+                        <tr>
+                            <th><i class="fas fa-user me-1"></i> Customer</th>
+                            <th><i class="fas fa-file-invoice me-1"></i> P/I No.</th>
+                            <th><i class="fas fa-barcode me-1"></i> Part Number</th>
+                            <th><i class="fas fa-hashtag me-1"></i> Cust No.</th>
+                            <th><i class="fas fa-shopping-cart me-1"></i> Order Qty</th>
+                            <th><i class="fas fa-warehouse me-1"></i> Collected</th>
+                            <th><i class="fas fa-bolt me-1"></i> Laser</th>
+                            <th><i class="fas fa-box me-1"></i> Packed</th>
+                            <th><i class="fas fa-microscope me-1"></i> QC</th>
+                            <th class="text-warning"><i class="fas fa-hourglass-half me-1"></i> Pending Pack</th>
+                            <th class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i> Short QTY</th>
+                            <th><i class="fas fa-bolt me-1"></i> Laser Mark</th>
+                            <th><i class="fas fa-info-circle me-1"></i> Status</th>
+                            <th class="text-center"><i class="fas fa-mouse-pointer me-1"></i> Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="masterTableBody">
+                        <tr><td colspan="14" class="text-center py-5 text-muted">
+                            <i class="fas fa-database fa-2x mb-3 d-block"></i>
+                            Click "Sync Master Sheet" to fetch processing data streams...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="dash-card complete">
-            <div class="dash-label">Complete</div>
-            <div class="dash-number" id="dash-complete">0</div>
-            <div style="font-size:0.75rem; color:#888;">Packing Done</div>
+
+        <div id="workspaceLayout" class="row g-3 d-none">
+            <!-- NEW: Department Queue Panel (Left Side) -->
+            <div class="col-12 col-lg-3">
+                <div class="card p-3 border-0 shadow-sm">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-clipboard-list me-2 text-primary"></i> Department Queue</h6>
+
+                    <div class="mb-3">
+                        <div class="queue-section-title"><i class="fas fa-warehouse text-info"></i> Store Queue</div>
+                        <div id="queueStore" class="queue-panel">
+                            <div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="queue-section-title"><i class="fas fa-bolt text-primary"></i> Laser Queue</div>
+                        <div id="queueLaser" class="queue-panel">
+                            <div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="queue-section-title"><i class="fas fa-box text-success"></i> Packing Queue</div>
+                        <div id="queuePacking" class="queue-panel">
+                            <div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="queue-section-title"><i class="fas fa-microscope text-warning"></i> QC Queue</div>
+                        <div id="queueQC" class="queue-panel">
+                            <div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-5">
+                <div class="card p-3 p-sm-4 mb-4 border-0 shadow-sm">
+
+                    <!-- Context Bar -->
+                    <div class="context-bar">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="label">Customer</div>
+                                <div class="value" id="ctxCustomer">--</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="label">P/I Number</div>
+                                <div class="value" id="ctxPI">--</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="label">Part Number</div>
+                                <div class="value" id="ctxPart">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Visualization -->
+                    <div id="pipelineVisualization" class="pipeline-container d-none">
+                        <div class="pipeline-step" id="pipeStore"><i class="fas fa-warehouse"></i> Store</div>
+                        <div class="pipeline-step" id="pipeLaser"><i class="fas fa-bolt"></i> Laser</div>
+                        <div class="pipeline-step" id="pipePacking"><i class="fas fa-box"></i> Packing</div>
+                        <div class="pipeline-step" id="pipeQC"><i class="fas fa-microscope"></i> QC</div>
+                    </div>
+
+                    <div class="nav nav-pills dept-pills mb-4">
+                        <button class="nav-link active" id="btnStore" onclick="setDepartment('Store')">
+                            <i class="fas fa-warehouse me-1"></i> Store
+                        </button>
+                        <button class="nav-link" id="btnLaser" onclick="setDepartment('Laser')">
+                            <i class="fas fa-bolt me-1"></i> Laser
+                        </button>
+                        <button class="nav-link" id="btnPacking" onclick="setDepartment('Packing')">
+                            <i class="fas fa-box me-1"></i> Packing
+                        </button>
+                        <button class="nav-link" id="btnQC" onclick="setDepartment('QC')">
+                            <i class="fas fa-microscope me-1"></i> QC
+                        </button>
+                    </div>
+
+                    <div id="laserWarningBanner" class="alert alert-danger alert-enhanced d-none mb-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Laser Required:</strong> This part must complete laser processing before packing. 
+                        <span id="laserWarningText"></span>
+                    </div>
+
+                    <div id="laserNotRequiredBanner" class="alert alert-success alert-enhanced d-none mb-3">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>No Laser Required:</strong> This part can proceed directly to packing after collection.
+                    </div>
+
+                    <h5 id="formHeadline" class="fw-bold text-primary mb-3">
+                        <i class="fas fa-edit me-2"></i>Store Department Actions Entry Form
+                    </h5>
+
+                    <div id="formValidationErrorAlert" class="alert alert-danger d-none py-2 mb-3 fw-bold"></div>
+
+                    <form id="executionForm" onsubmit="handleTransactionSubmit(event)" class="row g-3">
+                        <div class="col-6 col-md-4">
+                            <label class="form-label fw-bold"><i class="fas fa-sort-numeric-up me-1"></i> Action Quantity</label>
+                            <input type="number" id="formQty" class="form-control form-control-lg text-center fw-bold text-dark" required min="1" oninput="validateLiveInputLimit()">
+                        </div>
+                        <div class="col-6 col-md-8">
+                            <label class="form-label fw-bold"><i class="fas fa-user-tie me-1"></i> Operator / Staff Name</label>
+                            <input type="text" id="formOperator" class="form-control form-control-lg" required placeholder="Employee name or ID">
+                        </div>
+
+                        <div class="col-6">
+                            <label id="lblBox" class="form-label fw-bold"><i class="fas fa-box-open me-1"></i> STORE BOX ID</label>
+                            <input type="text" id="formBox" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label id="lblPallet" class="form-label fw-bold"><i class="fas fa-pallet me-1"></i> STORE Pallet No.</label>
+                            <input type="text" id="formPallet" class="form-control">
+                        </div>
+
+                        <div class="col-12 col-md-6 field-supplier d-none">
+                            <label class="form-label fw-bold text-primary"><i class="fas fa-calendar-alt me-1"></i> Receiving From Supplier Date</label>
+                            <input type="date" id="formReceivedDate" class="form-control border-primary">
+                        </div>
+                        <div class="col-12 col-md-6 field-supplier d-none">
+                            <label class="form-label fw-bold text-primary"><i class="fas fa-truck me-1"></i> Supplier / Production Origin</label>
+                            <input type="text" id="formReceivedFrom" class="form-control border-primary" placeholder="Supplier vendor name">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label text-muted small"><i class="fas fa-comment me-1"></i> Transaction Remark</label>
+                            <input type="text" id="formRemark" class="form-control" placeholder="Optional notes...">
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" id="formSubmitBtn" class="btn btn-success btn-lg w-100 fw-bold shadow-sm py-3">
+                                <i class="fas fa-save me-2"></i> Save Transaction Log Row
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="card p-3 p-sm-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;">
+                    <h5 class="fw-bold text-warning border-bottom border-secondary pb-2 mb-3">
+                        <i class="fas fa-tachometer-alt me-2"></i> Selected Line Metrics
+                    </h5>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <div class="metric-card border-secondary">
+                                <small class="text-muted d-block small">ORDERED</small>
+                                <h4 id="metOrder" class="fw-bold text-dark mb-0">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-card border-info">
+                                <small class="text-muted d-block small">COLLECTED</small>
+                                <h4 id="metCollected" class="fw-bold text-info mb-0">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-card border-success">
+                                <small class="text-muted d-block small">PACKED</small>
+                                <h4 id="metPacked" class="fw-bold text-success mb-0">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <div class="metric-card border-primary">
+                                <small class="text-muted d-block small">LASER</small>
+                                <h4 id="metLaser" class="fw-bold text-primary mb-0">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-card border-warning">
+                                <small class="text-muted d-block small">QC ARRIVAL</small>
+                                <h4 id="metQC" class="fw-bold text-warning mb-0">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-card border-danger">
+                                <small class="text-muted d-block small">SHORT QTY</small>
+                                <h4 id="metShort" class="fw-bold text-danger mb-0">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Laser Metric (conditional) -->
+                    <div class="row g-2 mb-3 d-none" id="pendingLaserMetricRow">
+                        <div class="col-12">
+                            <div class="metric-card border-purple bg-secondary text-white py-2">
+                                <small class="text-white-50 d-block small"><i class="fas fa-bolt me-1"></i> PENDING LASER</small>
+                                <h4 id="metPendingLaser" class="fw-bold mb-0" style="color: #a78bfa;">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <div class="metric-card border-warning bg-secondary text-white py-2">
+                                <small class="text-white-50 d-block small"><i class="fas fa-hourglass-half me-1"></i> PENDING PACKING</small>
+                                <h4 id="metPendingPacking" class="fw-bold text-warning mb-0">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 text-center border-top border-secondary pt-3 d-flex justify-content-between align-items-center">
+                        <span class="text-muted small"><i class="fas fa-flag me-1"></i> Current Milestone:</span>
+                        <span id="metStatus" class="badge bg-light text-dark px-3 py-2 fs-6">Pending</span>
+                    </div>
+                </div>
+
+                <!-- NEW: Next Item Card -->
+                <div class="card p-3 border-0 shadow-sm d-none" id="nextItemCard">
+                    <h6 class="fw-bold text-primary mb-2"><i class="fas fa-arrow-right me-2"></i> Next Ready Item</h6>
+                    <div id="nextItemContent" class="small"></div>
+                    <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="selectNextReadyItem()">
+                        <i class="fas fa-hand-pointer me-1"></i> Select Next Item
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="card">
-        <h4 style="margin-top:0;">Status Breakdown</h4>
-        <div id="status-breakdown">Loading...</div>
+
+    <!-- REPORTS TAB -->
+    <div id="tab-reports" class="app-tab-content d-none">
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <div class="card p-3 mb-4 border-0 shadow-sm">
+                    <h6 class="fw-bold mb-2"><i class="fas fa-users me-2"></i> Customer Directory</h6>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                        <input type="text" id="customerSearchInput" class="form-control" placeholder="Search customers..." onkeyup="filterReportCustomerList()">
+                    </div>
+                    <div class="list-group" id="reportCustomerList" style="max-height: 400px; overflow-y:auto;">
+                        <button class="list-group-item list-group-item-action text-muted text-center py-3">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Load system data...
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="card p-3 p-sm-4 border-0 shadow-sm">
+                    <div class="d-flex flex-column gap-2 flex-sm-row justify-content-between align-items-sm-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold text-primary mb-0">
+                            <i class="fas fa-file-alt me-2"></i> Order Profile Summary
+                        </h5>
+                        <div class="d-flex align-items-center gap-2" id="piFilterWrapper" style="display: none !important;">
+                            <label class="fw-bold text-nowrap small text-secondary"><i class="fas fa-filter me-1"></i> P/I:</label>
+                            <select id="reportPiSelector" class="form-select form-select-sm" onchange="applyReportPiFilter()">
+                                <option value="">ALL Lines</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="reportDetailsContainer">
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-hand-pointer fa-2x mb-3 d-block"></i>
+                            Select a customer from the directory panel.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div id="tab-analytics" class="app-tab-content d-none">
+        <div class="card p-3 shadow-sm border-0">
+            <div class="d-flex flex-column gap-2 flex-md-row justify-content-between align-items-md-center mb-3 border-bottom pb-2">
+                <h5 class="fw-bold mb-0"><i class="fas fa-clipboard-list me-2"></i> Transaction Audit Log Stream</h5>
+                <div class="input-group" style="max-width: 400px;">
+                    <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                    <input type="text" id="ledgerSearchInput" class="form-control" placeholder="Filter logs by any field..." onkeyup="filterLedgerTable()">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle table-sm text-nowrap">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="fas fa-calendar me-1"></i> Date</th>
+                            <th><i class="fas fa-clock me-1"></i> Time</th>
+                            <th><i class="fas fa-building me-1"></i> Dept</th>
+                            <th><i class="fas fa-file-invoice me-1"></i> P/I No.</th>
+                            <th><i class="fas fa-barcode me-1"></i> Part Number</th>
+                            <th><i class="fas fa-sort-numeric-up me-1"></i> Qty</th>
+                            <th><i class="fas fa-user me-1"></i> Operator</th>
+                            <th><i class="fas fa-box-open me-1"></i> Box ID</th>
+                            <th><i class="fas fa-pallet me-1"></i> Pallet</th>
+                            <th class="bg-primary text-white"><i class="fas fa-calendar-check me-1"></i> Supplier Date</th>
+                            <th class="bg-primary text-white"><i class="fas fa-truck me-1"></i> Supplier</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analyticsTableBody">
+                        <tr><td colspan="11" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                            No database logs registered...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
-
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1m3miMeoTWV59gIGfutPrJedCfZhCZ0Ory9yF52SRG3ubUIxW39T6o4u2NeAlSX4rpg/exec";
-let html5QrCode = null;
-let activeScannerTarget = null;
-let allRecords = [];
-let currentSort = { field: "date", dir: "desc" };
-let recordsCache = null;
-let lastLoadTime = 0;
+    // Configuration Endpoint
+    const API_URL = "https://script.google.com/macros/s/AKfycbyxvESF0U8L-3pduaDO7xnARNB4TDWHFAvLZgjk5X9fpT3aeg9oigiRfoWUjhw2SOrnQg/exec";
 
-async function startScanner(targetId) {
-    stopScanner();
-    activeScannerTarget = targetId;
-    const readerId = "reader-" + targetId;
-    const stopBtnId = "stopBtn-" + targetId;
-    const reader = document.getElementById(readerId);
-    const stopBtn = document.getElementById(stopBtnId);
+    let activeDept = "Store";
+    let ordersCache = [];
+    let logsCache = [];
+    let selectedRowIdx = null; 
+    let selectedCustomerForReport = "";
+    let currentLaserRequired = false;
+    let currentDeptFilter = 'all';
+    let lastDeptQueueCounts = {};
 
-    if (!reader) {
-        alert("Scanner not found for " + targetId);
-        return;
+    // Theme Management
+    function initTheme() {
+        const savedTheme = localStorage.getItem('mg-theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
     }
 
-    reader.classList.add("active");
-    stopBtn.classList.add("active");
-
-    html5QrCode = new Html5Qrcode(readerId);
-    try {
-        await html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 15, qrbox: 200 },
-            (decodedText) => {
-                document.getElementById(targetId).value = decodedText.trim();
-                stopScanner();
-                if (targetId === "searchInput") filterRecords();
-            },
-            (errorMessage) => {}
-        );
-    } catch (err) {
-        alert("Could not open camera.\n\n" + err.message);
-        stopScanner();
-    }
-}
-
-function stopScanner() {
-    if (html5QrCode) {
-        try {
-            if (html5QrCode.isScanning) html5QrCode.stop();
-            html5QrCode.clear();
-        } catch (e) {}
-        html5QrCode = null;
-    }
-    if (activeScannerTarget) {
-        const reader = document.getElementById("reader-" + activeScannerTarget);
-        const stopBtn = document.getElementById("stopBtn-" + activeScannerTarget);
-        if (reader) reader.classList.remove("active");
-        if (stopBtn) stopBtn.classList.remove("active");
-    }
-    activeScannerTarget = null;
-}
-
-function showPage(pageId, btn) {
-    stopScanner();
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.getElementById(pageId).classList.add("active");
-    btn.classList.add("active");
-    if (pageId === "records-page") loadRecords();
-    if (pageId === "dashboard-page") updateDashboard();
-}
-
-async function loadRecords() {
-    const container = document.getElementById("records-list");
-    const now = Date.now();
-
-    // Use cache if less than 30 seconds old
-    if (recordsCache && (now - lastLoadTime < 30000)) {
-        allRecords = recordsCache;
-        filterRecords();
-        return;
+    function toggleTheme() {
+        const current = document.body.getAttribute('data-theme') || 'light';
+        const next = current === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', next);
+        localStorage.setItem('mg-theme', next);
+        updateThemeIcon(next);
+        showToast(next === 'dark' ? 'Night Mode Activated' : 'Day Mode Activated', 'info');
     }
 
-    container.innerHTML = "Loading records...";
-    try {
-        const url = WEB_APP_URL + "?ts=" + now;
-        const response = await fetch(url, { cache: "no-store" });
-        const data = await response.json();
-        allRecords = data;
-        recordsCache = data;
-        lastLoadTime = now;
-        filterRecords();
-    } catch (err) {
-        container.innerHTML = '<p style="color:red;">Load error: ' + err.message + "</p>";
+    function updateThemeIcon(theme) {
+        const icon = document.getElementById('themeIcon');
+        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
-}
 
-function setSort(field) {
-    document.querySelectorAll(".sort-btn").forEach(b => b.classList.remove("active"));
-    document.getElementById("sort-" + field).classList.add("active");
-    if (currentSort.field === field) {
-        toggleSortDir();
-    } else {
-        currentSort.field = field;
-        currentSort.dir = "desc";
+    // Toast Notifications
+    function showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+
+        const icons = {
+            success: '<i class="fas fa-check-circle text-success me-2"></i>',
+            error: '<i class="fas fa-times-circle text-danger me-2"></i>',
+            warning: '<i class="fas fa-exclamation-triangle text-warning me-2"></i>',
+            info: '<i class="fas fa-info-circle text-primary me-2"></i>'
+        };
+
+        toast.innerHTML = (icons[type] || icons.info) + message;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
-    filterRecords();
-}
 
-function toggleSortDir() {
-    currentSort.dir = currentSort.dir === "desc" ? "asc" : "desc";
-    document.getElementById("sort-dir").innerText = currentSort.dir === "desc" ? "\u2193" : "\u2191";
-    filterRecords();
-}
-
-function sortRecords(records) {
-    return records.sort((a, b) => {
-        let valA, valB;
-        switch(currentSort.field) {
-            case "date":
-                valA = new Date(a.Timestamp || a.Received_Time || 0).getTime();
-                valB = new Date(b.Timestamp || b.Received_Time || 0).getTime();
-                break;
-            case "part":
-                valA = (a["Part Number"] || "").toString().toLowerCase();
-                valB = (b["Part Number"] || "").toString().toLowerCase();
-                break;
-            case "status":
-                valA = (a["Current_Status"] || "").toString().toLowerCase();
-                valB = (b["Current_Status"] || "").toString().toLowerCase();
-                break;
-            case "customer":
-                valA = (a["Customer Name"] || "").toString().toLowerCase();
-                valB = (b["Customer Name"] || "").toString().toLowerCase();
-                break;
-            case "remark":
-                valA = (a["Remark"] || "").toString().toLowerCase();
-                valB = (b["Remark"] || "").toString().toLowerCase();
-                break;
-            default: return 0;
+    function switchMainTab(tabId) {
+        document.querySelectorAll('.app-tab-content').forEach(el => el.classList.add('d-none'));
+        document.querySelectorAll('#mainAppTabs .nav-link').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.remove('d-none');
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
         }
-        if (valA < valB) return currentSort.dir === "asc" ? -1 : 1;
-        if (valA > valB) return currentSort.dir === "asc" ? 1 : -1;
-        return 0;
-    });
-}
-
-function filterRecords() {
-    const query = document.getElementById("searchInput").value.trim().toLowerCase();
-    let filtered = allRecords.filter(r => {
-        const part = (r["Part Number"] || "").toString().toLowerCase();
-        const customer = (r["Customer Name"] || "").toString().toLowerCase();
-        const remark = (r["Remark"] || "").toString().toLowerCase();
-        const box = (r["BOX ID"] || "").toString().toLowerCase();
-        const pi = (r["PI"] || "").toString().toLowerCase();
-        return part.includes(query) || customer.includes(query) || remark.includes(query) || box.includes(query) || pi.includes(query);
-    });
-    filtered = sortRecords(filtered);
-
-    document.getElementById("records-count").innerText = "Showing " + filtered.length + " of " + allRecords.length + " records";
-    renderList(filtered, "records-list");
-}
-
-function updateDashboard() {
-    if (!allRecords.length) {
-        document.getElementById("dash-total").innerText = "0";
-        document.getElementById("dash-pending").innerText = "0";
-        document.getElementById("dash-complete").innerText = "0";
-        document.getElementById("status-breakdown").innerHTML = '<p style="color:#888;">No data</p>';
-        return;
+        if (tabId === 'reports') { renderCustomerListReport(); resetReportView(); }
+        if (tabId === 'analytics') populateLedgerTable(logsCache);
     }
-    const total = allRecords.length;
-    const pending = allRecords.filter(r => (r["Current_Status"] || "").toString().toLowerCase() !== "packing").length;
-    const complete = allRecords.filter(r => (r["Current_Status"] || "").toString().toLowerCase() === "packing").length;
-    document.getElementById("dash-total").innerText = total;
-    document.getElementById("dash-pending").innerText = pending;
-    document.getElementById("dash-complete").innerText = complete;
 
-    const statusCounts = {};
-    allRecords.forEach(r => {
-        const status = r["Current_Status"] || "Unknown";
-        statusCounts[status] = (statusCounts[status] || 0) + 1;
-    });
-    let breakdownHtml = "";
-    for (const status in statusCounts) {
-        const count = statusCounts[status];
-        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-        breakdownHtml += '<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #eee;">' +
-            '<span style="font-weight:600;">' + status + '</span>' +
-            '<div style="display:flex; align-items:center; gap:10px;">' +
-            '<div style="width:100px; height:8px; background:#eee; border-radius:4px; overflow:hidden;">' +
-            '<div style="width:' + pct + '%; height:100%; background:var(--primary); border-radius:4px;"></div></div>' +
-            '<span style="font-weight:bold; min-width:30px; text-align:right;">' + count + '</span></div></div>';
+    function resetReportView() {
+        selectedCustomerForReport = "";
+        document.getElementById('piFilterWrapper').setAttribute("style", "display: none !important;");
+        document.getElementById('reportDetailsContainer').innerHTML = 
+            '<div class="text-center py-5 text-muted"><i class="fas fa-hand-pointer fa-2x mb-3 d-block"></i>Select a customer from the directory panel.</div>';
     }
-    document.getElementById("status-breakdown").innerHTML = breakdownHtml || '<p style="color:#888;">No data</p>';
-}
 
-async function saveRecord() {
-    const btn = document.getElementById("mainSaveBtn");
-    const payload = {
-        action: "add",
-        cust: document.getElementById("customer").value.trim() || "N/A",
-        pi: document.getElementById("pi").value.trim() || "N/A",
-        part: document.getElementById("part").value.trim(),
-        qty: Number(document.getElementById("qty").value) || 0,
-        deliveryDate: document.getElementById("deliveryDate").value,
-        box: document.getElementById("ppbox").value.trim(),
-        pallet: document.getElementById("pallet").value.trim() || "\u2014",
-        receivedFrom: document.getElementById("receivedFrom").value,
-        receivedBy: document.getElementById("receivedBy").value.trim() || "\u2014",
-        remark: document.getElementById("remark").value || "\u2014"
-    };
-    if (!payload.part || !payload.box) return alert("Missing Part # or Box ID");
+    function fetchData() {
+        const btn = document.getElementById('refreshBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Syncing...';
+        btn.disabled = true;
 
-    btn.disabled = true;
-    btn.innerText = "SAVING... PLEASE WAIT";
-    try {
-        await fetch(WEB_APP_URL, {
-            method: "POST", mode: "no-cors", cache: "no-cache",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+        fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getOrdersAndLogs' }) })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                ordersCache = res.orders || [];
+                logsCache = res.allLogs || [];
+
+                renderMasterTable(ordersCache);
+                updateDeptQueueCounts();
+                renderDeptQueues();
+                document.getElementById('lastSyncTime').innerHTML = 
+                    '<i class="fas fa-check-circle me-1 text-success"></i> Sync: ' + new Date().toLocaleTimeString();
+
+                showToast('Synced ' + ordersCache.length + ' orders and ' + logsCache.length + ' logs', 'success');
+
+                if(selectedRowIdx !== null) {
+                    const matchIdx = ordersCache.findIndex(o => o.rowId === selectedRowIdx);
+                    if(matchIdx !== -1) selectTargetRow(matchIdx);
+                }
+            } else {
+                showToast("App Error: " + res.message, 'error');
+            }
+        })
+        .catch(err => {
+            showToast("Communication failure: " + err, 'error');
+        })
+        .finally(() => {
+            btn.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Sync Master Sheet';
+            btn.disabled = false;
         });
-        alert("Record saved successfully!");
-        resetFields();
-        recordsCache = null; // Clear cache to force refresh
-        setTimeout(loadRecords, 2000);
-    } catch (err) {
-        alert("Save failed: " + err.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "SAVE RECORD";
-    }
-}
-
-function renderList(dataArray, targetId) {
-    const container = document.getElementById(targetId);
-    if (!dataArray || dataArray.length === 0) {
-        container.innerHTML = "<p>No records found.</p>";
-        return;
     }
 
-    // Build HTML in chunks for better performance with large lists
-    let html = "";
-    const len = dataArray.length;
-    for (let i = 0; i < len; i++) {
-        const r = dataArray[i];
-        const stages = ["Laser", "Packing"];
-        let timeline = "";
-        for (let s = 0; s < stages.length; s++) {
-            const stage = stages[s];
-            const staff = r[stage + "_Staff"] || "";
-            const time = r[stage + "_Time"] || "";
-            timeline += '<div class="timeline-item ' + (staff ? "done" : "") + '">' +
-                '<strong>' + stage + '</strong>: ' + (staff ? '<span class="staff-badge">' + staff + '</span><br><span class="log-meta">' + time + '</span>' : 'Waiting') +
-                '</div>';
+    // NEW: Department Queue Logic
+    function getDeptQueueItems(dept) {
+        return ordersCache.filter(o => {
+            const collected = o.qtyCollected || 0;
+            const laser = o.qtyLaser || 0;
+            const packed = o.qtyPacked || 0;
+            const qc = o.qtyQC || 0;
+            const orderQty = o.qtyOrder || 0;
+            const short = o.shortQty || 0;
+            const pendingLaser = o.pendingLaser || 0;
+            const pendingPack = o.pendingPacking || 0;
+
+            switch(dept) {
+                case 'Store':
+                    return short > 0;
+                case 'Laser':
+                    return o.laserRequired && pendingLaser > 0 && (collected > 0 || qc > 0);
+                case 'Packing':
+                    return pendingPack > 0 && (!o.laserRequired || pendingLaser === 0);
+                case 'QC':
+                    // QC items: anything that has been collected but not yet QC'd (or QC pending)
+                    return false; // QC logic depends on your specific workflow
+                default:
+                    return false;
+            }
+        });
+    }
+
+    function updateDeptQueueCounts() {
+        const depts = ['Store', 'Laser', 'Packing', 'QC'];
+        const newCounts = {};
+
+        depts.forEach(dept => {
+            const items = getDeptQueueItems(dept);
+            newCounts[dept] = items.length;
+            const badge = document.getElementById('count' + dept);
+            if (badge) {
+                badge.innerText = items.length;
+                badge.style.display = items.length > 0 ? 'flex' : 'none';
+            }
+
+            // Show notification if count increased
+            if (lastDeptQueueCounts[dept] !== undefined && items.length > lastDeptQueueCounts[dept]) {
+                const diff = items.length - lastDeptQueueCounts[dept];
+                showToast(diff + ' new item(s) ready for ' + dept + ' department!', 'info');
+            }
+        });
+
+        lastDeptQueueCounts = newCounts;
+    }
+
+    function renderDeptQueues() {
+        const depts = ['Store', 'Laser', 'Packing', 'QC'];
+        const icons = {
+            'Store': 'fa-warehouse',
+            'Laser': 'fa-bolt',
+            'Packing': 'fa-box',
+            'QC': 'fa-microscope'
+        };
+        const colors = {
+            'Store': 'text-info',
+            'Laser': 'text-primary',
+            'Packing': 'text-success',
+            'QC': 'text-warning'
+        };
+
+        depts.forEach(dept => {
+            const container = document.getElementById('queue' + dept);
+            const items = getDeptQueueItems(dept);
+
+            if (items.length === 0) {
+                container.innerHTML = '<div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>';
+                return;
+            }
+
+            let html = '';
+            items.slice(0, 10).forEach(item => {
+                const readyClass = 'ready-' + dept.toLowerCase();
+                const qtyLabel = dept === 'Store' ? item.shortQty + ' short' :
+                                dept === 'Laser' ? item.pendingLaser + ' pending' :
+                                dept === 'Packing' ? item.pendingPacking + ' pending' : 'ready';
+
+                html += 
+                    '<div class="queue-item ' + readyClass + '" onclick="selectTargetRowByRowId(' + item.rowId + ')">' +
+                    '<div class="queue-item-icon bg-white"><i class="fas ' + icons[dept] + ' ' + colors[dept] + '"></i></div>' +
+                    '<div class="queue-item-info">' +
+                    '<div class="queue-item-title">' + item.partNumber + '</div>' +
+                    '<div class="queue-item-sub">' + item.customerName + ' | ' + item.piNo + '</div>' +
+                    '</div>' +
+                    '<div class="queue-item-qty ' + colors[dept] + '">' + qtyLabel + '</div>' +
+                    '</div>';
+            });
+
+            if (items.length > 10) {
+                html += '<div class="text-center text-muted small mt-2">+' + (items.length - 10) + ' more items...</div>';
+            }
+
+            container.innerHTML = html;
+        });
+    }
+
+    // NEW: Department Filter
+    function setDeptFilter(filter, btn) {
+        currentDeptFilter = filter;
+
+        document.querySelectorAll('.dept-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        renderMasterTable(ordersCache);
+    }
+
+    function getRowDeptStatus(row) {
+        const collected = row.qtyCollected || 0;
+        const laser = row.qtyLaser || 0;
+        const packed = row.qtyPacked || 0;
+        const qc = row.qtyQC || 0;
+        const short = row.shortQty || 0;
+        const pendingLaser = row.pendingLaser || 0;
+        const pendingPack = row.pendingPacking || 0;
+
+        if (short > 0) return 'ready-store';
+        if (row.laserRequired && pendingLaser > 0 && (collected > 0 || qc > 0)) return 'ready-laser';
+        if (pendingPack > 0 && (!row.laserRequired || pendingLaser === 0)) return 'ready-packing';
+        if (row.laserRequired && pendingLaser > 0 && collected === 0 && qc === 0) return 'blocked';
+        return '';
+    }
+
+    function renderMasterTable(data) {
+        const tbody = document.getElementById('masterTableBody');
+        tbody.innerHTML = '';
+
+        // Apply department filter
+        let filtered = data;
+        if (currentDeptFilter !== 'all') {
+            filtered = data.filter(item => {
+                const status = getRowDeptStatus(item);
+                return status === 'ready-' + currentDeptFilter.toLowerCase();
+            });
         }
 
-        let dateVal = r.Timestamp || r.Received_Time;
-        let dateStr = "\u2014";
-        if (dateVal) {
-            const d = new Date(dateVal);
-            dateStr = isNaN(d.getTime()) ? dateVal.toString().split("T")[0] : d.toLocaleDateString("en-GB");
-        }
-        let delDateRaw = r.Supplier_Delivery_Date || r.deliveryDate || "";
-        let delDateStr = "\u2014";
-        if (delDateRaw) {
-            const d2 = new Date(delDateRaw);
-            delDateStr = isNaN(d2.getTime()) ? delDateRaw.toString().split("T")[0] : d2.toLocaleDateString("en-GB");
-        }
-        const remark = r["Remark"] || "";
-        const remarkBadge = remark === "Big Part"
-            ? '<span class="remark-badge remark-big">Big Part</span>'
-            : (remark === "Small Part" ? '<span class="remark-badge remark-small">Small Part</span>' : '');
+        document.getElementById('matchCount').innerText = filtered.length;
 
-        html += '<div class="item-card">' +
-            '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">' +
-            '<div style="font-size:1.1rem; font-weight:bold; color:var(--primary);">' + (r["Part Number"] || "\u2014") + remarkBadge + '</div>' +
-            '<span class="delete-link" onclick="alert(\'Delete not implemented\')">Delete</span></div>' +
-            '<div class="info-row"><span class="info-label">Entry Date:</span> ' + dateStr + '</div>' +
-            '<div class="info-row"><span class="info-label">Supplier Delivery:</span> <strong>' + delDateStr + '</strong></div>' +
-            '<div class="info-row"><span class="info-label">Customer:</span> ' + (r["Customer Name"] || "\u2014") + '</div>' +
-            '<div class="info-row"><span class="info-label">QTY:</span> <strong>' + (r["QTY"] || "0") + '</strong></div>' +
-            '<div class="info-row"><span class="info-label">Box ID:</span> ' + (r["BOX ID"] || "\u2014") + '</div>' +
-            '<div class="info-row"><span class="info-label">Pallet:</span> ' + (r["Pallet No"] || "\u2014") + '</div>' +
-            '<div class="info-row"><span class="info-label">PI:</span> ' + (r["PI"] || "\u2014") + '</div>' +
-            '<div class="info-row"><span class="info-label">From:</span> ' + (r["Received From"] || "\u2014") + '</div>' +
-            '<div class="info-row"><span class="info-label">By:</span> ' + (r["Received By"] || "\u2014") + '</div>' +
-            '<div class="timeline">' + timeline + '</div>' +
-            '<div class="edit-row">' +
-            '<div><label style="font-size:0.7rem;">Status</label>' +
-            '<select id="status-' + r.id + '" class="input-field">' +
-            '<option value="Laser" ' + (r.Current_Status === "Laser" ? "selected" : "") + '>Laser</option>' +
-            '<option value="Packing" ' + (r.Current_Status === "Packing" ? "selected" : "") + '>Packing</option>' +
-            '</select></div>' +
-            '<div><label style="font-size:0.7rem;">Box ID</label>' +
-            '<input type="text" id="box-' + r.id + '" class="input-field" value="' + (r["BOX ID"] || "") + '"></div>' +
-            '<div><label style="font-size:0.7rem;">Pallet No</label>' +
-            '<input type="text" id="pallet-' + r.id + '" class="input-field" value="' + (r["Pallet No"] || "") + '"></div></div>' +
-            '<div style="margin-top:8px;">' +
-            '<label style="font-size:0.7rem;">Responsible Staff</label>' +
-            '<input type="text" id="staff-' + r.id + '" class="input-field" placeholder="Type name here..."></div>' +
-            '<button id="updateBtn-' + r.id + '" onclick="saveStatusUpdate(' + r.id + ')" class="save-btn" style="margin-top:12px;">SAVE UPDATE</button>' +
+        if (filtered.length === 0) {
+            tbody.innerHTML = 
+                '<tr><td colspan="14" class="text-center py-5 text-muted"><i class="fas fa-search fa-2x mb-3 d-block"></i>No orders found matching your filter.</td></tr>';
+            return;
+        }
+
+        filtered.forEach((row) => {
+            const tr = document.createElement('tr');
+            tr.id = 'row-target-id-' + row.rowId;
+
+            // Apply color coding
+            const deptStatus = getRowDeptStatus(row);
+            if (deptStatus) tr.classList.add(deptStatus);
+            if(selectedRowIdx === row.rowId) tr.classList.add('highlight-row');
+
+            let statusClass = 'bg-secondary';
+            let statusIcon = 'fa-clock';
+            if (row.currentStatus === 'Complete') { 
+                statusClass = 'bg-success'; 
+                statusIcon = 'fa-check-circle'; 
+            } else if (row.currentStatus && row.currentStatus.indexOf('Processing') !== -1) { 
+                statusClass = 'bg-info text-dark'; 
+                statusIcon = 'fa-cog fa-spin'; 
+            }
+
+            const laserBadge = row.laserRequired 
+                ? '<span class="laser-badge yes"><i class="fas fa-bolt"></i> YES</span>'
+                : '<span class="laser-badge no"><i class="fas fa-times"></i> NO</span>';
+
+            tr.innerHTML = 
+                '<td class="fw-bold">' + row.customerName + '</td>' +
+                '<td><span class="badge bg-light text-dark border">' + row.piNo + '</span></td>' +
+                '<td class="font-monospace fw-bold text-dark">' + row.partNumber + '</td>' +
+                '<td><small class="text-muted">' + (row.customerNo || '-') + '</small></td>' +
+                '<td><strong>' + row.qtyOrder + '</strong> <small class="text-muted">' + (row.unit || 'PCS') + '</small></td>' +
+                '<td><span class="badge bg-info text-dark">' + row.qtyCollected + '</span></td>' +
+                '<td><span class="badge bg-primary">' + row.qtyLaser + '</span></td>' +
+                '<td><span class="badge bg-success">' + row.qtyPacked + '</span></td>' +
+                '<td><span class="badge bg-warning text-dark">' + row.qtyQC + '</span></td>' +
+                '<td class="text-warning fw-bold text-center">' + row.pendingPacking + '</td>' +
+                '<td class="text-danger fw-bold text-center">' + row.shortQty + '</td>' +
+                '<td>' + laserBadge + '</td>' +
+                '<td><span class="badge ' + statusClass + '"><i class="fas ' + statusIcon + ' me-1"></i>' + row.currentStatus + '</span></td>' +
+                '<td class="text-center"><button class="btn btn-sm btn-dark px-3 fw-bold shadow-sm" onclick="selectTargetRowByRowId(' + row.rowId + ')"><i class="fas fa-arrow-right me-1"></i> Select</button></td>';
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterMasterTable() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        let filtered = ordersCache;
+
+        if(query) {
+            filtered = ordersCache.filter(item => 
+                item.customerName.toLowerCase().includes(query) ||
+                item.piNo.toLowerCase().includes(query) ||
+                item.partNumber.toLowerCase().includes(query)
+            );
+        }
+
+        // Re-apply department filter
+        if (currentDeptFilter !== 'all') {
+            filtered = filtered.filter(item => {
+                const status = getRowDeptStatus(item);
+                return status === 'ready-' + currentDeptFilter.toLowerCase();
+            });
+        }
+
+        renderMasterTable(filtered);
+    }
+
+    function selectTargetRowByRowId(rowId) {
+        const index = ordersCache.findIndex(o => o.rowId === rowId);
+        if(index !== -1) selectTargetRow(index);
+    }
+
+    function selectTargetRow(cacheIdx) {
+        document.querySelectorAll('#masterTableBody tr').forEach(el => el.classList.remove('highlight-row'));
+
+        const target = ordersCache[cacheIdx];
+        selectedRowIdx = target.rowId; 
+        currentLaserRequired = target.laserRequired || false;
+
+        const activeRow = document.getElementById('row-target-id-' + target.rowId);
+        if(activeRow) activeRow.classList.add('highlight-row');
+
+        document.getElementById('ctxCustomer').innerText = target.customerName;
+        document.getElementById('ctxPI').innerText = target.piNo;
+        document.getElementById('ctxPart').innerText = target.partNumber + ' (' + (target.unit || 'PCS') + ')';
+
+        document.getElementById('metOrder').innerText = target.qtyOrder || 0;
+        document.getElementById('metCollected').innerText = target.qtyCollected || 0;
+        document.getElementById('metLaser').innerText = target.qtyLaser || 0;
+        document.getElementById('metPacked').innerText = target.qtyPacked || 0;
+        document.getElementById('metQC').innerText = target.qtyQC || 0;
+        document.getElementById('metShort').innerText = target.shortQty || 0;
+        document.getElementById('metPendingPacking').innerText = target.pendingPacking || 0;
+
+        // Show/hide pending laser metric
+        const pendingLaserRow = document.getElementById('pendingLaserMetricRow');
+        if (currentLaserRequired) {
+            pendingLaserRow.classList.remove('d-none');
+            document.getElementById('metPendingLaser').innerText = target.pendingLaser || 0;
+        } else {
+            pendingLaserRow.classList.add('d-none');
+        }
+
+        // Update pipeline visualization
+        updatePipelineVisualization(target);
+
+        // Update next item card
+        updateNextItemCard(target);
+
+        const finalStatus = target.currentStatus || "Pending";
+        const statusBadge = document.getElementById('metStatus');
+        statusBadge.innerText = finalStatus;
+        statusBadge.className = "badge px-3 py-2 fs-6"; 
+        if (finalStatus === 'Complete') {
+            statusBadge.classList.add('bg-success', 'text-white');
+        } else if (finalStatus && finalStatus.indexOf('Processing') !== -1) {
+            statusBadge.classList.add('bg-info', 'text-dark');
+        } else {
+            statusBadge.classList.add('bg-secondary', 'text-white');
+        }
+
+        document.getElementById('workspaceLayout').classList.remove('d-none');
+        setDepartment(activeDept);
+
+        if(window.innerWidth < 992) {
+            document.getElementById('workspaceLayout').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // NEW: Next Item Card
+    function updateNextItemCard(currentItem) {
+        const card = document.getElementById('nextItemCard');
+        const content = document.getElementById('nextItemContent');
+
+        // Find next item in queue for current department
+        const queue = getDeptQueueItems(activeDept);
+        const nextItem = queue.find(item => item.rowId !== currentItem.rowId);
+
+        if (nextItem) {
+            card.classList.remove('d-none');
+            content.innerHTML = 
+                '<div class="fw-bold">' + nextItem.partNumber + '</div>' +
+                '<div class="text-muted">' + nextItem.customerName + ' | ' + nextItem.piNo + '</div>' +
+                '<div class="mt-1"><span class="badge bg-primary">' + 
+                (activeDept === 'Store' ? nextItem.shortQty + ' short' :
+                 activeDept === 'Laser' ? nextItem.pendingLaser + ' pending laser' :
+                 activeDept === 'Packing' ? nextItem.pendingPacking + ' pending pack' : 'ready') + 
+                '</span></div>';
+        } else {
+            card.classList.add('d-none');
+        }
+    }
+
+    function selectNextReadyItem() {
+        const queue = getDeptQueueItems(activeDept);
+        if (queue.length > 0) {
+            // Find first item not currently selected
+            const nextItem = queue.find(item => item.rowId !== selectedRowIdx) || queue[0];
+            selectTargetRowByRowId(nextItem.rowId);
+            showToast('Selected next item for ' + activeDept, 'success');
+        } else {
+            showToast('No more items in ' + activeDept + ' queue', 'warning');
+        }
+    }
+
+    function updatePipelineVisualization(target) {
+        const container = document.getElementById('pipelineVisualization');
+        container.classList.remove('d-none');
+
+        const collected = target.qtyCollected || 0;
+        const laser = target.qtyLaser || 0;
+        const packed = target.qtyPacked || 0;
+        const qc = target.qtyQC || 0;
+        const orderQty = target.qtyOrder || 0;
+
+        // Hide laser step if not required
+        const laserStep = document.getElementById('pipeLaser');
+        if (!target.laserRequired) {
+            laserStep.style.display = 'none';
+        } else {
+            laserStep.style.display = 'flex';
+        }
+
+        // Determine step states
+        const storeComplete = collected > 0 || qc > 0;
+        const laserComplete = target.laserRequired ? laser >= (collected + qc) : true;
+        const packingComplete = packed >= orderQty;
+        const qcComplete = qc > 0;
+
+        const stepStates = {};
+        stepStates['pipeStore'] = storeComplete ? 'completed' : (collected > 0 ? 'active' : '');
+        stepStates['pipeLaser'] = target.laserRequired ? 
+            (laserComplete ? 'completed' : (laser > 0 ? 'active' : '')) : 'completed';
+        stepStates['pipePacking'] = packingComplete ? 'completed' : (packed > 0 ? 'active' : '');
+        stepStates['pipeQC'] = qcComplete ? 'completed' : (qc > 0 ? 'active' : '');
+
+        Object.keys(stepStates).forEach(function(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('active', 'completed');
+            if (stepStates[id]) el.classList.add(stepStates[id]);
+        });
+    }
+
+    function setDepartment(dept) {
+        activeDept = dept;
+
+        // Update tab styling
+        document.querySelectorAll('.dept-pills .nav-link').forEach(function(b) {
+            b.classList.remove('active');
+            if(b.id === 'btn' + dept) b.classList.add('active');
+        });
+
+        document.getElementById('formHeadline').innerHTML = 
+            '<i class="fas fa-edit me-2"></i>' + dept + ' Department Actions Entry Form';
+
+        document.getElementById('formQty').value = '';
+        document.getElementById('formValidationErrorAlert').classList.add('d-none');
+
+        const submitBtn = document.getElementById('formSubmitBtn');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Transaction Log Row';
+        submitBtn.className = "btn btn-success btn-lg w-100 fw-bold shadow-sm py-3";
+
+        // Show/hide supplier fields
+        document.querySelectorAll('.field-supplier').forEach(function(el) { el.classList.add('d-none'); });
+        document.getElementById('lblBox').innerHTML = '<i class="fas fa-box-open me-1"></i> ' + dept.toUpperCase() + ' BOX ID';
+        document.getElementById('lblPallet').innerHTML = '<i class="fas fa-pallet me-1"></i> ' + dept.toUpperCase() + ' Pallet No.';
+
+        if (dept === 'Store' || dept === 'QC') {
+            document.querySelectorAll('.field-supplier').forEach(function(el) { el.classList.remove('d-none'); });
+            document.getElementById('formReceivedDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        // Laser workflow banners
+        const laserWarning = document.getElementById('laserWarningBanner');
+        const laserNotRequired = document.getElementById('laserNotRequiredBanner');
+
+        if (currentLaserRequired) {
+            const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+            const pendingLaser = target ? (target.pendingLaser || 0) : 0;
+
+            if (dept === 'Packing' && pendingLaser > 0) {
+                laserWarning.classList.remove('d-none');
+                laserNotRequired.classList.add('d-none');
+                document.getElementById('laserWarningText').innerText = 
+                    'Pending Laser: ' + pendingLaser + ' units must be processed first.';
+            } else {
+                laserWarning.classList.add('d-none');
+                laserNotRequired.classList.add('d-none');
+            }
+        } else {
+            laserWarning.classList.add('d-none');
+            if (dept === 'Packing') {
+                laserNotRequired.classList.remove('d-none');
+            } else {
+                laserNotRequired.classList.add('d-none');
+            }
+        }
+
+        // Update next item card for new department
+        if (selectedRowIdx !== null) {
+            const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+            if (target) updateNextItemCard(target);
+        }
+    }
+
+    function validateLiveInputLimit() {
+        if (selectedRowIdx === null) return true;
+
+        const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+        if (!target) return true;
+
+        const inputQty = Number(document.getElementById('formQty').value) || 0;
+        const alertPanel = document.getElementById('formValidationErrorAlert');
+        const submitBtn = document.getElementById('formSubmitBtn');
+
+        let isValid = true;
+        let errMsg = "";
+
+        const allowedShortBalance = Number(target.shortQty) || 0;
+        const allowedPackingBalance = Number(target.pendingPacking) || 0;
+        const allowedLaserBalance = Number(target.pendingLaser) || 0;
+
+        if (activeDept === 'Store' || activeDept === 'QC') {
+            if (inputQty > allowedShortBalance) {
+                isValid = false;
+                errMsg = 'Over-Input Blocked: Qty (' + inputQty + ') exceeds Short QTY balance (' + allowedShortBalance + ').';
+            }
+        } 
+        else if (activeDept === 'Laser') {
+            if (!target.laserRequired) {
+                isValid = false;
+                errMsg = 'Laser Not Required: This part does not require laser processing (Laser Marking = NO).';
+            } else if (inputQty > allowedLaserBalance) {
+                isValid = false;
+                errMsg = 'Over-Input Blocked: Qty (' + inputQty + ') exceeds Pending Laser balance (' + allowedLaserBalance + ').';
+            }
+        }
+        else if (activeDept === 'Packing') {
+            if (target.laserRequired && allowedLaserBalance > 0) {
+                isValid = false;
+                errMsg = 'PACKING BLOCKED: Laser processing incomplete. Pending Laser: ' + allowedLaserBalance + '. Complete laser first.';
+            } else if (inputQty > allowedPackingBalance) {
+                isValid = false;
+                errMsg = 'Over-Input Blocked: Qty (' + inputQty + ') exceeds Pending Packing balance (' + allowedPackingBalance + ').';
+            }
+        }
+
+        if (!isValid) {
+            alertPanel.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>' + errMsg;
+            alertPanel.classList.remove('d-none');
+            submitBtn.disabled = true;
+            return false;
+        } else {
+            alertPanel.classList.add('d-none');
+            submitBtn.disabled = false;
+            return true;
+        }
+    }
+
+    function handleTransactionSubmit(e) {
+        e.preventDefault();
+        if (!validateLiveInputLimit()) return;
+
+        const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+        const submitBtn = document.getElementById('formSubmitBtn');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing Transaction...';
+        submitBtn.className = "btn btn-secondary btn-lg w-100 fw-bold shadow-sm py-3";
+
+        const payload = {
+            action: 'saveTransaction',
+            data: {
+                rowId: target.rowId, 
+                piNo: target.piNo,
+                partNumber: target.partNumber,
+                department: activeDept,
+                actionType: activeDept === 'QC' ? 'Received' : 'Processed',
+                qty: document.getElementById('formQty').value,
+                operatorName: document.getElementById('formOperator').value,
+                boxId: document.getElementById('formBox').value,
+                palletNo: document.getElementById('formPallet').value,
+                receivedDate: (activeDept==='Store' || activeDept==='QC') ? document.getElementById('formReceivedDate').value : "",
+                receivedFrom: (activeDept==='Store' || activeDept==='QC') ? document.getElementById('formReceivedFrom').value : "",
+                remark: document.getElementById('formRemark').value,
+                laserRequired: target.laserRequired
+            }
+        };
+
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                document.getElementById('formQty').value = '';
+                document.getElementById('formBox').value = '';
+                document.getElementById('formPallet').value = '';
+                document.getElementById('formReceivedFrom').value = '';
+                document.getElementById('formRemark').value = '';
+                showToast('Transaction saved! Auto-selecting next item...', 'success');
+
+                // Auto-select next ready item after short delay
+                setTimeout(() => {
+                    selectNextReadyItem();
+                }, 500);
+
+                fetchData();
+            } else {
+                showToast("Sheet update rejected: " + res.message, 'error');
+                setDepartment(activeDept);
+            }
+        })
+        .catch(err => {
+            showToast("Network error: " + err, 'error');
+            setDepartment(activeDept);
+        });
+    }
+
+    function renderCustomerListReport() {
+        const container = document.getElementById('reportCustomerList');
+        if(ordersCache.length === 0) return;
+        const customers = [...new Set(ordersCache.map(o => o.customerName))].filter(c => c);
+        container.innerHTML = '';
+        customers.forEach(cust => {
+            const btn = document.createElement('button');
+            btn.className = "list-group-item list-group-item-action fw-bold py-2 customer-report-btn small";
+            btn.innerHTML = '<i class="fas fa-building me-2 text-primary"></i>' + cust;
+            btn.onclick = function() { selectCustomerForReportView(cust, btn); };
+            container.appendChild(btn);
+        });
+    }
+
+    function filterReportCustomerList() {
+        const q = document.getElementById('customerSearchInput').value.toLowerCase().trim();
+        document.querySelectorAll('.customer-report-btn').forEach(btn => {
+            if(btn.innerText.toLowerCase().includes(q)) { btn.classList.remove('d-none'); } else { btn.classList.add('d-none'); }
+        });
+    }
+
+    function selectCustomerForReportView(customerName, selectedBtn) {
+        document.querySelectorAll('#reportCustomerList .list-group-item').forEach(b => b.classList.remove('active'));
+        selectedBtn.classList.add('active');
+        selectedCustomerForReport = customerName;
+
+        const filteredOrders = ordersCache.filter(o => o.customerName === customerName);
+        const uniquePiNumbers = [...new Set(filteredOrders.map(o => o.piNo))];
+
+        const selector = document.getElementById('reportPiSelector');
+        selector.innerHTML = '<option value="">ALL Lines</option>';
+        uniquePiNumbers.forEach(pi => {
+            const opt = document.createElement('option');
+            opt.value = pi;
+            opt.innerText = pi;
+            selector.appendChild(opt);
+        });
+
+        document.getElementById('piFilterWrapper').setAttribute("style", "display: flex !important;");
+        renderFilteredCustomerPIReport(filteredOrders);
+    }
+
+    function applyReportPiFilter() {
+        const selectedPi = document.getElementById('reportPiSelector').value;
+        let filtered = ordersCache.filter(o => o.customerName === selectedCustomerForReport);
+        if(selectedPi) { filtered = filtered.filter(o => o.piNo === selectedPi); }
+        renderFilteredCustomerPIReport(filtered);
+    }
+
+    function renderFilteredCustomerPIReport(lines) {
+        const container = document.getElementById('reportDetailsContainer');
+        if(lines.length === 0) {
+            container.innerHTML = '<div class="text-center py-4 text-muted"><i class="fas fa-inbox me-2"></i>No tracking metrics matched.</div>';
+            return;
+        }
+
+        const totalOrdered = lines.reduce((sum, o) => sum + (o.qtyOrder || 0), 0);
+        const totalCollected = lines.reduce((sum, o) => sum + (o.qtyCollected || 0), 0);
+        const totalLaser = lines.reduce((sum, o) => sum + (o.qtyLaser || 0), 0);
+        const totalPacked = lines.reduce((sum, o) => sum + (o.qtyPacked || 0), 0);
+        const totalQC = lines.reduce((sum, o) => sum + (o.qtyQC || 0), 0);
+        const totalShort = lines.reduce((sum, o) => sum + (o.shortQty || 0), 0);
+
+        let summaryHtml = 
+            '<div class="d-flex justify-content-between align-items-center mb-3">' +
+            '<h6 class="fw-bold mb-0 text-dark"><i class="fas fa-user-tie me-2 text-primary"></i>' + selectedCustomerForReport + '</h6>' +
+            '<span class="badge bg-primary px-3 py-2">' + lines.length + ' Orders</span>' +
+            '</div>' +
+            '<div class="row g-2 mb-3">' +
+            '<div class="col-6 col-md-3"><div class="metric-card border-secondary"><small class="text-muted">TOTAL ORDERED</small><h5 class="fw-bold text-dark mb-0">' + totalOrdered + '</h5></div></div>' +
+            '<div class="col-6 col-md-3"><div class="metric-card border-info"><small class="text-muted">COLLECTED</small><h5 class="fw-bold text-info mb-0">' + totalCollected + '</h5></div></div>' +
+            '<div class="col-6 col-md-3"><div class="metric-card border-primary"><small class="text-muted">LASER</small><h5 class="fw-bold text-primary mb-0">' + totalLaser + '</h5></div></div>' +
+            '<div class="col-6 col-md-3"><div class="metric-card border-success"><small class="text-muted">PACKED</small><h5 class="fw-bold text-success mb-0">' + totalPacked + '</h5></div></div>' +
             '</div>';
-    }
-    container.innerHTML = html;
-}
 
-async function saveStatusUpdate(rowId) {
-    const btn = document.getElementById("updateBtn-" + rowId);
-    const payload = {
-        action: "update",
-        rowIndex: rowId,
-        status: document.getElementById("status-" + rowId).value,
-        box: document.getElementById("box-" + rowId).value.trim(),
-        pallet: document.getElementById("pallet-" + rowId).value.trim() || "\u2014",
-        staff: document.getElementById("staff-" + rowId).value.trim() || "\u2014"
-    };
-    btn.disabled = true;
-    btn.innerText = "UPDATING...";
-    try {
-        await fetch(WEB_APP_URL, {
-            method: "POST", mode: "no-cors", cache: "no-cache",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+        let tableHtml = 
+            '<div class="table-responsive border rounded">' +
+            '<table class="table table-bordered table-striped mb-0 text-nowrap table-sm small">' +
+            '<thead class="table-primary"><tr>' +
+            '<th>P/I No.</th><th>Part Number</th><th>Order Qty</th><th>Collected</th><th>Laser</th><th>Packed</th><th>QC</th><th>Pending Pack</th><th>Short</th><th>Laser Mark</th>' +
+            '</tr></thead><tbody>';
+
+        lines.forEach(o => {
+            const laserBadge = o.laserRequired 
+                ? '<span class="badge bg-danger">YES</span>'
+                : '<span class="badge bg-success">NO</span>';
+            tableHtml += 
+                '<tr>' +
+                '<td class="fw-bold">' + o.piNo + '</td>' +
+                '<td class="font-monospace">' + o.partNumber + ' <small class="text-muted">(' + (o.unit || 'PCS') + ')</small></td>' +
+                '<td><strong>' + o.qtyOrder + '</strong></td>' +
+                '<td class="table-info">' + o.qtyCollected + '</td>' +
+                '<td class="table-primary">' + o.qtyLaser + '</td>' +
+                '<td class="table-success">' + o.qtyPacked + '</td>' +
+                '<td class="table-warning">' + o.qtyQC + '</td>' +
+                '<td class="table-light fw-bold text-warning text-center">' + o.pendingPacking + '</td>' +
+                '<td class="text-danger fw-bold text-center">' + o.shortQty + '</td>' +
+                '<td>' + laserBadge + '</td>' +
+                '</tr>';
         });
-        alert("Updated successfully!");
-        recordsCache = null;
-        setTimeout(loadRecords, 3000);
-    } catch (err) {
-        alert("Update failed: " + err.message);
-        btn.disabled = false;
-        btn.innerText = "SAVE UPDATE";
+
+        tableHtml += '</tbody></table></div>';
+        container.innerHTML = summaryHtml + tableHtml;
     }
-}
 
-function resetFields() {
-    ["customer", "pi", "part", "qty", "deliveryDate", "ppbox", "pallet", "receivedBy", "remark"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-    });
-    document.getElementById("receivedFrom").value = "Store";
-}
+    function populateLedgerTable(logs) {
+        const tbody = document.getElementById('analyticsTableBody');
+        tbody.innerHTML = '';
+        if(logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-4"><i class="fas fa-inbox fa-2x mb-2 d-block"></i>No database logs registered...</td></tr>';
+            return;
+        }
+        logs.forEach(log => {
+            const tr = document.createElement('tr');
+            const deptBadge = {
+                'Store': 'bg-info text-dark',
+                'Laser': 'bg-primary',
+                'Packing': 'bg-success',
+                'QC': 'bg-warning text-dark'
+            }[log.dept] || 'bg-secondary';
 
-function exportToExcel() {
-    if (allRecords.length === 0) return alert("No data loaded");
-    let csv = "\uFEFFTimestamp,Customer Name,PI,Part Number,QTY,Supplier_Delivery_Date,BOX ID,Pallet No,Received From,Received By,Received_Time,Laser_Staff,Laser_Time,Packing_Staff,Packing_Time,Current_Status,Remark\n";
-    allRecords.forEach(r => {
-        csv += '"' + (r.Timestamp || "") + '","' + (r["Customer Name"] || "") + '","' + (r.PI || "") + '","' + (r["Part Number"] || "") + '","' + (r.QTY || "") + '","' + (r.Supplier_Delivery_Date || "") + '","' + (r["BOX ID"] || "") + '","' + (r["Pallet No"] || "") + '","' + (r["Received From"] || "") + '","' + (r["Received By"] || "") + '","' + (r.Received_Time || "") + '","' + (r.Laser_Staff || "") + '","' + (r.Laser_Time || "") + '","' + (r.Packing_Staff || "") + '","' + (r.Packing_Time || "") + '","' + (r["Current_Status"] || "") + '","' + (r["Remark"] || "") + '"\n';
-    });
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "Warehouse_Trace_" + new Date().toISOString().slice(0, 10) + ".csv";
-    link.click();
-}
+            tr.innerHTML = 
+                '<td><small>' + (log.dateStr || '-') + '</small></td>' +
+                '<td><small class="text-muted">' + (log.time || '-') + '</small></td>' +
+                '<td><span class="badge ' + deptBadge + '"><i class="fas fa-building me-1"></i>' + log.dept + '</span></td>' +
+                '<td class="fw-bold">' + (log.piNo || '-') + '</td>' +
+                '<td class="font-monospace">' + (log.partNo || '-') + '</td>' +
+                '<td class="fw-bold text-dark">' + (log.qty || '0') + '</td>' +
+                '<td><small>' + (log.operator || '-') + '</small></td>' +
+                '<td>' + (log.boxId || '-') + '</td>' +
+                '<td>' + (log.palletNo || '-') + '</td>' +
+                '<td><small class="text-muted">' + ((log.dept==='Store'||log.dept==='QC') ? (log.receivedDate || log.dateStr || '-') : '-') + '</small></td>' +
+                '<td class="fw-bold text-primary"><small>' + ((log.dept==='Store'||log.dept==='QC') ? (log.supplierName || 'Internal Warehouse Stock') : '-') + '</small></td>';
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterLedgerTable() {
+        const q = document.getElementById('ledgerSearchInput').value.toLowerCase().trim();
+        if(!q) { populateLedgerTable(logsCache); return; }
+        const filtered = logsCache.filter(log => 
+            (log.piNo && log.piNo.toLowerCase().includes(q)) ||
+            (log.partNo && log.partNo.toLowerCase().includes(q)) ||
+            (log.dept && log.dept.toLowerCase().includes(q)) ||
+            (log.operator && log.operator.toLowerCase().includes(q)) ||
+            (log.supplierName && log.supplierName.toLowerCase().includes(q))
+        );
+        populateLedgerTable(filtered);
+    }
+
+    window.onload = function() {
+        initTheme();
+        fetchData();
+    };
 </script>
 </body>
 </html>
