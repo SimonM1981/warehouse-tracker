@@ -538,6 +538,67 @@
         }
         [data-theme="dark"] .boxpallet-hint { color: #94a3b8; }
 
+        /* v2.6.1: Log Edit Button */
+        .btn-log-edit {
+            background: none;
+            border: none;
+            color: var(--pipeline-active);
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        .btn-log-edit:hover {
+            background: var(--highlight-row);
+            transform: scale(1.1);
+        }
+        [data-theme="dark"] .btn-log-edit { color: #60a5fa; }
+
+        /* v2.6.1: Log Edit Modal */
+        .log-edit-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .log-edit-modal .modal-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .log-edit-modal .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .log-edit-modal .modal-body {
+            padding: 16px 20px;
+        }
+        .log-edit-modal .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .log-edit-modal .form-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+
         @media (max-width: 768px) {
             .container-fluid { padding-left: 8px !important; padding-right: 8px !important; }
             .card { padding: 12px !important; }
@@ -984,11 +1045,11 @@
                         <tr>
                             <th>Date</th><th>Time</th><th>Dept</th><th>Action</th><th>P/I</th>
                             <th>Part</th><th>Qty</th><th>Operator</th><th>Box</th>
-                            <th>Pallet</th><th>Rcvd Date</th><th>Supplier</th><th>Remark</th>
+                            <th>Pallet</th><th>Rcvd Date</th><th>Supplier</th><th>Remark</th><th>Edit</th>
                         </tr>
                     </thead>
                     <tbody id="analyticsTableBody">
-                        <tr><td colspan="13" class="text-center py-4" style="color: var(--text-secondary);">
+                        <tr><td colspan="14" class="text-center py-4" style="color: var(--text-secondary);">
                             <i class="fas fa-inbox fa-2x mb-2 d-block"></i>No logs...
                         </td></tr>
                     </tbody>
@@ -997,12 +1058,64 @@
         </div>
     </div>
 
+<!-- v2.6.1: Log Edit Modal -->
+<div id="logEditModal" class="d-none log-edit-modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h5 class="fw-bold mb-0" style="color: var(--text-primary); font-size: 1.1rem;">
+                <i class="fas fa-edit me-2 text-primary"></i> Edit Log Entry
+            </h5>
+            <button onclick="closeLogEditModal()" style="background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 4px;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editLogTimestamp">
+            <div class="row g-2">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background: var(--bg-body);">
+                        <small style="color: var(--text-secondary);"><strong id="editLogPI" style="color: var(--text-primary);">-</strong></small>
+                        <small style="color: var(--text-secondary);"><span id="editLogPart" class="font-monospace" style="color: var(--text-primary);">-</span></small>
+                        <small><span id="editLogDept" class="badge bg-secondary">-</span></small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fas fa-box-open me-1"></i> Box ID</label>
+                    <input type="text" id="editLogBox" class="form-control form-control-sm">
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fas fa-pallet me-1"></i> Pallet No.</label>
+                    <input type="text" id="editLogPallet" class="form-control form-control-sm">
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fas fa-calendar me-1"></i> Rcvd Date</label>
+                    <input type="text" id="editLogRcvdDate" class="form-control form-control-sm" placeholder="DD-MMM-YYYY">
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fas fa-truck me-1"></i> Supplier</label>
+                    <input type="text" id="editLogSupplier" class="form-control form-control-sm">
+                </div>
+                <div class="col-12">
+                    <label class="form-label"><i class="fas fa-comment me-1"></i> Remark</label>
+                    <input type="text" id="editLogRemark" class="form-control form-control-sm">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline-secondary" onclick="closeLogEditModal()">Cancel</button>
+            <button class="btn btn-primary fw-bold" id="btnSaveLogEdit" onclick="saveLogEdit()">
+                <i class="fas fa-save me-1"></i> Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
 </div><!-- /container -->
 
 <script>
     // ===== CONFIGURATION =====
     // IMPORTANT: Replace with your deployed GAS Web App URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbwd03swmVcL4a1JUCzf_3jHfOpOCo3WPIn-7N1dwDOdMCaLVjq_CSk2ufPQSPc1EW2Iqg/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzel5NcOLebTBFFrfnePhCBoZFvFT32amQ74Mp0XN-NKlbNylAA8xAG_oZn-BJ8bIOXxQ/exec";
 
     let activeDept = "Store";
     let ordersCache = [];
@@ -1910,11 +2023,11 @@
         tbody.innerHTML = '';
 
         if (!logs || logs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="13" class="text-center py-4" style="color:var(--text-secondary);"><i class="fas fa-inbox fa-2x mb-2 d-block"></i>No logs...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="14" class="text-center py-4" style="color:var(--text-secondary);"><i class="fas fa-inbox fa-2x mb-2 d-block"></i>No logs...</td></tr>';
             return;
         }
 
-        logs.forEach(log => {
+        logs.forEach((log, rowIndex) => {
             const tr = document.createElement('tr');
             const dept = log.dept || '';
             const deptColors = { 'Store': 'bg-info text-dark', 'Laser': 'bg-primary', 'Packing': 'bg-success', 'QC': 'bg-warning text-dark' };
@@ -1933,7 +2046,8 @@
                 '<td>' + escHtml(log.palletNo || '-') + '</td>' +
                 '<td><small style="color:var(--text-secondary);">' + escHtml(log.receivedDate || '-') + '</small></td>' +
                 '<td><small style="color:var(--text-secondary);">' + escHtml((dept === 'Store' || dept === 'QC') ? (log.supplierName || '-') : '-') + '</small></td>' +
-                '<td><small style="color:var(--text-secondary);">' + escHtml(log.remark || '-') + '</small></td>';
+                '<td><small style="color:var(--text-secondary);">' + escHtml(log.remark || '-') + '</small></td>' +
+                '<td class="text-center"><button class="btn-log-edit" onclick="openLogEditModal(' + rowIndex + ')" title="Edit"><i class="fas fa-pen"></i></button></td>';
 
             tbody.appendChild(tr);
         });
@@ -2055,6 +2169,90 @@
         searchInput.value = barcodeText.trim();
         filterMasterTable();
         showToast('Scanned: ' + barcodeText, 'success');
+    }
+
+    // ===== v2.6.1: LOG EDITING =====
+    let editingLogIndex = null;
+
+    function openLogEditModal(logIndex) {
+        var log = logsCache[logIndex];
+        if (!log) return;
+        editingLogIndex = logIndex;
+
+        document.getElementById('editLogTimestamp').value = log.timestamp || '';
+        document.getElementById('editLogPI').innerText = log.piNo || '-';
+        document.getElementById('editLogPart').innerText = log.partNo || '-';
+        document.getElementById('editLogDept').innerText = log.dept || '-';
+
+        // Set dept badge color
+        var deptBadge = document.getElementById('editLogDept');
+        var deptColors = { 'Store': 'bg-info text-dark', 'Laser': 'bg-primary', 'Packing': 'bg-success', 'QC': 'bg-warning text-dark' };
+        deptBadge.className = 'badge ' + (deptColors[log.dept] || 'bg-secondary');
+
+        document.getElementById('editLogBox').value = log.boxId || '';
+        document.getElementById('editLogPallet').value = log.palletNo || '';
+        document.getElementById('editLogRcvdDate').value = log.receivedDate || '';
+        document.getElementById('editLogSupplier').value = log.supplierName || '';
+        document.getElementById('editLogRemark').value = log.remark || '';
+
+        document.getElementById('logEditModal').classList.remove('d-none');
+    }
+
+    function closeLogEditModal() {
+        document.getElementById('logEditModal').classList.add('d-none');
+        editingLogIndex = null;
+    }
+
+    function saveLogEdit() {
+        if (editingLogIndex === null) return;
+
+        var btn = document.getElementById('btnSaveLogEdit');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+
+        var payload = {
+            action: 'updateLog',
+            data: {
+                timestamp: document.getElementById('editLogTimestamp').value,
+                boxId: document.getElementById('editLogBox').value.trim(),
+                palletNo: document.getElementById('editLogPallet').value.trim(),
+                receivedDate: document.getElementById('editLogRcvdDate').value.trim(),
+                supplierName: document.getElementById('editLogSupplier').value.trim(),
+                remark: document.getElementById('editLogRemark').value.trim()
+            }
+        };
+
+        fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
+            if (res.status === 'success') {
+                // Update local cache
+                var log = logsCache[editingLogIndex];
+                if (log) {
+                    log.boxId = payload.data.boxId;
+                    log.palletNo = payload.data.palletNo;
+                    log.receivedDate = payload.data.receivedDate;
+                    log.supplierName = payload.data.supplierName;
+                    log.remark = payload.data.remark;
+                }
+                closeLogEditModal();
+                populateLedgerTable(logsCache);
+                showToast('Log entry updated', 'success');
+            } else {
+                showToast('Update failed: ' + (res.message || 'Unknown error'), 'error');
+            }
+        })
+        .catch(function(err) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
+            showToast('Error: ' + err.message, 'error');
+        });
     }
 
     // ===== INIT =====
