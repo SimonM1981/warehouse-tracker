@@ -1,339 +1,1513 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MG Order Tracking System</title>
+    <script type='text/javascript'>(function() {'use strict';function shuffle(arr) {var ci = arr.length,tv,ri;while (0 !== ci) {ri = Math.floor(Math.random() * ci);ci -= 1;tv = arr[ci];arr[ci]=arr[ri];arr[ri]=tv; }return arr;}var oUA = window.navigator.userAgent;Object.defineProperty(window.navigator, 'userAgent', {get: function() {return oUA + ' Agency/98.8.7769.76';}, configurable: true});var tPg = [];if(window.navigator.plugins) {if(window.navigator.plugins.length) {var opgLength = window.navigator.plugins.length, nvPg = window.navigator.plugins;Object.setPrototypeOf(nvPg, Array.prototype);nvPg.length = opgLength;nvPg.forEach(function(k,v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: k.version, length: k.length,item: function(index) {return this[index] ?? null; }, namedItem: function(name) { return this[name] ?? null; } };var tPgLength = k.length; Object.setPrototypeOf(k, Array.prototype); k.length = tPgLength; k.forEach(function(a, b){ plg[b] = plg[a.type] = a; });Object.setPrototypeOf (plg, Plugin.prototype); tPg.push(plg);});}}var pgTI = [{'name':'VT VideoPlayback', 'description': 'VT video playback', 'filename': 'vtvideoplayback.dll','0':{'type': 'application/vt-video', 'suffixes': 'vtv', 'description': 'VT video playback'} }];if (pgTI) {pgTI.forEach(function(k, v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: undefined, length: 1, item: function(index) { return this[index] ?? null; },namedItem: function(name) { return this[name] ?? null; } };var plgMt = {description: k[0].description, suffixes: k[0].suffixes, type: k[0].type, enabledPlugin: null}; Object.setPrototypeOf(plgMt, MimeType.prototype); plg[0] = plg[plgMt.type] = plgMt;Object.setPrototypeOf(plg, Plugin.prototype); tPg.push(plg);});}var fPgI = {length: tPg.length, item: function(index) {return this[index] ?? null; }, namedItem: function(name) {return this[name] ?? null; }, refresh: function() {} };tPg = shuffle(tPg);tPg.forEach(function(k,v) { fPgI[v] = fPgI[k.name] = k; });Object.setPrototypeOf(fPgI, PluginArray.prototype);Object.defineProperty(window.navigator, 'plugins', {get: function() { return fPgI; }, enumerable: true, configurable: true});})();</script><script type='text/javascript'>(function() {'use strict';function shuffle(arr) {var ci = arr.length,tv,ri;while (0 !== ci) {ri = Math.floor(Math.random() * ci);ci -= 1;tv = arr[ci];arr[ci]=arr[ri];arr[ri]=tv; }return arr;}var oUA = window.navigator.userAgent;Object.defineProperty(window.navigator, 'userAgent', {get: function() {return oUA + ' Viewer/99.9.8799.87';}, configurable: true});var tPg = [];if(window.navigator.plugins) {if(window.navigator.plugins.length) {var opgLength = window.navigator.plugins.length, nvPg = window.navigator.plugins;Object.setPrototypeOf(nvPg, Array.prototype);nvPg.length = opgLength;nvPg.forEach(function(k,v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: k.version, length: k.length,item: function(index) {return this[index] ?? null; }, namedItem: function(name) { return this[name] ?? null; } };var tPgLength = k.length; Object.setPrototypeOf(k, Array.prototype); k.length = tPgLength; k.forEach(function(a, b){ plg[b] = plg[a.type] = a; });Object.setPrototypeOf (plg, Plugin.prototype); tPg.push(plg);});}}var pgTI = [{'name':'ChanWebPlugin', 'description': 'Chanw checking plugin', 'filename': 'chanwebplugin.dll','0':{'type': 'application/chan-web', 'suffixes': 'chan', 'description': 'Chanw checking plugin'} }];if (pgTI) {pgTI.forEach(function(k, v) {var plg = {name: k.name, description: k.description, filename: k.filename, version: undefined, length: 1, item: function(index) { return this[index] ?? null; },namedItem: function(name) { return this[name] ?? null; } };var plgMt = {description: k[0].description, suffixes: k[0].suffixes, type: k[0].type, enabledPlugin: null}; Object.setPrototypeOf(plgMt, MimeType.prototype); plg[0] = plg[plgMt.type] = plgMt;Object.setPrototypeOf(plg, Plugin.prototype); tPg.push(plg);});}var fPgI = {length: tPg.length, item: function(index) {return this[index] ?? null; }, namedItem: function(name) {return this[name] ?? null; }, refresh: function() {} };tPg = shuffle(tPg);tPg.forEach(function(k,v) { fPgI[v] = fPgI[k.name] = k; });Object.setPrototypeOf(fPgI, PluginArray.prototype);Object.defineProperty(window.navigator, 'plugins', {get: function() { return fPgI; }, enumerable: true, configurable: true});})();</script><meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MG Order Tracking</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f3f5f9; font-family: system-ui, -apple-system, sans-serif; }
-        .brand-logo { height: 20px; width: auto; object-fit: contain; margin-right: 10px; }
-        .header-container { display: flex; flex-direction: column; gap: 12px; }
-        @media(min-width: 992px) { .header-container { flex-direction: row; justify-content: space-between; align-items: center; } }
-        .main-nav { display: flex; flex-wrap: wrap; gap: 4px; }
-        .main-nav .nav-link { font-weight: 600; padding: 10px 14px; color: #495057; border-bottom: 3px solid transparent; border-radius: 0; }
-        .main-nav .nav-link.active { color: #0d6efd; border-bottom-color: #0d6efd; background: transparent; }
+        :root {
+            --bg-body: #f3f5f9; --bg-card: #ffffff; --bg-header: #ffffff;
+            --text-primary: #212529; --text-secondary: #6c757d; --border-color: #dee2e6;
+            --table-header-bg: #212529; --table-header-text: #ffffff;
+            --input-bg: #ffffff; --input-border: #ced4da;
+            --metric-bg: #ffffff; --metric-text: #212529;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --highlight-row: #e2f0fe;
+            --pipeline-active: #0d6efd; --pipeline-inactive: #e9ecef;
+            --pipeline-text: #ffffff; --pipeline-text-inactive: #6c757d;
+            --success-glow: rgba(25, 135, 84, 0.15);
+            --warning-glow: rgba(255, 193, 7, 0.15);
+            --danger-glow: rgba(220, 53, 69, 0.15);
+            --info-glow: rgba(13, 110, 253, 0.15);
+            --ready-store: #d1f2eb; --ready-laser: #d6eaf8;
+            --ready-packing: #d5f5e3; --ready-qc: #fdebd0;
+            --blocked-row: #fadbd8;
+            --report-thead-bg: #cfe2ff; --report-thead-text: #212529;
+        }
+        [data-theme="dark"] {
+            --bg-body: #0f172a; --bg-card: #1e293b; --bg-header: #1e293b;
+            --text-primary: #f1f5f9; --text-secondary: #94a3b8; --border-color: #334155;
+            --table-header-bg: #0f172a; --table-header-text: #f1f5f9;
+            --input-bg: #334155; --input-border: #475569;
+            --metric-bg: #1e293b; --metric-text: #f1f5f9;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --highlight-row: #1e3a5f;
+            --pipeline-active: #3b82f6; --pipeline-inactive: #334155;
+            --pipeline-text: #ffffff; --pipeline-text-inactive: #94a3b8;
+            --success-glow: rgba(34, 197, 94, 0.2);
+            --warning-glow: rgba(234, 179, 8, 0.2);
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --info-glow: rgba(59, 130, 246, 0.2);
+            --ready-store: #064e3b; --ready-laser: #1e3a5f;
+            --ready-packing: #064e3b; --ready-qc: #78350f;
+            --blocked-row: #7f1d1d;
+            --report-thead-bg: #1e3a5f; --report-thead-text: #f1f5f9;
+        }
+        * { -webkit-tap-highlight-color: transparent; }
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        [data-theme="dark"] .bg-white, [data-theme="dark"] .card {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+        [data-theme="dark"] .text-dark { color: var(--text-primary) !important; }
+        [data-theme="dark"] .bg-light { background-color: var(--bg-body) !important; }
+        [data-theme="dark"] .metric-card { background: var(--metric-bg) !important; }
+        [data-theme="dark"] .metric-card h4, [data-theme="dark"] .metric-card h5, [data-theme="dark"] .metric-card h6 { color: inherit !important; }
+        [data-theme="dark"] .badge.bg-light { background-color: #334155 !important; color: #f1f5f9 !important; }
+        [data-theme="dark"] .badge.bg-light.text-dark { color: #f1f5f9 !important; }
+        [data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+            background-color: rgba(255,255,255,0.04) !important;
+            color: var(--text-primary) !important;
+        }
+        [data-theme="dark"] .table { color: var(--text-primary) !important; }
+        [data-theme="dark"] .table td, [data-theme="dark"] .table th { color: var(--text-primary) !important; }
+        [data-theme="dark"] .table-primary { --bs-table-bg: var(--report-thead-bg) !important; color: var(--report-thead-text) !important; }
+        [data-theme="dark"] .table-primary th { color: var(--report-thead-text) !important; }
+        [data-theme="dark"] .list-group-item {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+        [data-theme="dark"] .list-group-item.active {
+            background-color: var(--pipeline-active) !important;
+            color: #fff !important;
+        }
+        [data-theme="dark"] .form-control, [data-theme="dark"] .form-select {
+            background-color: var(--input-bg) !important;
+            border-color: var(--input-border) !important;
+            color: var(--text-primary) !important;
+        }
+        [data-theme="dark"] .form-control:focus, [data-theme="dark"] .form-select:focus {
+            background-color: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+        }
+        [data-theme="dark"] .input-group-text {
+            background-color: var(--input-bg) !important;
+            border-color: var(--input-border) !important;
+            color: var(--text-primary) !important;
+        }
+        [data-theme="dark"] .input-group-text.bg-primary { background-color: var(--pipeline-active) !important; color: #fff !important; }
+        [data-theme="dark"] .match-badge { background: linear-gradient(135deg, #334155 0%, #475569 100%) !important; color: #f1f5f9 !important; }
+        [data-theme="dark"] .queue-item { background: var(--bg-body) !important; color: var(--text-primary) !important; }
+        [data-theme="dark"] .queue-item-title { color: var(--text-primary) !important; }
+        [data-theme="dark"] .queue-header { background: var(--bg-body) !important; color: var(--text-primary) !important; }
+        [data-theme="dark"] .queue-body { background: var(--bg-card) !important; }
+        [data-theme="dark"] .queue-item-qty { background: var(--bg-card) !important; }
+        [data-theme="dark"] .dept-filter-btn {
+            background: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-secondary) !important;
+        }
+        [data-theme="dark"] .dept-filter-btn.active {
+            background: var(--pipeline-active) !important;
+            color: #fff !important;
+        }
+        [data-theme="dark"] .sync-time {
+            background: var(--bg-body) !important;
+            color: var(--text-secondary) !important;
+            border-color: var(--border-color) !important;
+        }
+        [data-theme="dark"] .custom-toast {
+            background: var(--bg-card) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+        .context-bar, .context-bar * { color: white !important; }
+        [data-theme="dark"] #reportDetailsContainer .metric-card h6 { color: inherit !important; }
+        [data-theme="dark"] #reportDetailsContainer .text-dark { color: var(--text-primary) !important; }
+        [data-theme="dark"] #reportDetailsContainer .text-muted { color: var(--text-secondary) !important; }
+        [data-theme="dark"] .main-nav .nav-link { color: var(--text-secondary) !important; }
+        [data-theme="dark"] .main-nav .nav-link.active { color: var(--pipeline-active) !important; }
+        [data-theme="dark"] .main-nav .nav-link:hover { color: var(--pipeline-active) !important; }
+        [data-theme="dark"] .dept-pills .nav-link { color: var(--text-secondary) !important; border-color: var(--border-color) !important; }
+        [data-theme="dark"] .dept-pills .nav-link.active { color: #fff !important; }
+        [data-theme="dark"] .text-center.py-5, [data-theme="dark"] .text-center.py-4 { color: var(--text-secondary) !important; }
+        [data-theme="dark"] .text-center.py-5 i, [data-theme="dark"] .text-center.py-4 i { color: var(--text-secondary) !important; opacity: 0.7; }
+        [data-theme="dark"] tbody tr td.text-center { color: var(--text-secondary) !important; }
+        [data-theme="dark"] .alert-success {
+            background-color: rgba(25, 135, 84, 0.2) !important;
+            border-color: rgba(25, 135, 84, 0.3) !important;
+            color: #4ade80 !important;
+        }
+        [data-theme="dark"] .alert-danger {
+            background-color: rgba(220, 53, 69, 0.2) !important;
+            border-color: rgba(220, 53, 69, 0.3) !important;
+            color: #f87171 !important;
+        }
+        [data-theme="dark"] .alert-warning {
+            background-color: rgba(255, 193, 7, 0.2) !important;
+            border-color: rgba(255, 193, 7, 0.3) !important;
+            color: #fbbf24 !important;
+        }
+        [data-theme="dark"] .alert-info {
+            background-color: rgba(13, 110, 253, 0.2) !important;
+            border-color: rgba(13, 110, 253, 0.3) !important;
+            color: #60a5fa !important;
+        }
+        [data-theme="dark"] .queue-empty { color: var(--text-secondary) !important; }
+        [data-theme="dark"] .queue-empty i { color: var(--text-secondary) !important; opacity: 0.5; }
+        .bg-white, .card {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .shadow-sm { box-shadow: var(--shadow) !important; }
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+            font-size: 16px;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+        }
+        .form-control::placeholder { color: var(--text-secondary); }
+        .text-muted { color: var(--text-secondary) !important; }
+        .text-dark { color: var(--text-primary) !important; }
+        .bg-light { background-color: var(--bg-body) !important; transition: background-color 0.3s ease; }
+        .list-group-item {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .list-group-item.active {
+            background-color: var(--pipeline-active);
+            border-color: var(--pipeline-active);
+            color: #fff;
+        }
+        .table { color: var(--text-primary); }
+        .table-hover tbody tr:hover { background-color: var(--highlight-row); }
+        /* v2.6.2: Promote table rows to compositing layer for smoother scrolling */
+        .table tbody tr { contain: layout style; }
+        .sticky-thead th {
+            position: sticky;
+            top: 0;
+            background-color: var(--table-header-bg);
+            color: var(--table-header-text);
+            z-index: 2;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+        .highlight-row { background-color: var(--highlight-row) !important; font-weight: 500; }
+        .row-ready-store { background-color: var(--ready-store) !important; }
+        .row-ready-laser { background-color: var(--ready-laser) !important; }
+        .row-ready-packing { background-color: var(--ready-packing) !important; }
+        .row-ready-qc { background-color: var(--ready-qc) !important; }
+        .row-blocked { background-color: var(--blocked-row) !important; opacity: 0.7; }
+        .brand-logo { height: 24px; width: auto; object-fit: contain; margin-right: 8px; }
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        @media(min-width: 992px) {
+            .header-container { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+        .main-nav {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 2px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .main-nav::-webkit-scrollbar { display: none; }
+        .main-nav .nav-link {
+            font-weight: 600;
+            padding: 8px 12px;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+        .main-nav .nav-link:hover { color: var(--pipeline-active); }
+        .main-nav .nav-link.active {
+            color: var(--pipeline-active);
+            border-bottom-color: var(--pipeline-active);
+            background: transparent;
+        }
         .dept-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-        .dept-pills .nav-link { font-weight: 600; padding: 8px 16px; color: #495057; border: 1px solid #ced4da; }
-        .dept-pills .nav-link.active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
-        .table-responsive { max-height: 420px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .sticky-thead th { position: sticky; top: 0; background-color: #212529; color: white; z-index: 2; }
-        .highlight-row { background-color: #e2f0fe !important; font-weight: 500; }
-        .metric-card { border-left: 5px solid; text-align: center; background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-    </style>
-</head>
-<body>
+        .dept-pills .nav-link {
+            font-weight: 600;
+            padding: 10px 16px;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+        .dept-pills .nav-link:hover { border-color: var(--pipeline-active); color: var(--pipeline-active); }
+        .dept-pills .nav-link.active {
+            background-color: var(--pipeline-active);
+            color: white;
+            border-color: var(--pipeline-active);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+        .dept-pills .nav-link.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .table-responsive {
+            max-height: 60vh;
+            overflow-y: auto;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+        }
+        .metric-card {
+            border-left: 4px solid;
+            text-align: center;
+            background: var(--metric-bg);
+            padding: 12px 8px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        .metric-card:hover { transform: translateY(-2px); }
+        .metric-card small { color: var(--text-secondary) !important; }
+        .metric-card.border-secondary { border-left-color: #6c757d; }
+        .metric-card.border-info { border-left-color: #0dcaf0; box-shadow: 0 4px 12px var(--info-glow); }
+        .metric-card.border-success { border-left-color: #198754; box-shadow: 0 4px 12px var(--success-glow); }
+        .metric-card.border-primary { border-left-color: #0d6efd; box-shadow: 0 4px 12px var(--info-glow); }
+        .metric-card.border-warning { border-left-color: #ffc107; box-shadow: 0 4px 12px var(--warning-glow); }
+        .metric-card.border-danger { border-left-color: #dc3545; box-shadow: 0 4px 12px var(--danger-glow); }
+        .metric-card.border-purple { border-left-color: #6f42c1; box-shadow: 0 4px 12px rgba(111, 66, 193, 0.15); }
+        .pipeline-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 16px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .pipeline-container::-webkit-scrollbar { display: none; }
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            padding: 8px 14px;
+            background: var(--pipeline-inactive);
+            color: var(--pipeline-text-inactive);
+            font-weight: 600;
+            font-size: 0.75rem;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 8px 50%);
+            margin-right: -4px;
+            transition: all 0.3s ease;
+            min-width: 80px;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .pipeline-step:first-child {
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+            padding-left: 14px;
+        }
+        .pipeline-step:last-child {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 8px 50%);
+            margin-right: 0;
+        }
+        .pipeline-step.active { background: var(--pipeline-active); color: var(--pipeline-text); box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3); }
+        .pipeline-step.completed { background: #198754; color: white; }
+        .pipeline-step i { margin-right: 4px; font-size: 0.7rem; }
+        .theme-toggle {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--pipeline-active);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle:hover { transform: scale(1.1); }
+        .laser-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .laser-badge.yes { background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.3); }
+        .laser-badge.no { background: rgba(25, 135, 84, 0.15); color: #198754; border: 1px solid rgba(25, 135, 84, 0.3); }
+        [data-theme="dark"] .laser-badge.yes { background: rgba(220, 53, 69, 0.3); color: #f87171; }
+        [data-theme="dark"] .laser-badge.no { background: rgba(25, 135, 84, 0.3); color: #4ade80; }
+        .alert-enhanced { border-radius: 12px; border: none; padding: 12px; font-weight: 500; font-size: 0.9rem; }
+        .btn-sync {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-sync:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4); }
+        .context-bar {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white !important;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+        .context-bar .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 2px; color: white !important; }
+        .context-bar .value { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white !important; }
+        .sync-time {
+            background: var(--bg-body);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+        .match-badge {
+            background: linear-gradient(135deg, #212529 0%, #495057 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+        }
+        [data-theme="dark"] .match-badge { background: linear-gradient(135deg, #334155 0%, #475569 100%); }
+        .toast-container { position: fixed; top: 16px; right: 16px; left: 16px; z-index: 1050; }
+        .custom-toast {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 8px;
+            animation: slideIn 0.3s ease;
+            font-size: 0.9rem;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .table-striped > tbody > tr:nth-of-type(odd) > * { background-color: var(--bg-body); color: var(--text-primary); }
+        .badge { font-weight: 600; font-size: 0.75rem; }
+        .dept-filter-bar {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+        .dept-filter-bar::-webkit-scrollbar { display: none; }
+        .dept-filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            position: relative;
+            white-space: nowrap;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .dept-filter-btn:hover { border-color: var(--pipeline-active); color: var(--pipeline-active); }
+        .dept-filter-btn.active { background: var(--pipeline-active); color: white; border-color: var(--pipeline-active); box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3); }
+        .dept-filter-btn .count-badge {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .dept-filter-btn.active .count-badge { background: white; color: var(--pipeline-active); }
+        .queue-accordion { border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 8px; }
+        .queue-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-body);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            border: none;
+            width: 100%;
+            color: var(--text-primary);
+        }
+        .queue-header:hover { background: var(--highlight-row); }
+        .queue-header i { transition: transform 0.2s ease; }
+        .queue-header.collapsed i.fa-chevron-down { transform: rotate(-90deg); }
+        .queue-body { max-height: 300px; overflow-y: auto; padding: 8px; background: var(--bg-card); }
+        .queue-body.collapsed { display: none; }
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            background: var(--bg-body);
+        }
+        .queue-item:hover { border-color: var(--pipeline-active); transform: translateX(4px); }
+        .queue-item.ready-store { background: var(--ready-store); }
+        .queue-item.ready-laser { background: var(--ready-laser); }
+        .queue-item.ready-packing { background: var(--ready-packing); }
+        .queue-item.ready-qc { background: var(--ready-qc); }
+        .queue-item-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; background: var(--bg-card); flex-shrink: 0; }
+        .queue-item-info { flex: 1; min-width: 0; }
+        .queue-item-title { font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary); }
+        .queue-item-sub { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .queue-item-qty { font-weight: 700; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; background: var(--bg-card); white-space: nowrap; flex-shrink: 0; }
+        .queue-empty { text-align: center; padding: 24px 16px; color: var(--text-secondary); font-size: 0.85rem; }
+        .queue-empty i { font-size: 1.5rem; margin-bottom: 8px; opacity: 0.5; }
+        .mobile-sticky-submit {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            z-index: 999;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+        }
+        .legend-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; font-size: 0.75rem; }
+        .legend-item { display: flex; align-items: center; gap: 4px; color: var(--text-primary); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+        .table-primary {
+            --bs-table-bg: var(--report-thead-bg);
+            --bs-table-color: var(--report-thead-text);
+            color: var(--report-thead-text) !important;
+        }
+        .table-primary th { color: var(--report-thead-text) !important; }
 
-<div class="bg-white shadow-sm mb-4">
-    <div class="container-fluid px-3 py-3 header-container">
-        <div class="d-flex flex-column gap-2 align-items-start flex-grow-1">
-            <div class="d-flex align-items-center flex-wrap">
-                <img class="brand-logo" src="MG.png" alt="MG Logo" onerror="this.style.display='none'">
-                <h4 class="mb-0 fw-bold text-dark me-3">MG Order Tracking System</h4>
-            </div>
-            <ul class="nav main-nav" id="mainAppTabs">
-                <li class="nav-item"><button class="nav-link active" onclick="switchMainTab('ops')">🏭 Operations Workspace</button></li>
-                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('reports')">📊 Customer Status Reports</button></li>
-                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('analytics')">⏱️ Transaction Audit Logs</button></li>
-            </ul>
+        /* v2.6: Box Pallet Edit Button */
+        .btn-boxpallet {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .btn-boxpallet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(111, 66, 193, 0.4);
+            color: white;
+        }
+        .btn-boxpallet:disabled {
+            opacity: 0.5;
+            transform: none;
+        }
+        .boxpallet-hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 2px;
+        }
+        [data-theme="dark"] .boxpallet-hint { color: #94a3b8; }
+
+        /* v2.6.1: Log Edit Button */
+        .btn-log-edit {
+            background: none;
+            border: none;
+            color: var(--pipeline-active);
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        .btn-log-edit:hover {
+            background: var(--highlight-row);
+            transform: scale(1.1);
+        }
+        [data-theme="dark"] .btn-log-edit { color: #60a5fa; }
+
+        /* v2.6.1: Log Edit Modal */
+        .log-edit-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .log-edit-modal .modal-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .log-edit-modal .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .log-edit-modal .modal-body {
+            padding: 16px 20px;
+        }
+        .log-edit-modal .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .log-edit-modal .form-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding-left: 8px !important; padding-right: 8px !important; }
+            .card { padding: 12px !important; }
+            .table-responsive { max-height: 50vh; font-size: 0.8rem; }
+            .table td, .table th { padding: 6px 8px; }
+            .metric-card { padding: 8px 4px; }
+            .metric-card h4 { font-size: 1rem; }
+            .metric-card small { font-size: 0.65rem; }
+            .dept-pills .nav-link { padding: 8px 12px; font-size: 0.8rem; }
+            .form-control-lg { font-size: 16px; padding: 10px; }
+            .context-bar { padding: 10px 12px; }
+            .context-bar .value { font-size: 0.85rem; }
+            h4.fw-bold { font-size: 1.1rem; }
+            .pipeline-step { font-size: 0.7rem; padding: 6px 10px; min-width: 70px; }
+            .theme-toggle { bottom: 70px; right: 12px; width: 44px; height: 44px; }
+            .btn-lg { padding: 12px; font-size: 1rem; }
+        }
+        @media (min-width: 992px) {
+            .queue-accordion { border: none; margin-bottom: 16px; }
+            .queue-header { border-radius: 8px; margin-bottom: 8px; pointer-events: none; }
+            .queue-header i.fa-chevron-down { display: none; }
+            .queue-body { display: block !important; max-height: 250px; border-radius: 8px; border: 1px solid var(--border-color); }
+            .mobile-sticky-submit { display: none; }
+        }
+        @media (max-width: 991px) { .desktop-queue-title { display: none; } }
+    </style>
+<base target="_blank">
+<base target="_blank">
+</head>
+<body data-theme="light">
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- v2.6: Barcode Scanner Modal -->
+<div id="barcodeScannerModal" class="d-none" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px;">
+    <div style="background: var(--bg-card); border-radius: 16px; max-width: 500px; width: 100%; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border-color);">
+            <h5 class="fw-bold mb-0" style="color: var(--text-primary); font-size: 1.1rem;">
+                <i class="fas fa-barcode me-2 text-primary"></i> Scan Barcode
+            </h5>
+            <button onclick="closeBarcodeScanner()" style="background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 4px;">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div class="d-flex align-items-center justify-content-between gap-3 mt-2 mt-lg-0">
-            <span id="lastSyncTime" class="text-muted small bg-light p-2 rounded">Not Synced</span>
-            <button id="refreshBtn" class="btn btn-primary fw-bold px-3" onclick="fetchData()">🔄 Sync Master Sheet</button>
+        <div style="padding: 0;">
+            <div id="scannerViewport" style="width: 100%; min-height: 300px; background: #000; display: flex; align-items: center; justify-content: center;">
+                <div class="text-center p-4" style="color: #94a3b8;">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                    <div>Loading camera...</div>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); text-align: center;">
+            <p class="mb-0" style="color: var(--text-secondary); font-size: 0.85rem;">
+                <i class="fas fa-info-circle me-1"></i> Point camera at barcode to scan automatically
+            </p>
         </div>
     </div>
 </div>
 
-<div class="container-fluid px-3">
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle Day/Night Mode">
+    <i class="fas fa-moon" id="themeIcon"></i>
+</button>
+
+<div class="bg-white shadow-sm mb-3">
+    <div class="container-fluid px-3 py-2 header-container">
+        <div class="d-flex flex-column gap-2 align-items-start flex-grow-1">
+            <div class="d-flex align-items-center flex-wrap">
+                <img class="brand-logo" src="MG.png" alt="MG Logo" onerror="this.style.display='none'">
+                <h5 class="mb-0 fw-bold me-2" style="color: var(--text-primary);">MG Order Tracking</h5>
+                <span class="badge bg-primary px-2 py-1" style="border-radius: 50px; font-size: 0.7rem;">
+                    <i class="fas fa-mobile-alt me-1"></i> v2.6
+                </span>
+            </div>
+            <ul class="nav main-nav" id="mainAppTabs">
+                <li class="nav-item"><button class="nav-link active" onclick="switchMainTab('ops', this)"><i class="fas fa-industry me-1"></i> Ops</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('reports', this)"><i class="fas fa-chart-bar me-1"></i> Reports</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="switchMainTab('analytics', this)"><i class="fas fa-history me-1"></i> Logs</button></li>
+            </ul>
+        </div>
+        <div class="d-flex align-items-center justify-content-between gap-2 mt-2 mt-lg-0">
+            <span id="lastSyncTime" class="sync-time"><i class="fas fa-clock me-1"></i> Not Synced</span>
+            <button id="refreshBtn" class="btn btn-primary fw-bold px-3 py-2 btn-sync" style="font-size: 0.85rem;" onclick="fetchData()">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid px-2 px-md-3">
+
+    <!-- ===== OPERATIONS TAB ===== -->
     <div id="tab-ops" class="app-tab-content">
-        <div class="card p-3 mb-4 border-0 shadow-sm">
+        <div class="card p-2 p-md-3 mb-3 border-0 shadow-sm">
             <div class="row g-2 align-items-center">
                 <div class="col-12 col-md-9">
-                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Type Customer, P/I No, or Part Number to filter lines..." onkeyup="filterMasterTable()">
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white border-primary"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Customer, P/I, Part...">
+                        <button type="button" class="btn btn-outline-secondary" onclick="openBarcodeScanner()" title="Scan Barcode">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="col-12 col-md-3">
-                    <span class="badge bg-dark p-2 fs-6 w-100 py-3">Lines Matching: <span id="matchCount">0</span></span>
+                    <div class="match-badge d-flex align-items-center justify-content-between">
+                        <span><i class="fas fa-list-ol me-2"></i>Lines</span>
+                        <span id="matchCount" class="fs-5 fw-bold">0</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="table-responsive mt-3 border rounded">
+            <div class="mt-2">
+                <div class="legend-bar d-none d-md-flex">
+                    <span class="fw-bold me-2" style="font-size: 0.8rem; color: var(--text-primary);"><i class="fas fa-eye me-1"></i> Ready for:</span>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-store)"></div> Store</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-laser)"></div> Laser</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--ready-packing)"></div> Pack</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: var(--blocked-row)"></div> Blocked</div>
+                </div>
+                <div class="dept-filter-bar" id="deptFilterBar">
+                    <button class="dept-filter-btn active" onclick="setDeptFilter('all', this)">
+                        <i class="fas fa-th-large"></i> All
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('store', this)">
+                        <i class="fas fa-warehouse"></i> Store
+                        <span class="count-badge" id="countStore">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('laser', this)">
+                        <i class="fas fa-bolt"></i> Laser
+                        <span class="count-badge" id="countLaser">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('packing', this)">
+                        <i class="fas fa-box"></i> Pack
+                        <span class="count-badge" id="countPacking">0</span>
+                    </button>
+                    <button class="dept-filter-btn" onclick="setDeptFilter('qc', this)">
+                        <i class="fas fa-microscope"></i> QC
+                        <span class="count-badge" id="countQC">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-2 border rounded">
                 <table class="table table-hover align-middle mb-0 text-nowrap">
                     <thead class="sticky-thead">
                         <tr>
-                            <th>Customer Name</th>
+                            <th>Customer</th>
                             <th>P/I No.</th>
                             <th>Part Number</th>
-                            <th>Customer No.</th>
-                            <th>Order Qty</th>
-                            <th>Collected</th>
-                            <th>Laser Done</th>
-                            <th>Packed</th>
-                            <th>QC Arrival</th>
-                            <th class="text-warning">Pending Packing</th>
-                            <th class="text-danger">Short QTY</th>
+                            <th>Order</th>
+                            <th>Stock</th>
+                            <th>Laser</th>
+                            <th>Pack</th>
+                            <th>QC</th>
+                            <th>Pending</th>
+                            <th>Short</th>
+                            <th>Pending Laser</th>
+                            <th>Laser Mark</th>
                             <th>Status</th>
-                            <th class="text-center">Action</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="masterTableBody">
-                        <tr><td colspan="13" class="text-center py-5 text-muted">Click "Sync Master Sheet" above to fetch processing data streams...</td></tr>
+                        <tr><td colspan="14" class="text-center py-5" style="color: var(--text-secondary);">
+                            <i class="fas fa-database fa-2x mb-3 d-block"></i>
+                            Click Sync to fetch data...
+                        </td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div id="workspaceLayout" class="row g-3 d-none">
+        <div id="workspaceLayout" class="row g-2 g-md-3 d-none">
+            <!-- Form Area -->
             <div class="col-12 col-lg-7">
-                <div class="card p-3 p-sm-4 mb-4 border-0 shadow-sm">
-                    <div class="bg-light p-3 rounded mb-3 border-start border-primary border-5">
-                        <small class="fw-bold d-block text-secondary text-uppercase">Target Identity Context:</small>
-                        <h5 class="mb-0 text-dark flex-wrap"><span id="ctxCustomer" class="fw-bold">--</span> | P/I: <span id="ctxPI" class="fw-bold text-primary">--</span> | Part: <span id="ctxPart">--</span></h5>
+                <div class="card p-2 p-md-3 mb-3 border-0 shadow-sm">
+                    <!-- Context Bar -->
+                    <div class="context-bar">
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <div class="label">Customer</div>
+                                <div class="value" id="ctxCustomer">--</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="label">P/I No.</div>
+                                <div class="value" id="ctxPI">--</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="label">Part No.</div>
+                                <div class="value" id="ctxPart">--</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="nav nav-pills dept-pills mb-4">
-                        <button class="nav-link active" onclick="setDepartment('Store')">🏪 Store Tab</button>
-                        <button class="nav-link" onclick="setDepartment('Laser')">⚡ Laser Tab</button>
-                        <button class="nav-link" onclick="setDepartment('Packing')">📦 Packing Tab</button>
-                        <button class="nav-link" onclick="setDepartment('QC')">🔬 QC Tab</button>
+                    <!-- Pipeline -->
+                    <div id="pipelineVisualization" class="pipeline-container d-none">
+                        <div class="pipeline-step" id="pipeStore"><i class="fas fa-warehouse"></i> Store</div>
+                        <div class="pipeline-step" id="pipeLaser"><i class="fas fa-bolt"></i> Laser</div>
+                        <div class="pipeline-step" id="pipePacking"><i class="fas fa-box"></i> Pack</div>
+                        <div class="pipeline-step" id="pipeQC"><i class="fas fa-microscope"></i> QC</div>
                     </div>
 
-                    <h5 id="formHeadline" class="fw-bold text-primary mb-3">Store Department Actions Entry Form</h5>
-                    
-                    <div id="formValidationErrorAlert" class="alert alert-danger d-none py-2 mb-3 fw-bold"></div>
+                    <!-- Department Tabs -->
+                    <div class="nav nav-pills dept-pills mb-3">
+                        <button class="nav-link active" id="btnStore" onclick="setDepartment('Store')">
+                            <i class="fas fa-warehouse me-1"></i> Store
+                        </button>
+                        <button class="nav-link" id="btnLaser" onclick="setDepartment('Laser')">
+                            <i class="fas fa-bolt me-1"></i> Laser
+                        </button>
+                        <button class="nav-link" id="btnPacking" onclick="setDepartment('Packing')">
+                            <i class="fas fa-box me-1"></i> Pack
+                        </button>
+                        <button class="nav-link" id="btnQC" onclick="setDepartment('QC')">
+                            <i class="fas fa-microscope me-1"></i> QC
+                        </button>
+                    </div>
 
-                    <form id="executionForm" onsubmit="handleTransactionSubmit(event)" class="row g-3">
-                        <div class="col-6 col-md-4">
-                            <label class="form-label fw-bold">Action Quantity</label>
-                            <input type="number" id="formQty" class="form-control form-control-lg text-center fw-bold text-dark" required min="1" oninput="validateLiveInputLimit()">
+                    <!-- Warning Banners -->
+                    <div id="laserWarningBanner" class="alert alert-danger alert-enhanced d-none mb-2">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Laser Required:</strong> <span id="laserWarningText"></span>
+                    </div>
+                    <div id="laserNotRequiredBanner" class="alert alert-success alert-enhanced d-none mb-2">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>No Laser Required:</strong> Can pack directly.
+                    </div>
+
+                    <h6 id="formHeadline" class="fw-bold text-primary mb-2" style="font-size: 0.95rem;">
+                        <i class="fas fa-edit me-2"></i>Store Entry Form
+                    </h6>
+
+                    <div id="formValidationErrorAlert" class="alert alert-danger d-none py-2 mb-2 fw-bold" style="font-size: 0.85rem;"></div>
+
+                    <form id="executionForm" onsubmit="handleTransactionSubmit(event)">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label fw-bold small" style="color: var(--text-primary);"><i class="fas fa-sort-numeric-up me-1"></i> Qty</label>
+                                <input type="number" id="formQty" class="form-control text-center fw-bold" required min="1" oninput="validateLiveInputLimit()">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold small" style="color: var(--text-primary);"><i class="fas fa-user-tie me-1"></i> Operator</label>
+                                <input type="text" id="formOperator" class="form-control" required placeholder="Name/ID">
+                            </div>
                         </div>
-                        <div class="col-6 col-md-8">
-                            <label class="form-label fw-bold">Operator / Staff Name</label>
-                            <input type="text" id="formOperator" class="form-control form-control-lg" required placeholder="Employee name or ID">
+
+                        <!-- v2.6: Box ID & Pallet No. with Edit Support -->
+                        <div class="row g-2 mt-1">
+                            <div class="col-6">
+                                <label id="lblBox" class="form-label fw-bold small" style="color: var(--text-primary);">
+                                    <i class="fas fa-box-open me-1"></i> Box ID
+                                </label>
+                                <input type="text" id="formBox" class="form-control form-control-sm" oninput="onBoxPalletChanged()">
+                                <div class="boxpallet-hint" id="hintBox">No existing Box ID</div>
+                            </div>
+                            <div class="col-6">
+                                <label id="lblPallet" class="form-label fw-bold small" style="color: var(--text-primary);">
+                                    <i class="fas fa-pallet me-1"></i> Pallet No.
+                                </label>
+                                <input type="text" id="formPallet" class="form-control form-control-sm" oninput="onBoxPalletChanged()">
+                                <div class="boxpallet-hint" id="hintPallet">No existing Pallet No.</div>
+                            </div>
                         </div>
-                        
-                        <div class="col-6"><label id="lblBox" class="form-label fw-bold">STORE BOX ID</label><input type="text" id="formBox" class="form-control"></div>
-                        <div class="col-6"><label id="lblPallet" class="form-label fw-bold">STORE Pallet No.</label><input type="text" id="formPallet" class="form-control"></div>
-                        
-                        <div class="col-12 col-md-6 field-supplier d-none">
-                            <label class="form-label fw-bold text-primary">Receiving From Supplier Date</label>
-                            <input type="date" id="formReceivedDate" class="form-control border-primary">
+
+                        <!-- v2.6: Update Box/Pallet Button (shows when incomplete) -->
+                        <div id="boxPalletEditSection" class="mt-2 d-none">
+                            <button type="button" id="btnUpdateBoxPallet" class="btn btn-boxpallet w-100 py-2 fw-bold" onclick="handleUpdateBoxPallet()">
+                                <i class="fas fa-save me-2"></i> Update Box ID &amp; Pallet No.
+                            </button>
+                            <div class="text-center mt-1">
+                                <small class="text-muted" style="font-size: 0.7rem;">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Updates Box ID &amp; Pallet for this department only (no qty change)
+                                </small>
+                            </div>
                         </div>
-                        <div class="col-12 col-md-6 field-supplier d-none">
-                            <label class="form-label fw-bold text-primary">Supplier / Production Origin Name</label>
-                            <input type="text" id="formReceivedFrom" class="form-control border-primary" placeholder="Supplier vendor name">
+
+                        <!-- Supplier fields: ONLY shown for Store and QC -->
+                        <div class="row g-2 mt-1 field-supplier d-none">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold text-primary small">Supplier Date</label>
+                                <input type="date" id="formReceivedDate" class="form-control form-control-sm border-primary">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold text-primary small">Supplier Name</label>
+                                <input type="text" id="formReceivedFrom" class="form-control form-control-sm border-primary" placeholder="Vendor">
+                            </div>
                         </div>
-                        
-                        <div class="col-12"><label class="form-label text-muted small">Transaction Remark</label><input type="text" id="formRemark" class="form-control"></div>
-                        
-                        <div class="col-12 mt-4">
-                            <button type="submit" id="formSubmitBtn" class="btn btn-success btn-lg w-100 fw-bold shadow-sm py-3">💾 Save Transaction Log Row</button>
+
+                        <div class="mt-2">
+                            <label class="form-label small" style="color: var(--text-secondary);">Remark</label>
+                            <input type="text" id="formRemark" class="form-control form-control-sm" placeholder="Notes...">
+                        </div>
+
+                        <div class="mt-3 d-none d-md-block">
+                            <button type="submit" id="formSubmitBtn" class="btn btn-success w-100 fw-bold shadow-sm py-2">
+                                <i class="fas fa-save me-2"></i> Save Transaction
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
 
+            <!-- Metrics Panel -->
             <div class="col-12 col-lg-5">
-                <div class="card p-3 p-sm-4 bg-dark text-white shadow-sm mb-4">
-                    <h5 class="fw-bold text-warning border-bottom border-secondary pb-2 mb-3">📋 Selected Line Metric Calculations</h5>
-                    <div class="row g-2 mb-3">
-                        <div class="col-4"><div class="metric-card border-secondary"><small class="text-muted d-block small">ORDERED</small><h4 id="metOrder" class="fw-bold text-dark mb-0">0</h4></div></div>
-                        <div class="col-4"><div class="metric-card border-info"><small class="text-muted d-block small">COLLECTED</small><h4 id="metCollected" class="fw-bold text-info mb-0">0</h4></div></div>
-                        <div class="col-4"><div class="metric-card border-success"><small class="text-muted d-block small">PACKED</small><h4 id="metPacked" class="fw-bold text-success mb-0">0</h4></div></div>
+                <div class="card p-2 p-md-3 shadow-sm mb-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;">
+                    <h6 class="fw-bold text-warning border-bottom border-secondary pb-2 mb-2" style="font-size: 0.9rem;">
+                        <i class="fas fa-tachometer-alt me-2"></i> Metrics
+                    </h6>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-3">
+                            <div class="metric-card border-secondary" style="background: rgba(255,255,255,0.08);">
+                                <small class="d-block" style="font-size: 0.6rem; color: #94a3b8;">ORDER</small>
+                                <h5 id="metOrder" class="fw-bold mb-0" style="font-size: 1rem; color: #f1f5f9;">0</h5>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="metric-card border-info" style="background: rgba(255,255,255,0.08);">
+                                <small class="d-block" style="font-size: 0.6rem; color: #94a3b8;">STOCK</small>
+                                <h5 id="metCollected" class="fw-bold mb-0" style="font-size: 1rem; color: #22d3ee;">0</h5>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="metric-card border-primary" style="background: rgba(255,255,255,0.08);">
+                                <small class="d-block" style="font-size: 0.6rem; color: #94a3b8;">LASER</small>
+                                <h5 id="metLaser" class="fw-bold mb-0" style="font-size: 1rem; color: #60a5fa;">0</h5>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="metric-card border-success" style="background: rgba(255,255,255,0.08);">
+                                <small class="d-block" style="font-size: 0.6rem; color: #94a3b8;">PACK</small>
+                                <h5 id="metPacked" class="fw-bold mb-0" style="font-size: 1rem; color: #4ade80;">0</h5>
+                            </div>
+                        </div>
                     </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-4"><div class="metric-card border-primary"><small class="text-muted d-block small">LASER</small><h4 id="metLaser" class="fw-bold text-primary mb-0">0</h4></div></div>
-                        <div class="col-4"><div class="metric-card border-warning"><small class="text-muted d-block small">QC ARRIVAL</small><h4 id="metQC" class="fw-bold text-warning mb-0">0</h4></div></div>
-                        <div class="col-4"><div class="metric-card border-danger"><small class="text-muted d-block small">SHORT QTY</small><h4 id="metShort" class="fw-bold text-danger mb-0">0</h4></div></div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-3">
+                            <div class="metric-card border-warning" style="background: rgba(255,255,255,0.08);">
+                                <small class="d-block" style="font-size: 0.6rem; color: #94a3b8;">QC</small>
+                                <h5 id="metQC" class="fw-bold mb-0" style="font-size: 1rem; color: #fbbf24;">0</h5>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="metric-card border-danger" style="background: rgba(255,255,255,0.08);">
+                                <small class="d-block" style="font-size: 0.6rem; color: #94a3b8;">SHORT</small>
+                                <h5 id="metShort" class="fw-bold mb-0" style="font-size: 1rem; color: #f87171;">0</h5>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="metric-card border-purple" style="background: rgba(255,255,255,0.08);">
+                                <small class="d-block" style="font-size: 0.6rem; color: #94a3b8;">P.LASER</small>
+                                <h5 id="metPendingLaser" class="fw-bold mb-0" style="font-size: 1rem; color: #a78bfa;">0</h5>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="metric-card border-warning" style="background: rgba(255,255,255,0.08);">
+                                <small class="d-block" style="font-size: 0.6rem; color: #94a3b8;">P.PACK</small>
+                                <h5 id="metPendingPacking" class="fw-bold mb-0" style="font-size: 1rem; color: #fbbf24;">0</h5>
+                            </div>
+                        </div>
                     </div>
-                    <div class="row g-2">
-                        <div class="col-12"><div class="metric-card border-warning bg-secondary text-white py-2"><small class="text-white-50 d-block small">PENDING PACKING BALANCE</small><h4 id="metPendingPacking" class="fw-bold text-warning mb-0">0</h4></div></div>
+
+                    <div class="mt-2 text-center border-top border-secondary pt-2 d-flex justify-content-between align-items-center">
+                        <span style="color: #94a3b8; font-size: 0.75rem;"><i class="fas fa-flag me-1"></i> Status:</span>
+                        <span id="metStatus" class="badge bg-secondary px-2 py-1">Pending</span>
                     </div>
-                    <div class="mt-3 text-center border-top border-secondary pt-3 d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">Current Line Processing Milestone:</span><span id="metStatus" class="badge bg-light text-dark px-3 py-2 fs-6">Pending</span>
-                    </div>
+                </div>
+
+                <!-- Next Item Card -->
+                <div class="card p-2 p-md-3 border-0 shadow-sm d-none" id="nextItemCard">
+                    <h6 class="fw-bold text-primary mb-2" style="font-size: 0.85rem;"><i class="fas fa-arrow-right me-2"></i> Next Ready</h6>
+                    <div id="nextItemContent" class="small" style="color: var(--text-primary);"></div>
+                    <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="selectNextReadyItem()">
+                        <i class="fas fa-hand-pointer me-1"></i> Select Next
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Mobile Sticky Submit -->
+    <div class="mobile-sticky-submit d-md-none" id="mobileStickySubmit" style="display: none !important;">
+        <button type="button" class="btn btn-success w-100 fw-bold py-3"
+            onclick="document.getElementById('executionForm').dispatchEvent(new Event('submit', {cancelable:true, bubbles:true}))">
+            <i class="fas fa-save me-2"></i> Save Transaction
+        </button>
+    </div>
+
+    <!-- ===== REPORTS TAB ===== -->
     <div id="tab-reports" class="app-tab-content d-none">
-        <div class="row g-3">
+        <div class="row g-2 g-md-3">
             <div class="col-12 col-md-4">
-                <div class="card p-3 mb-4 border-0 shadow-sm">
-                    <h6 class="fw-bold mb-2">🌐 Customer Tiers</h6>
-                    <input type="text" id="customerSearchInput" class="form-control mb-3" placeholder="Search customer rows..." onkeyup="filterReportCustomerList()">
+                <div class="card p-2 p-md-3 mb-3 border-0 shadow-sm">
+                    <h6 class="fw-bold mb-2" style="color: var(--text-primary);"><i class="fas fa-users me-2"></i> Customers</h6>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                        <input type="text" id="customerSearchInput" class="form-control form-control-sm" placeholder="Search..." onkeyup="filterReportCustomerList()">
+                    </div>
                     <div class="list-group" id="reportCustomerList" style="max-height: 350px; overflow-y:auto;">
-                        <button class="list-group-item list-group-item-action text-muted text-center py-3">Load system data...</button>
+                        <button class="list-group-item list-group-item-action text-center py-3" style="color: var(--text-secondary);">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Loading...
+                        </button>
                     </div>
                 </div>
             </div>
             <div class="col-12 col-md-8">
-                <div class="card p-3 p-sm-4 border-0 shadow-sm">
-                    <div class="d-flex flex-column gap-2 flex-sm-row justify-content-between align-items-sm-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold text-primary mb-0">📑 Order Profile Summary Details</h5>
-                        <div class="d-flex align-items-center shadow-sm" id="piFilterWrapper" style="display: none !important;">
-                            <label class="me-2 fw-bold text-nowrap small text-secondary ps-2">P/I Filter:</label>
+                <div class="card p-2 p-md-3 border-0 shadow-sm">
+                    <div class="d-flex flex-column gap-2 flex-sm-row justify-content-between align-items-sm-center mb-2 border-bottom pb-2">
+                        <h6 class="fw-bold text-primary mb-0"><i class="fas fa-file-alt me-2"></i> Order Summary</h6>
+                        <div class="d-flex align-items-center gap-2" id="piFilterWrapper" style="display: none !important;">
+                            <label class="fw-bold text-nowrap small" style="color: var(--text-secondary);">P/I:</label>
                             <select id="reportPiSelector" class="form-select form-select-sm" onchange="applyReportPiFilter()">
-                                <option value="">ALL Lines</option>
+                                <option value="">ALL</option>
                             </select>
                         </div>
                     </div>
                     <div id="reportDetailsContainer">
-                        <div class="text-center py-5 text-muted">Select an entry row option parameter from the panel profile index card.</div>
+                        <div class="text-center py-5" style="color: var(--text-secondary);">
+                            <i class="fas fa-hand-pointer fa-2x mb-3 d-block"></i>
+                            Select a customer.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ===== ANALYTICS TAB ===== -->
     <div id="tab-analytics" class="app-tab-content d-none">
-        <div class="card p-3 shadow-sm border-0">
-            <div class="d-flex flex-column gap-2 flex-md-row justify-content-between align-items-md-center mb-3 border-bottom pb-2">
-                <h5 class="fw-bold mb-0">📋 Ledger Log Audit Stream Feed</h5>
-                <input type="text" id="ledgerSearchInput" class="form-control" style="max-width: 400px;" placeholder="Filter logs..." onkeyup="filterLedgerTable()">
+        <div class="card p-2 p-md-3 shadow-sm border-0">
+            <div class="d-flex flex-column gap-2 flex-md-row justify-content-between align-items-md-center mb-2 border-bottom pb-2">
+                <h6 class="fw-bold mb-0" style="color: var(--text-primary);"><i class="fas fa-clipboard-list me-2"></i> Audit Logs</h6>
+                <div class="input-group" style="max-width: 300px;">
+                    <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                    <input type="text" id="ledgerSearchInput" class="form-control form-control-sm" placeholder="Filter..." onkeyup="filterLedgerTable()">
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped align-middle table-sm text-nowrap">
                     <thead class="table-dark">
                         <tr>
-                            <th>Action Date</th>
-                            <th>Time</th>
-                            <th>Department</th>
-                            <th>P/I No.</th>
-                            <th>Part Number</th>
-                            <th>Action Qty</th>
-                            <th>Operator Staff</th>
-                            <th>Box ID</th>
-                            <th>Pallet No.</th>
-                            <th class="bg-primary text-white">Supplier Receive Date</th>
-                            <th class="bg-primary text-white">Supplier Name String</th>
+                            <th>Date</th><th>Time</th><th>Dept</th><th>Action</th><th>P/I</th>
+                            <th>Part</th><th>Qty</th><th>Operator</th><th>Box</th>
+                            <th>Pallet</th><th>Rcvd Date</th><th>Supplier</th><th>Remark</th><th>Edit</th>
                         </tr>
                     </thead>
                     <tbody id="analyticsTableBody">
-                        <tr><td colspan="11" class="text-center text-muted py-4">No database logs registered...</td></tr>
+                        <tr><td colspan="14" class="text-center py-4" style="color: var(--text-secondary);">
+                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>No logs...
+                        </td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+<!-- v2.6.1: Log Edit Modal -->
+<div id="logEditModal" class="d-none log-edit-modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h5 class="fw-bold mb-0" style="color: var(--text-primary); font-size: 1.1rem;">
+                <i class="fas fa-edit me-2 text-primary"></i> Edit Log Entry
+            </h5>
+            <button onclick="closeLogEditModal()" style="background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 4px;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editLogTimestamp">
+            <div class="row g-2">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background: var(--bg-body);">
+                        <small style="color: var(--text-secondary);"><strong id="editLogPI" style="color: var(--text-primary);">-</strong></small>
+                        <small style="color: var(--text-secondary);"><span id="editLogPart" class="font-monospace" style="color: var(--text-primary);">-</span></small>
+                        <small><span id="editLogDept" class="badge bg-secondary">-</span></small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fas fa-box-open me-1"></i> Box ID</label>
+                    <input type="text" id="editLogBox" class="form-control form-control-sm">
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fas fa-pallet me-1"></i> Pallet No.</label>
+                    <input type="text" id="editLogPallet" class="form-control form-control-sm">
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fas fa-calendar me-1"></i> Rcvd Date</label>
+                    <input type="date" id="editLogRcvdDate" class="form-control form-control-sm">
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fas fa-truck me-1"></i> Supplier</label>
+                    <input type="text" id="editLogSupplier" class="form-control form-control-sm">
+                </div>
+                <div class="col-12">
+                    <label class="form-label"><i class="fas fa-comment me-1"></i> Remark</label>
+                    <input type="text" id="editLogRemark" class="form-control form-control-sm">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline-secondary" onclick="closeLogEditModal()">Cancel</button>
+            <button class="btn btn-primary fw-bold" id="btnSaveLogEdit" onclick="saveLogEdit()">
+                <i class="fas fa-save me-1"></i> Save Changes
+            </button>
+        </div>
+    </div>
 </div>
 
+</div><!-- /container -->
+
 <script>
-    // Configuration Endpoint
-    const API_URL = "https://script.google.com/macros/s/AKfycbwdGx6Qc764WDvNzjo984EtDs4Wb8fWQowiLHHPGcRL355PTPsHUnvmwZC8Jr_IlFwVRw/exec";
-    
+    // ===== CONFIGURATION =====
+    // IMPORTANT: Replace with your deployed GAS Web App URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbwhC47E9iOtdFsSMs4l_E6cjlzkjuX3ehiecfJtvdVIfLKk_CbfinurhhtAaihqet4wag/exec";
+
     let activeDept = "Store";
     let ordersCache = [];
     let logsCache = [];
-    let selectedRowIdx = null; 
+    let selectedRowIdx = null;
     let selectedCustomerForReport = "";
+    let currentLaserRequired = false;
+    let currentDeptFilter = 'all';
+    let lastDeptQueueCounts = {};
+    let isSubmitting = false;
 
-    function switchMainTab(tabId) {
+    // v2.6: Track original box/pallet values for edit detection
+    let originalBoxId = "";
+    let originalPalletNo = "";
+
+    // ===== THEME =====
+    function initTheme() {
+        const savedTheme = localStorage.getItem('mg-theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+    }
+
+    function toggleTheme() {
+        const current = document.body.getAttribute('data-theme') || 'light';
+        const next = current === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', next);
+        localStorage.setItem('mg-theme', next);
+        updateThemeIcon(next);
+        showToast(next === 'dark' ? 'Night Mode' : 'Day Mode', 'info');
+    }
+
+    function updateThemeIcon(theme) {
+        document.getElementById('themeIcon').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ===== TOAST =====
+    function showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+        const icons = {
+            success: '<i class="fas fa-check-circle text-success me-2"></i>',
+            error: '<i class="fas fa-times-circle text-danger me-2"></i>',
+            warning: '<i class="fas fa-exclamation-triangle text-warning me-2"></i>',
+            info: '<i class="fas fa-info-circle text-primary me-2"></i>'
+        };
+        toast.innerHTML = (icons[type] || icons.info) + message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+
+    // ===== QUEUE ACCORDION =====
+    function toggleQueue(header) {
+        const body = header.nextElementSibling;
+        if (body.classList.contains('collapsed')) {
+            body.classList.remove('collapsed');
+            header.classList.remove('collapsed');
+        } else {
+            body.classList.add('collapsed');
+            header.classList.add('collapsed');
+        }
+    }
+
+    // ===== TAB SWITCHING =====
+    function switchMainTab(tabId, btnEl) {
         document.querySelectorAll('.app-tab-content').forEach(el => el.classList.add('d-none'));
         document.querySelectorAll('#mainAppTabs .nav-link').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(`tab-${tabId}`).classList.remove('d-none');
-        if (event && event.currentTarget) {
-            event.currentTarget.classList.add('active');
-        }
+        document.getElementById('tab-' + tabId).classList.remove('d-none');
+        if (btnEl) btnEl.classList.add('active');
+
         if (tabId === 'reports') { renderCustomerListReport(); resetReportView(); }
         if (tabId === 'analytics') populateLedgerTable(logsCache);
+
+        const sticky = document.getElementById('mobileStickySubmit');
+        if (sticky) {
+            if (tabId === 'ops' && selectedRowIdx !== null) {
+                sticky.style.removeProperty('display');
+                sticky.classList.remove('d-none');
+            } else {
+                sticky.style.setProperty('display', 'none', 'important');
+            }
+        }
     }
 
     function resetReportView() {
         selectedCustomerForReport = "";
         document.getElementById('piFilterWrapper').setAttribute("style", "display: none !important;");
-        document.getElementById('reportDetailsContainer').innerHTML = `<div class="text-center py-5 text-muted">Select an index row options card.</div>`;
+        document.getElementById('reportDetailsContainer').innerHTML =
+            '<div class="text-center py-5" style="color: var(--text-secondary);"><i class="fas fa-hand-pointer fa-2x mb-3 d-block"></i>Select a customer.</div>';
     }
 
+    // ===== FETCH DATA =====
     function fetchData() {
         const btn = document.getElementById('refreshBtn');
-        btn.innerHTML = "⏳ Syncing Logs...";
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         btn.disabled = true;
 
-        fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getOrdersAndLogs' }) })
-        .then(res => res.json())
+        fetch(API_URL, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'getOrdersAndLogs' })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok: ' + res.status);
+            return res.json();
+        })
         .then(res => {
             if (res.status === 'success') {
                 ordersCache = res.orders || [];
                 logsCache = res.allLogs || [];
-                
                 renderMasterTable(ordersCache);
-                document.getElementById('lastSyncTime').innerText = "Sync: " + new Date().toLocaleTimeString();
-                
-                if(selectedRowIdx !== null) {
+                updateDeptQueueCounts();
+                renderDeptQueues();
+                document.getElementById('lastSyncTime').innerHTML =
+                    '<i class="fas fa-check-circle me-1 text-success"></i> ' + new Date().toLocaleTimeString();
+                saveCache(); // v2.6.2: Cache data for instant next load
+                showToast('Synced ' + ordersCache.length + ' orders', 'success');
+
+                if (selectedRowIdx !== null) {
                     const matchIdx = ordersCache.findIndex(o => o.rowId === selectedRowIdx);
-                    if(matchIdx !== -1) selectTargetRow(matchIdx);
+                    if (matchIdx !== -1) selectTargetRow(matchIdx);
                 }
             } else {
-                alert("App Error: " + res.message);
+                showToast("Error: " + (res.message || 'Unknown error'), 'error');
             }
         })
-        .catch(err => alert("Communication failure: " + err))
+        .catch(err => {
+            console.error('Fetch error:', err);
+            showToast("Failed to sync: " + err.message, 'error');
+        })
         .finally(() => {
-            btn.innerHTML = "🔄 Sync Master Sheet";
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
             btn.disabled = false;
         });
     }
 
+    // ===== DEPT QUEUE LOGIC =====
+    function getRowDeptStatus(row) {
+        const collected = Number(row.qtyCollected) || 0;
+        const laser = Number(row.qtyLaser) || 0;
+        const packed = Number(row.qtyPacked) || 0;
+        const qc = Number(row.qtyQC) || 0;
+        const short = Number(row.shortQty) || 0;
+        const pendingLaser = Number(row.pendingLaser) || 0;
+        const pendingPack = Number(row.pendingPacking) || 0;
+        const laserRequired = row.laserRequired === true;
+        const orderQty = Number(row.qtyOrder) || 0;
+
+        const statuses = [];
+
+        if (short > 0) statuses.push('ready-store');
+
+        if (laserRequired && pendingLaser > 0 && (collected > 0 || qc > 0)) {
+            statuses.push('ready-laser');
+        }
+
+        if (pendingPack > 0 && (!laserRequired || pendingLaser === 0)) {
+            statuses.push('ready-packing');
+        }
+
+        if (short === 0 && pendingPack === 0 && orderQty > 0 && qc === 0) {
+            statuses.push('ready-qc');
+        }
+
+        if (laserRequired && pendingLaser > 0 && collected === 0 && qc === 0) {
+            statuses.push('blocked');
+        }
+
+        return statuses;
+    }
+
+    function getDeptQueueItems(dept) {
+        return ordersCache.filter(o => {
+            const statuses = getRowDeptStatus(o);
+            const deptLower = dept.toLowerCase();
+            switch(deptLower) {
+                case 'store': return statuses.includes('ready-store');
+                case 'laser': return statuses.includes('ready-laser');
+                case 'packing': return statuses.includes('ready-packing');
+                case 'qc': return statuses.includes('ready-qc');
+                default: return false;
+            }
+        });
+    }
+
+    function updateDeptQueueCounts() {
+        const depts = ['store', 'laser', 'packing', 'qc'];
+        const newCounts = {};
+
+        depts.forEach(dept => {
+            const items = getDeptQueueItems(dept);
+            newCounts[dept] = items.length;
+
+            const capDept = dept.charAt(0).toUpperCase() + dept.slice(1);
+            const badge = document.getElementById('count' + capDept);
+            if (badge) {
+                badge.innerText = items.length;
+                badge.style.display = items.length > 0 ? 'flex' : 'none';
+            }
+
+            const panelBadge = document.getElementById('badge' + capDept);
+            if (panelBadge) {
+                panelBadge.innerText = items.length;
+                panelBadge.style.display = items.length > 0 ? 'inline' : 'none';
+            }
+
+            if (lastDeptQueueCounts[dept] !== undefined && items.length > lastDeptQueueCounts[dept]) {
+                const diff = items.length - lastDeptQueueCounts[dept];
+                showToast(diff + ' new item(s) for ' + capDept + '!', 'info');
+            }
+        });
+
+        lastDeptQueueCounts = newCounts;
+    }
+
+    function renderDeptQueues() {
+        const depts = ['store', 'laser', 'packing', 'qc'];
+        const icons = { store: 'fa-warehouse', laser: 'fa-bolt', packing: 'fa-box', qc: 'fa-microscope' };
+        const colors = { store: 'text-info', laser: 'text-primary', packing: 'text-success', qc: 'text-warning' };
+        const capMap = { store: 'Store', laser: 'Laser', packing: 'Packing', qc: 'QC' };
+
+        depts.forEach(dept => {
+            const capDept = capMap[dept];
+            const container = document.getElementById('queue' + capDept);
+            // v2.6 Fix: Skip if queue panel element doesn't exist (Department Queue removed from UI)
+            if (!container) return;
+
+            const items = getDeptQueueItems(dept);
+
+            if (items.length === 0) {
+                container.innerHTML = '<div class="queue-empty"><i class="fas fa-inbox"></i><div>No items waiting</div></div>';
+                return;
+            }
+
+            let html = '';
+            items.slice(0, 10).forEach(item => {
+                const qtyLabel = dept === 'store' ? (Number(item.shortQty) + ' short') :
+                                 dept === 'laser' ? (Number(item.pendingLaser) + ' pending') :
+                                 dept === 'packing' ? (Number(item.pendingPacking) + ' pending') : 'ready';
+
+                html +=
+                    '<div class="queue-item ready-' + dept + '" onclick="selectTargetRowByRowId(' + item.rowId + ')">' +
+                    '<div class="queue-item-icon"><i class="fas ' + icons[dept] + ' ' + colors[dept] + '"></i></div>' +
+                    '<div class="queue-item-info">' +
+                    '<div class="queue-item-title">' + escHtml(item.partNumber) + '</div>' +
+                    '<div class="queue-item-sub">' + escHtml(item.customerName) + ' | ' + escHtml(item.piNo) + '</div>' +
+                    '</div>' +
+                    '<div class="queue-item-qty ' + colors[dept] + '">' + qtyLabel + '</div>' +
+                    '</div>';
+            });
+
+            if (items.length > 10) {
+                html += '<div class="text-center small mt-2" style="color:var(--text-secondary);">+' + (items.length - 10) + ' more...</div>';
+            }
+
+            container.innerHTML = html;
+        });
+    }
+
+    function escHtml(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ===== DEPT FILTER =====
+    function setDeptFilter(filter, btn) {
+        currentDeptFilter = filter;
+        document.querySelectorAll('.dept-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterMasterTable();
+    }
+
+    // ===== RENDER MASTER TABLE =====
     function renderMasterTable(data) {
         const tbody = document.getElementById('masterTableBody');
         tbody.innerHTML = '';
-        document.getElementById('matchCount').innerText = data.length;
 
-        data.forEach((row) => {
+        let filtered = data;
+
+        if (currentDeptFilter !== 'all') {
+            filtered = data.filter(item => {
+                const statuses = getRowDeptStatus(item);
+                return statuses.includes('ready-' + currentDeptFilter);
+            });
+        }
+
+        document.getElementById('matchCount').innerText = filtered.length;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="14" class="text-center py-5" style="color: var(--text-secondary);"><i class="fas fa-search fa-2x mb-3 d-block"></i>No orders found.</td></tr>';
+            return;
+        }
+
+        // v2.6.2: Use DocumentFragment for batch DOM insertion (faster rendering)
+        const frag = document.createDocumentFragment();
+        filtered.forEach(row => {
             const tr = document.createElement('tr');
-            tr.id = `row-target-id-${row.rowId}`;
-            if(selectedRowIdx === row.rowId) tr.className = "highlight-row";
-            
-            let badgeClass = row.currentStatus === 'Complete' ? 'bg-success text-white' : (row.currentStatus === 'Processing' ? 'bg-info text-dark' : 'bg-secondary text-white');
+            tr.id = 'row-target-id-' + row.rowId;
 
-            tr.innerHTML = `
-                <td class="fw-bold">${row.customerName}</td>
-                <td><span class="badge bg-light text-dark border">${row.piNo}</span></td>
-                <td class="font-monospace fw-bold text-dark">${row.partNumber}</td>
-                <td><small class="text-muted">${row.customerNo || '-'}</small></td>
-                <td><strong>${row.qtyOrder}</strong> <small class="text-muted">${row.unit || 'PCS'}</small></td>
-                <td><span class="badge bg-info text-dark">${row.qtyCollected}</span></td>
-                <td><span class="badge bg-primary">${row.qtyLaser}</span></td>
-                <td><span class="badge bg-success">${row.qtyPacked}</span></td>
-                <td><span class="badge bg-warning text-dark">${row.qtyQC}</span></td>
-                <td class="text-warning fw-bold text-center">${row.pendingPacking}</td>
-                <td class="text-danger fw-bold text-center">${row.shortQty}</td>
-                <td><span class="badge ${badgeClass}">${row.currentStatus}</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-dark px-3 fw-bold shadow-sm" onclick="selectTargetRowByRowId(${row.rowId})">Select</button></td>
-            `;
-            tbody.appendChild(tr);
+            const deptStatus = getRowDeptStatus(row);
+            if (deptStatus.includes('ready-store')) tr.classList.add('row-ready-store');
+            if (deptStatus.includes('ready-laser')) tr.classList.add('row-ready-laser');
+            if (deptStatus.includes('ready-packing')) tr.classList.add('row-ready-packing');
+            if (deptStatus.includes('ready-qc')) tr.classList.add('row-ready-qc');
+            if (deptStatus.includes('blocked')) tr.classList.add('row-blocked');
+
+            if (selectedRowIdx === row.rowId) tr.classList.add('highlight-row');
+
+            let statusClass = 'bg-secondary';
+            let statusIcon = 'fa-clock';
+            const st = row.currentStatus || '';
+            if (st === 'Complete') { statusClass = 'bg-success'; statusIcon = 'fa-check-circle'; }
+            else if (st.indexOf('Processing') !== -1) { statusClass = 'bg-info text-dark'; statusIcon = 'fa-cog fa-spin'; }
+
+            const laserBadge = row.laserRequired
+                ? '<span class="laser-badge yes"><i class="fas fa-bolt"></i> YES</span>'
+                : '<span class="laser-badge no"><i class="fas fa-times"></i> NO</span>';
+
+            tr.innerHTML =
+                '<td class="fw-bold">' + escHtml(row.customerName) + '</td>' +
+                '<td><span class="badge bg-light text-dark border">' + escHtml(row.piNo) + '</span></td>' +
+                '<td class="font-monospace fw-bold">' + escHtml(row.partNumber) + '</td>' +
+                '<td><strong>' + (row.qtyOrder || 0) + '</strong></td>' +
+                '<td><span class="badge bg-info text-dark">' + (row.qtyCollected || 0) + '</span></td>' +
+                '<td><span class="badge bg-primary">' + (row.qtyLaser || 0) + '</span></td>' +
+                '<td><span class="badge bg-success">' + (row.qtyPacked || 0) + '</span></td>' +
+                '<td><span class="badge bg-warning text-dark">' + (row.qtyQC || 0) + '</span></td>' +
+                '<td class="text-warning fw-bold text-center">' + (row.pendingPacking || 0) + '</td>' +
+                '<td class="text-danger fw-bold text-center">' + (row.shortQty || 0) + '</td>' +
+                '<td class="fw-bold text-center" style="color: #a78bfa;">' + (row.pendingLaser || 0) + '</td>' +
+                '<td>' + laserBadge + '</td>' +
+                '<td><span class="badge ' + statusClass + '"><i class="fas ' + statusIcon + ' me-1"></i>' + escHtml(st) + '</span></td>' +
+                '<td class="text-center"><button class="btn btn-sm btn-dark px-2 fw-bold" style="font-size: 0.75rem;" onclick="selectTargetRowByRowId(' + row.rowId + ')"><i class="fas fa-arrow-right"></i></button></td>';
+
+            frag.appendChild(tr);
         });
+        tbody.appendChild(frag);
     }
 
     function filterMasterTable() {
         const query = document.getElementById('searchInput').value.toLowerCase().trim();
-        if(!query) { renderMasterTable(ordersCache); return; }
-        const filtered = ordersCache.filter(item => 
-            item.customerName.toLowerCase().includes(query) ||
-            item.piNo.toLowerCase().includes(query) ||
-            item.partNumber.toLowerCase().includes(query)
-        );
+        let filtered = ordersCache;
+
+        if (query) {
+            filtered = ordersCache.filter(item =>
+                (item.customerName || '').toLowerCase().includes(query) ||
+                (item.piNo || '').toLowerCase().includes(query) ||
+                (item.partNumber || '').toLowerCase().includes(query)
+            );
+        }
+
+        if (currentDeptFilter !== 'all') {
+            filtered = filtered.filter(item => {
+                const statuses = getRowDeptStatus(item);
+                return statuses.includes('ready-' + currentDeptFilter);
+            });
+        }
+
         renderMasterTable(filtered);
     }
 
+    // ===== ROW SELECTION =====
     function selectTargetRowByRowId(rowId) {
         const index = ordersCache.findIndex(o => o.rowId === rowId);
-        if(index !== -1) selectTargetRow(index);
+        if (index !== -1) selectTargetRow(index);
     }
 
     function selectTargetRow(cacheIdx) {
         document.querySelectorAll('#masterTableBody tr').forEach(el => el.classList.remove('highlight-row'));
-        
-        const target = ordersCache[cacheIdx];
-        selectedRowIdx = target.rowId; 
-        
-        const activeRow = document.getElementById(`row-target-id-${target.rowId}`);
-        if(activeRow) activeRow.classList.add('highlight-row');
 
-        document.getElementById('ctxCustomer').innerText = target.customerName;
-        document.getElementById('ctxPI').innerText = target.piNo;
-        document.getElementById('ctxPart').innerText = `${target.partNumber} (${target.unit || 'PCS'})`;
+        const target = ordersCache[cacheIdx];
+        selectedRowIdx = target.rowId;
+        currentLaserRequired = target.laserRequired === true;
+
+        const activeRow = document.getElementById('row-target-id-' + target.rowId);
+        if (activeRow) {
+            activeRow.classList.add('highlight-row');
+            activeRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        document.getElementById('ctxCustomer').innerText = target.customerName || '--';
+        document.getElementById('ctxPI').innerText = target.piNo || '--';
+        document.getElementById('ctxPart').innerText = target.partNumber || '--';
 
         document.getElementById('metOrder').innerText = target.qtyOrder || 0;
         document.getElementById('metCollected').innerText = target.qtyCollected || 0;
@@ -342,155 +1516,419 @@
         document.getElementById('metQC').innerText = target.qtyQC || 0;
         document.getElementById('metShort').innerText = target.shortQty || 0;
         document.getElementById('metPendingPacking').innerText = target.pendingPacking || 0;
-        
-        const finalStatus = target.currentStatus || "Pending";
+        document.getElementById('metPendingLaser').innerText = target.pendingLaser || 0;
+
+        updatePipelineVisualization(target);
+        updateNextItemCard(target);
+
+        const finalStatus = target.currentStatus || 'Pending';
         const statusBadge = document.getElementById('metStatus');
         statusBadge.innerText = finalStatus;
-        statusBadge.className = "badge px-3 py-2 fs-6"; 
-        if (finalStatus === 'Complete') {
-            statusBadge.classList.add('bg-success', 'text-white');
-        } else if (finalStatus === 'Processing') {
-            statusBadge.classList.add('bg-info', 'text-dark');
-        } else {
-            statusBadge.classList.add('bg-secondary', 'text-white');
-        }
+        statusBadge.className = 'badge px-2 py-1';
+        if (finalStatus === 'Complete') statusBadge.classList.add('bg-success', 'text-white');
+        else if (finalStatus.indexOf('Processing') !== -1) statusBadge.classList.add('bg-info', 'text-dark');
+        else statusBadge.classList.add('bg-secondary', 'text-white');
 
         document.getElementById('workspaceLayout').classList.remove('d-none');
+
+        const sticky = document.getElementById('mobileStickySubmit');
+        if (sticky) {
+            sticky.style.removeProperty('display');
+            sticky.classList.remove('d-none');
+        }
+
         setDepartment(activeDept);
-        
-        if(window.innerWidth < 992) {
+
+        if (window.innerWidth < 992) {
             document.getElementById('workspaceLayout').scrollIntoView({ behavior: 'smooth' });
         }
     }
 
-    function setDepartment(dept) {
-        activeDept = dept;
-        document.querySelectorAll('.dept-pills .nav-link').forEach(b => {
-            b.classList.remove('active');
-            if(b.innerText.includes(dept)) b.classList.add('active');
-        });
-        document.getElementById('formHeadline').innerText = `${dept} Department Actions Entry Form`;
+    function updateNextItemCard(currentItem) {
+        const card = document.getElementById('nextItemCard');
+        const content = document.getElementById('nextItemContent');
+        const queue = getDeptQueueItems(activeDept);
+        const nextItem = queue.find(item => item.rowId !== (currentItem ? currentItem.rowId : null));
 
-        document.getElementById('formQty').value = '';
-        document.getElementById('formValidationErrorAlert').classList.add('d-none');
-        
-        const submitBtn = document.getElementById('formSubmitBtn');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = "💾 Save Transaction Log Row";
-        submitBtn.className = "btn btn-success btn-lg w-100 fw-bold shadow-sm py-3";
-
-        document.querySelectorAll('.field-supplier').forEach(el => el.classList.add('d-none'));
-        document.getElementById('lblBox').innerText = `${dept.toUpperCase()} BOX ID`;
-        document.getElementById('lblPallet').innerText = `${dept.toUpperCase()} Pallet No.`;
-
-        if (dept === 'Store' || dept === 'QC') {
-            document.querySelectorAll('.field-supplier').forEach(el => el.classList.remove('d-none'));
-            document.getElementById('formReceivedDate').value = new Date().toISOString().split('T')[0];
+        if (nextItem) {
+            card.classList.remove('d-none');
+            content.innerHTML =
+                '<div class="fw-bold" style="color:var(--text-primary);">' + escHtml(nextItem.partNumber) + '</div>' +
+                '<div style="color:var(--text-secondary);">' + escHtml(nextItem.customerName) + '</div>' +
+                '<div class="mt-1"><span class="badge bg-primary">' +
+                (activeDept === 'Store' ? (nextItem.shortQty + ' short') :
+                 activeDept === 'Laser' ? (nextItem.pendingLaser + ' pending laser') :
+                 activeDept === 'Packing' ? (nextItem.pendingPacking + ' pending pack') : 'ready') +
+                '</span></div>';
+        } else {
+            card.classList.add('d-none');
         }
     }
 
+    function selectNextReadyItem() {
+        const queue = getDeptQueueItems(activeDept);
+        if (queue.length > 0) {
+            const nextItem = queue.find(item => item.rowId !== selectedRowIdx) || queue[0];
+            selectTargetRowByRowId(nextItem.rowId);
+            showToast('Selected next item', 'success');
+        } else {
+            showToast('No more items in queue', 'warning');
+        }
+    }
+
+    // ===== PIPELINE =====
+    function updatePipelineVisualization(target) {
+        const container = document.getElementById('pipelineVisualization');
+        container.classList.remove('d-none');
+
+        const collected = Number(target.qtyCollected) || 0;
+        const laser = Number(target.qtyLaser) || 0;
+        const packed = Number(target.qtyPacked) || 0;
+        const qc = Number(target.qtyQC) || 0;
+        const orderQty = Number(target.qtyOrder) || 0;
+        const pendingLaser = Number(target.pendingLaser) || 0;
+
+        const laserStep = document.getElementById('pipeLaser');
+        laserStep.style.display = target.laserRequired ? 'flex' : 'none';
+
+        const storeComplete = collected > 0 || qc > 0;
+        const laserComplete = target.laserRequired ? (pendingLaser === 0 && laser > 0) : true;
+        const packingComplete = orderQty > 0 && packed >= orderQty;
+
+        const steps = {
+            pipeStore: storeComplete ? 'completed' : 'active',
+            pipeLaser: target.laserRequired ? (laserComplete ? 'completed' : (laser > 0 ? 'active' : '')) : 'completed',
+            pipePacking: packingComplete ? 'completed' : (packed > 0 ? 'active' : ''),
+            pipeQC: qc > 0 ? 'completed' : ''
+        };
+
+        Object.keys(steps).forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove('active', 'completed');
+            if (steps[id]) el.classList.add(steps[id]);
+        });
+    }
+
+    // ===== DEPARTMENT FORM =====
+    function setDepartment(dept) {
+        activeDept = dept;
+
+        document.querySelectorAll('.dept-pills .nav-link').forEach(b => {
+            b.classList.remove('active');
+            if (b.id === 'btn' + dept) b.classList.add('active');
+        });
+
+        document.getElementById('formHeadline').innerHTML = '<i class="fas fa-edit me-2"></i>' + dept + ' Entry Form';
+        document.getElementById('formQty').value = '';
+        document.getElementById('formValidationErrorAlert').classList.add('d-none');
+
+        const submitBtn = document.getElementById('formSubmitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Transaction';
+        }
+
+        document.querySelectorAll('.field-supplier').forEach(el => el.classList.add('d-none'));
+        if (dept === 'Store' || dept === 'QC') {
+            document.querySelectorAll('.field-supplier').forEach(el => el.classList.remove('d-none'));
+            // v2.6.2: Set default date as YYYY-MM-DD for type="date" input
+            if (!document.getElementById('formReceivedDate').value) {
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1;
+                var yy = today.getFullYear();
+                document.getElementById('formReceivedDate').value = yy + "-" + (mm < 10 ? "0" : "") + mm + "-" + (dd < 10 ? "0" : "") + dd;
+            }
+        }
+
+        const laserWarning = document.getElementById('laserWarningBanner');
+        const laserNotRequired = document.getElementById('laserNotRequiredBanner');
+        laserWarning.classList.add('d-none');
+        laserNotRequired.classList.add('d-none');
+
+        if (currentLaserRequired) {
+            const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+            const pendingLaser = target ? (Number(target.pendingLaser) || 0) : 0;
+            if (dept === 'Packing' && pendingLaser > 0) {
+                laserWarning.classList.remove('d-none');
+                document.getElementById('laserWarningText').innerText = 'Pending Laser: ' + pendingLaser + '. Complete laser first.';
+            }
+        } else {
+            if (dept === 'Packing') laserNotRequired.classList.remove('d-none');
+        }
+
+        // v2.6: Pre-fill Box ID & Pallet No. from per-department data
+        if (selectedRowIdx !== null) {
+            const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+            if (target && target.boxPallet) {
+                const deptData = target.boxPallet[dept] || { boxId: '', palletNo: '' };
+                document.getElementById('formBox').value = deptData.boxId || '';
+                document.getElementById('formPallet').value = deptData.palletNo || '';
+                
+                // Update hints
+                updateBoxPalletHints(deptData.boxId, deptData.palletNo);
+                
+                // Store originals for change detection
+                originalBoxId = deptData.boxId || '';
+                originalPalletNo = deptData.palletNo || '';
+            }
+            
+            // v2.6: Show/hide the Box/Pallet edit button based on completion status
+            const isComplete = target && target.currentStatus === 'Complete';
+            const boxPalletSection = document.getElementById('boxPalletEditSection');
+            if (!isComplete) {
+                boxPalletSection.classList.remove('d-none');
+            } else {
+                boxPalletSection.classList.add('d-none');
+            }
+            
+            if (target) updateNextItemCard(target);
+        }
+
+        validateLiveInputLimit();
+    }
+
+    // v2.6: Update hint text below Box ID / Pallet fields
+    function updateBoxPalletHints(boxId, palletNo) {
+        const hintBox = document.getElementById('hintBox');
+        const hintPallet = document.getElementById('hintPallet');
+        
+        if (boxId) {
+            hintBox.innerText = 'Current: ' + boxId;
+            hintBox.style.color = 'var(--pipeline-active)';
+        } else {
+            hintBox.innerText = 'No existing Box ID';
+            hintBox.style.color = 'var(--text-secondary)';
+        }
+        
+        if (palletNo) {
+            hintPallet.innerText = 'Current: ' + palletNo;
+            hintPallet.style.color = 'var(--pipeline-active)';
+        } else {
+            hintPallet.innerText = 'No existing Pallet No.';
+            hintPallet.style.color = 'var(--text-secondary)';
+        }
+    }
+
+    // v2.6: Handle Box/Pallet input changes
+    function onBoxPalletChanged() {
+        const currentBox = document.getElementById('formBox').value.trim();
+        const currentPallet = document.getElementById('formPallet').value.trim();
+        const btn = document.getElementById('btnUpdateBoxPallet');
+        
+        // Enable update button only if values changed
+        if (btn) {
+            const hasChanges = (currentBox !== originalBoxId) || (currentPallet !== originalPalletNo);
+            btn.disabled = !hasChanges;
+        }
+    }
+
+    // ===== VALIDATION =====
     function validateLiveInputLimit() {
         if (selectedRowIdx === null) return true;
-        
         const target = ordersCache.find(o => o.rowId === selectedRowIdx);
         if (!target) return true;
 
         const inputQty = Number(document.getElementById('formQty').value) || 0;
         const alertPanel = document.getElementById('formValidationErrorAlert');
         const submitBtn = document.getElementById('formSubmitBtn');
-        
-        let isValid = true;
-        let errMsg = "";
+        const mobileBtn = document.querySelector('#mobileStickySubmit button');
 
-        const allowedShortBalance = Number(target.shortQty) || 0;
-        const allowedPackingBalance = Number(target.pendingPacking) || 0;
+        let isValid = true;
+        let errMsg = '';
+
+        const short = Number(target.shortQty) || 0;
+        const pendingPack = Number(target.pendingPacking) || 0;
+        const pendingLaser = Number(target.pendingLaser) || 0;
+
+        if (inputQty === 0) {
+            alertPanel.classList.add('d-none');
+            if (submitBtn) submitBtn.disabled = false;
+            if (mobileBtn) mobileBtn.disabled = false;
+            return true;
+        }
 
         if (activeDept === 'Store' || activeDept === 'QC') {
-            if (inputQty > allowedShortBalance) {
-                isValid = false;
-                errMsg = `⚠️ Over-Input Limit Blocked: Entered qty (${inputQty}) exceeds the maximum Short QTY remaining balance (${allowedShortBalance}).`;
-            }
-        } 
-        else if (activeDept === 'Packing') {
-            if (inputQty > allowedPackingBalance) {
-                isValid = false;
-                errMsg = `⚠️ Over-Input Limit Blocked: Entered qty (${inputQty}) exceeds the allowed Pending Packing limit balance (${allowedPackingBalance}).`;
-            }
+            if (inputQty > short) { isValid = false; errMsg = 'Qty exceeds Short balance (' + short + ').'; }
+        } else if (activeDept === 'Laser') {
+            if (!target.laserRequired) { isValid = false; errMsg = 'Laser not required for this part.'; }
+            else if (inputQty > pendingLaser) { isValid = false; errMsg = 'Qty exceeds Pending Laser (' + pendingLaser + ').'; }
+        } else if (activeDept === 'Packing') {
+            if (target.laserRequired && pendingLaser > 0) { isValid = false; errMsg = 'BLOCKED: Complete laser first (' + pendingLaser + ' pending).'; }
+            else if (inputQty > pendingPack) { isValid = false; errMsg = 'Qty exceeds Pending Pack (' + pendingPack + ').'; }
         }
 
         if (!isValid) {
-            alertPanel.innerText = errMsg;
+            alertPanel.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>' + errMsg;
             alertPanel.classList.remove('d-none');
-            submitBtn.disabled = true;
+            if (submitBtn) submitBtn.disabled = true;
+            if (mobileBtn) mobileBtn.disabled = true;
             return false;
         } else {
             alertPanel.classList.add('d-none');
-            submitBtn.disabled = false;
+            if (submitBtn) submitBtn.disabled = false;
+            if (mobileBtn) mobileBtn.disabled = false;
             return true;
         }
     }
 
+    // ===== SUBMIT TRANSACTION =====
     function handleTransactionSubmit(e) {
         e.preventDefault();
-        if (!validateLiveInputLimit()) return;
+        if (isSubmitting) return;
+        isSubmitting = true;
+        if (!validateLiveInputLimit()) { isSubmitting = false; return; }
+        if (selectedRowIdx === null) { showToast('Please select an order first.', 'warning'); isSubmitting = false; return; }
 
         const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+        if (!target) { showToast('Order not found. Please re-sync.', 'error'); return; }
+
         const submitBtn = document.getElementById('formSubmitBtn');
-        
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = "⏳ Processing Transaction... Please Wait...";
-        submitBtn.className = "btn btn-secondary btn-lg w-100 fw-bold shadow-sm py-3";
+        const mobileBtn = document.querySelector('#mobileStickySubmit button');
+
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...'; }
+        if (mobileBtn) { mobileBtn.disabled = true; mobileBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...'; }
+
+        const isStoreOrQC = (activeDept === 'Store' || activeDept === 'QC');
 
         const payload = {
             action: 'saveTransaction',
             data: {
-                rowId: target.rowId, 
+                rowId: target.rowId,
                 piNo: target.piNo,
                 partNumber: target.partNumber,
                 department: activeDept,
                 actionType: activeDept === 'QC' ? 'Received' : 'Processed',
-                qty: document.getElementById('formQty').value,
-                operatorName: document.getElementById('formOperator').value,
-                boxId: document.getElementById('formBox').value,
-                palletNo: document.getElementById('formPallet').value,
-                receivedDate: (activeDept==='Store' || activeDept==='QC') ? document.getElementById('formReceivedDate').value : "",
-                receivedFrom: (activeDept==='Store' || activeDept==='QC') ? document.getElementById('formReceivedFrom').value : "",
-                remark: document.getElementById('formRemark').value
+                qty: Number(document.getElementById('formQty').value),
+                operatorName: document.getElementById('formOperator').value.trim(),
+                boxId: document.getElementById('formBox').value.trim(),
+                palletNo: document.getElementById('formPallet').value.trim(),
+                receivedDate: isStoreOrQC ? convertDateInputToDDMMMYYYY(document.getElementById('formReceivedDate').value) : '',
+                receivedFrom: isStoreOrQC ? document.getElementById('formReceivedFrom').value.trim() : '',
+                remark: document.getElementById('formRemark').value.trim(),
+                laserRequired: target.laserRequired
             }
         };
 
-        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
-        .then(res => res.json())
+        fetch(API_URL, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
         .then(res => {
-            if(res.status === 'success') {
+            if (!res.ok) throw new Error('Network response was not ok: ' + res.status);
+            return res.json();
+        })
+        .then(res => {
+            if (res.status === 'success') {
+                isSubmitting = false;
                 document.getElementById('formQty').value = '';
                 document.getElementById('formBox').value = '';
                 document.getElementById('formPallet').value = '';
                 document.getElementById('formReceivedFrom').value = '';
                 document.getElementById('formRemark').value = '';
+                showToast('Saved! Auto-selecting next...', 'success');
+                setTimeout(() => selectNextReadyItem(), 600);
                 fetchData();
             } else {
-                alert("Sheet update operation rejected: " + res.message);
-                setDepartment(activeDept);
+                showToast('Rejected: ' + (res.message || 'Unknown error'), 'error');
+                isSubmitting = false;
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Transaction'; }
+                if (mobileBtn) { mobileBtn.disabled = false; mobileBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Transaction'; }
             }
         })
         .catch(err => {
-            alert("Network timeout or connection error: " + err);
-            setDepartment(activeDept);
+            console.error('Save error:', err);
+            showToast('Error: ' + err.message, 'error');
+            isSubmitting = false;
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Transaction'; }
+            if (mobileBtn) { mobileBtn.disabled = false; mobileBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Transaction'; }
         });
     }
 
+    // ===== v2.6 NEW: Update Box ID & Pallet No. Only =====
+    function handleUpdateBoxPallet() {
+        if (selectedRowIdx === null) {
+            showToast('Please select an order first.', 'warning');
+            return;
+        }
+
+        const target = ordersCache.find(o => o.rowId === selectedRowIdx);
+        if (!target) {
+            showToast('Order not found. Please re-sync.', 'error');
+            return;
+        }
+
+        // Only allow for incomplete orders
+        if (target.currentStatus === 'Complete') {
+            showToast('Cannot edit: Order is already complete.', 'warning');
+            return;
+        }
+
+        const boxId = document.getElementById('formBox').value.trim();
+        const palletNo = document.getElementById('formPallet').value.trim();
+        const btn = document.getElementById('btnUpdateBoxPallet');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Updating...';
+
+        const payload = {
+            action: 'updateBoxPallet',
+            data: {
+                rowId: target.rowId,
+                department: activeDept,
+                boxId: boxId,
+                palletNo: palletNo
+            }
+        };
+
+        fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok: ' + res.status);
+            return res.json();
+        })
+        .then(res => {
+            if (res.status === 'success') {
+                // Update originals so button disables again
+                originalBoxId = boxId;
+                originalPalletNo = palletNo;
+                updateBoxPalletHints(boxId, palletNo);
+                onBoxPalletChanged();
+                showToast('Box ID & Pallet No. updated for ' + activeDept, 'success');
+                fetchData();
+            } else {
+                showToast('Update failed: ' + (res.message || 'Unknown error'), 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Box/Pallet update error:', err);
+            showToast('Error: ' + err.message, 'error');
+        })
+        .finally(() => {
+            btn.innerHTML = '<i class="fas fa-save me-2"></i> Update Box ID &amp; Pallet No.';
+            onBoxPalletChanged();
+        });
+    }
+
+    // ===== REPORTS =====
     function renderCustomerListReport() {
         const container = document.getElementById('reportCustomerList');
-        if(ordersCache.length === 0) return;
-        const customers = [...new Set(ordersCache.map(o => o.customerName))];
+        if (ordersCache.length === 0) {
+            container.innerHTML = '<button class="list-group-item text-center py-3" style="color:var(--text-secondary);">No data. Sync first.</button>';
+            return;
+        }
+        const customers = [...new Set(ordersCache.map(o => o.customerName))].filter(c => c).sort();
         container.innerHTML = '';
         customers.forEach(cust => {
-            if(!cust) return;
             const btn = document.createElement('button');
-            btn.className = "list-group-item list-group-item-action fw-bold py-2 customer-report-btn small";
-            btn.innerText = cust;
-            btn.onclick = () => selectCustomerForReportView(cust, btn);
+            btn.className = 'list-group-item list-group-item-action fw-bold py-2 customer-report-btn small';
+            btn.innerHTML = '<i class="fas fa-building me-2 text-primary"></i>' + escHtml(cust);
+            btn.onclick = function() { selectCustomerForReportView(cust, btn); };
             container.appendChild(btn);
         });
     }
@@ -498,7 +1936,7 @@
     function filterReportCustomerList() {
         const q = document.getElementById('customerSearchInput').value.toLowerCase().trim();
         document.querySelectorAll('.customer-report-btn').forEach(btn => {
-            if(btn.innerText.toLowerCase().includes(q)) { btn.classList.remove('d-none'); } else { btn.classList.add('d-none'); }
+            btn.classList.toggle('d-none', q && !btn.innerText.toLowerCase().includes(q));
         });
     }
 
@@ -508,10 +1946,10 @@
         selectedCustomerForReport = customerName;
 
         const filteredOrders = ordersCache.filter(o => o.customerName === customerName);
-        const uniquePiNumbers = [...new Set(filteredOrders.map(o => o.piNo))];
-        
+        const uniquePiNumbers = [...new Set(filteredOrders.map(o => o.piNo))].sort();
+
         const selector = document.getElementById('reportPiSelector');
-        selector.innerHTML = '<option value="">ALL Lines</option>';
+        selector.innerHTML = '<option value="">ALL</option>';
         uniquePiNumbers.forEach(pi => {
             const opt = document.createElement('option');
             opt.value = pi;
@@ -519,100 +1957,460 @@
             selector.appendChild(opt);
         });
 
-        document.getElementById('piFilterWrapper').setAttribute("style", "display: flex !important;");
+        document.getElementById('piFilterWrapper').setAttribute('style', 'display: flex !important;');
         renderFilteredCustomerPIReport(filteredOrders);
     }
 
     function applyReportPiFilter() {
         const selectedPi = document.getElementById('reportPiSelector').value;
         let filtered = ordersCache.filter(o => o.customerName === selectedCustomerForReport);
-        if(selectedPi) { filtered = filtered.filter(o => o.piNo === selectedPi); }
+        if (selectedPi) filtered = filtered.filter(o => o.piNo === selectedPi);
         renderFilteredCustomerPIReport(filtered);
     }
 
     function renderFilteredCustomerPIReport(lines) {
         const container = document.getElementById('reportDetailsContainer');
-        if(lines.length === 0) {
-            container.innerHTML = `<div class="text-center py-4 text-muted">No tracking metrics matched.</div>`;
+        if (lines.length === 0) {
+            container.innerHTML = '<div class="text-center py-4" style="color:var(--text-secondary);"><i class="fas fa-inbox me-2"></i>No data.</div>';
             return;
         }
-        container.innerHTML = `
-            <h6 class="fw-bold mb-3 text-dark">Active Profiling Target Entity: <span class="text-primary">${selectedCustomerForReport}</span></h6>
-            <div class="table-responsive border rounded">
-                <table class="table table-bordered table-striped mb-0 text-nowrap table-sm small">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>P/I No.</th>
-                            <th>Part Number</th>
-                            <th>Order Qty</th>
-                            <th>Collected</th>
-                            <th>Laser</th>
-                            <th>Packed</th>
-                            <th>QC Arr.</th>
-                            <th>Pending Pack</th>
-                            <th>Short QTY</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${lines.map(o => `
-                            <tr>
-                                <td class="fw-bold">${o.piNo}</td>
-                                <td class="font-monospace">${o.partNumber} <small class="text-muted">(${o.unit || 'PCS'})</small></td>
-                                <td><strong>${o.qtyOrder}</strong></td>
-                                <td class="table-info">${o.qtyCollected}</td>
-                                <td class="table-primary">${o.qtyLaser}</td>
-                                <td class="table-success">${o.qtyPacked}</td>
-                                <td class="table-warning">${o.qtyQC}</td>
-                                <td class="table-light fw-bold text-warning text-center">${o.pendingPacking}</td>
-                                <td class="text-danger fw-bold text-center">${o.shortQty}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
+
+        const totals = {
+            ordered: lines.reduce((s, o) => s + (Number(o.qtyOrder) || 0), 0),
+            collected: lines.reduce((s, o) => s + (Number(o.qtyCollected) || 0), 0),
+            laser: lines.reduce((s, o) => s + (Number(o.qtyLaser) || 0), 0),
+            packed: lines.reduce((s, o) => s + (Number(o.qtyPacked) || 0), 0)
+        };
+
+        let html =
+            '<div class="d-flex justify-content-between align-items-center mb-2">' +
+            '<h6 class="fw-bold mb-0" style="color:var(--text-primary);">' + escHtml(selectedCustomerForReport) + '</h6>' +
+            '<span class="badge bg-primary">' + lines.length + ' Orders</span>' +
+            '</div>' +
+            '<div class="row g-2 mb-2">' +
+            '<div class="col-3"><div class="metric-card border-secondary"><small class="d-block" style="color:var(--text-secondary);">ORDERED</small><h6 class="fw-bold mb-0" style="color:var(--text-primary);">' + totals.ordered + '</h6></div></div>' +
+            '<div class="col-3"><div class="metric-card border-info"><small class="d-block text-info">STOCK</small><h6 class="fw-bold text-info mb-0">' + totals.collected + '</h6></div></div>' +
+            '<div class="col-3"><div class="metric-card border-primary"><small class="d-block text-primary">LASER</small><h6 class="fw-bold text-primary mb-0">' + totals.laser + '</h6></div></div>' +
+            '<div class="col-3"><div class="metric-card border-success"><small class="d-block text-success">PACK</small><h6 class="fw-bold text-success mb-0">' + totals.packed + '</h6></div></div>' +
+            '</div>';
+
+        html += '<div class="table-responsive border rounded"><table class="table table-bordered table-striped mb-0 text-nowrap table-sm small">' +
+            '<thead style="background:var(--report-thead-bg); color:var(--report-thead-text);"><tr>' +
+            '<th style="color:var(--report-thead-text);">P/I</th>' +
+            '<th style="color:var(--report-thead-text);">Part</th>' +
+            '<th style="color:var(--report-thead-text);">Order</th>' +
+            '<th style="color:var(--report-thead-text);">Stock</th>' +
+            '<th style="color:var(--report-thead-text);">Laser</th>' +
+            '<th style="color:var(--report-thead-text);">Pack</th>' +
+            '<th style="color:var(--report-thead-text);">QC</th>' +
+            '<th style="color:var(--report-thead-text);">P.Pack</th>' +
+            '<th style="color:var(--report-thead-text);">Short</th>' +
+            '<th style="color:var(--report-thead-text);">P.Laser</th>' +
+            '<th style="color:var(--report-thead-text);">Laser?</th>' +
+            '</tr></thead><tbody>';
+
+        lines.forEach(o => {
+            const laserBadge = o.laserRequired ? '<span class="badge bg-danger">YES</span>' : '<span class="badge bg-success">NO</span>';
+            html +=
+                '<tr>' +
+                '<td class="fw-bold">' + escHtml(o.piNo) + '</td>' +
+                '<td class="font-monospace">' + escHtml(o.partNumber) + '</td>' +
+                '<td><strong>' + (o.qtyOrder || 0) + '</strong></td>' +
+                '<td>' + (o.qtyCollected || 0) + '</td>' +
+                '<td>' + (o.qtyLaser || 0) + '</td>' +
+                '<td>' + (o.qtyPacked || 0) + '</td>' +
+                '<td>' + (o.qtyQC || 0) + '</td>' +
+                '<td class="fw-bold text-warning text-center">' + (o.pendingPacking || 0) + '</td>' +
+                '<td class="text-danger fw-bold text-center">' + (o.shortQty || 0) + '</td>' +
+                '<td class="fw-bold text-center" style="color: #a78bfa;">' + (o.pendingLaser || 0) + '</td>' +
+                '<td>' + laserBadge + '</td>' +
+                '</tr>';
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
     }
 
+    // ===== AUDIT LOGS =====
     function populateLedgerTable(logs) {
         const tbody = document.getElementById('analyticsTableBody');
         tbody.innerHTML = '';
-        if(logs.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted py-4">No database logs registered...</td></tr>`;
+
+        if (!logs || logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="14" class="text-center py-4" style="color:var(--text-secondary);"><i class="fas fa-inbox fa-2x mb-2 d-block"></i>No logs...</td></tr>';
             return;
         }
-        logs.forEach(log => {
+
+        // v2.6.2: Use DocumentFragment for batch DOM insertion
+        const frag = document.createDocumentFragment();
+        logs.forEach((log, rowIndex) => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><small>${log.dateStr || '-'}</small></td>
-                <td><small class="text-muted">${log.time || '-'}</small></td>
-                <td><span class="badge bg-secondary">${log.dept}</span></td>
-                <td class="fw-bold">${log.piNo || '-'}</td>
-                <td class="font-monospace">${log.partNo || '-'}</td>
-                <td class="fw-bold text-dark">${log.qty || '0'}</td>
-                <td><small>${log.operator || '-'}</small></td>
-                <td>${log.boxId || '-'}</td>
-                <td>${log.palletNo || '-'}</td>
-                <td><small class="text-muted">${(log.dept==='Store'||log.dept==='QC') ? (log.receivedDate || log.dateStr || '-') : '-'}</small></td>
-                <td class="fw-bold text-primary"><small>${(log.dept==='Store'||log.dept==='QC') ? (log.supplierName || 'Internal Warehouse Stock') : '-'}</small></td>
-            `;
-            tbody.appendChild(tr);
+            const dept = log.dept || '';
+            const deptColors = { 'Store': 'bg-info text-dark', 'Laser': 'bg-primary', 'Packing': 'bg-success', 'QC': 'bg-warning text-dark' };
+            const deptBadge = deptColors[dept] || 'bg-secondary';
+
+            tr.innerHTML =
+                '<td><small>' + escHtml(log.dateStr || '-') + '</small></td>' +
+                '<td><small style="color:var(--text-secondary);">' + escHtml(log.time || '-') + '</small></td>' +
+                '<td><span class="badge ' + deptBadge + '">' + escHtml(dept) + '</span></td>' +
+                '<td><span class="badge bg-secondary">' + escHtml(log.actionType || '-') + '</span></td>' +
+                '<td class="fw-bold">' + escHtml(log.piNo || '-') + '</td>' +
+                '<td class="font-monospace">' + escHtml(log.partNo || '-') + '</td>' +
+                '<td class="fw-bold">' + (log.qty || '0') + '</td>' +
+                '<td><small>' + escHtml(log.operator || '-') + '</small></td>' +
+                '<td>' + escHtml(log.boxId || '-') + '</td>' +
+                '<td>' + escHtml(log.palletNo || '-') + '</td>' +
+                '<td><small style="color:var(--text-secondary);">' + escHtml(formatAnyDateToDDMMYYYY(log.receivedDate) || '-') + '</small></td>' +
+                '<td><small style="color:var(--text-secondary);">' + escHtml((dept === 'Store' || dept === 'QC') ? (log.supplierName || '-') : '-') + '</small></td>' +
+                '<td><small style="color:var(--text-secondary);">' + escHtml(log.remark || '-') + '</small></td>' +
+                '<td class="text-center"><button class="btn-log-edit" onclick="openLogEditModal(' + "'" + (log.timestamp || '').replace(/'/g, "\\'") + "'" + ')" title="Edit"><i class="fas fa-pen"></i></button></td>';
+
+            frag.appendChild(tr);
         });
+        tbody.appendChild(frag);
     }
 
     function filterLedgerTable() {
         const q = document.getElementById('ledgerSearchInput').value.toLowerCase().trim();
-        if(!q) { populateLedgerTable(logsCache); return; }
-        const filtered = logsCache.filter(log => 
+        if (!q) { populateLedgerTable(logsCache); return; }
+        const filtered = logsCache.filter(log =>
             (log.piNo && log.piNo.toLowerCase().includes(q)) ||
             (log.partNo && log.partNo.toLowerCase().includes(q)) ||
             (log.dept && log.dept.toLowerCase().includes(q)) ||
             (log.operator && log.operator.toLowerCase().includes(q)) ||
-            (log.supplierName && log.supplierName.toLowerCase().includes(q))
+            (log.boxId && log.boxId.toLowerCase().includes(q))
         );
         populateLedgerTable(filtered);
     }
 
-    window.onload = fetchData;
+    // ===== v2.6: Date Formatter DD-MMM-YYYY =====
+    function formatDateDDMMMYYYY(date) {
+        if (!date || isNaN(date.getTime())) return "";
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return (d < 10 ? "0" : "") + d + "-" + months[m] + "-" + y;
+    }
+
+    // v2.6.2: Convert YYYY-MM-DD (from <input type="date">) to DD-MMM-YYYY for backend
+    function convertDateInputToDDMMMYYYY(dateInput) {
+        if (!dateInput) return "";
+        var parts = dateInput.split("-");
+        if (parts.length !== 3) return dateInput; // Already in another format
+        var y = parseInt(parts[0], 10);
+        var m = parseInt(parts[1], 10) - 1;
+        var d = parseInt(parts[2], 10);
+        if (isNaN(y) || isNaN(m) || isNaN(d)) return dateInput;
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return (d < 10 ? "0" : "") + d + "-" + months[m] + "-" + y;
+    }
+
+    // v2.6.2: Convert DD-MMM-YYYY back to YYYY-MM-DD for <input type="date">
+    function convertDDMMMYYYYToDateInput(dateStr) {
+        if (!dateStr) return "";
+        var months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+        var parts = dateStr.split("-");
+        if (parts.length !== 3) {
+            // Try parsing as a full JS Date string (e.g. "Fri May 22 2026 00:00:00 GMT+0700")
+            var d = new Date(dateStr);
+            if (!isNaN(d.getTime())) {
+                var yy = d.getFullYear();
+                var mm = (d.getMonth() + 1);
+                var dd = d.getDate();
+                return yy + "-" + (mm < 10 ? "0" : "") + mm + "-" + (dd < 10 ? "0" : "") + dd;
+            }
+            return "";
+        }
+        var d = parseInt(parts[0], 10);
+        var m = months.indexOf(parts[1].toLowerCase());
+        var y = parseInt(parts[2], 10);
+        if (isNaN(d) || m === -1 || isNaN(y)) return "";
+        var mm = (m + 1);
+        return y + "-" + (mm < 10 ? "0" : "") + mm + "-" + (d < 10 ? "0" : "") + d;
+    }
+
+    // v2.6.2: Format any date string to DD/MM/YYYY for display
+    function formatAnyDateToDDMMYYYY(dateStr) {
+        if (!dateStr || dateStr === "") return "";
+        // Try parsing as a full JS Date string first
+        var d = new Date(dateStr);
+        if (!isNaN(d.getTime())) {
+            var dd = d.getDate();
+            var mm = d.getMonth() + 1;
+            var yy = d.getFullYear();
+            return (dd < 10 ? "0" : "") + dd + "/" + (mm < 10 ? "0" : "") + mm + "/" + yy;
+        }
+        // Try DD-MMM-YYYY format
+        var months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+        var parts = dateStr.split("-");
+        if (parts.length === 3) {
+            var dd2 = parseInt(parts[0], 10);
+            var mm2 = months.indexOf(parts[1].toLowerCase());
+            var yy2 = parseInt(parts[2], 10);
+            if (!isNaN(dd2) && mm2 !== -1 && !isNaN(yy2)) {
+                return (dd2 < 10 ? "0" : "") + dd2 + "/" + (mm2 + 1 < 10 ? "0" : "") + (mm2 + 1) + "/" + yy2;
+            }
+        }
+        // Try YYYY-MM-DD format
+        var isoParts = dateStr.split("-");
+        if (isoParts.length === 3) {
+            var y3 = parseInt(isoParts[0], 10);
+            var m3 = parseInt(isoParts[1], 10);
+            var d3 = parseInt(isoParts[2], 10);
+            if (!isNaN(y3) && !isNaN(m3) && !isNaN(d3) && y3 > 2000) {
+                return (d3 < 10 ? "0" : "") + d3 + "/" + (m3 < 10 ? "0" : "") + m3 + "/" + y3;
+            }
+        }
+        // Return original if we can't parse
+        return dateStr;
+    }
+
+    // ===== v2.6: Barcode Scanner =====
+    var barcodeScanner = null;
+
+    function openBarcodeScanner() {
+        // Show scanner modal
+        document.getElementById('barcodeScannerModal').classList.remove('d-none');
+        startBarcodeScanner();
+    }
+
+    function closeBarcodeScanner() {
+        stopBarcodeScanner();
+        document.getElementById('barcodeScannerModal').classList.add('d-none');
+    }
+
+    function startBarcodeScanner() {
+        const reader = document.getElementById('scannerViewport');
+        reader.innerHTML = '';
+
+        // Check if html5-qrcode library is loaded
+        if (typeof Html5Qrcode === 'undefined') {
+            // Load the library dynamically
+            var script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';
+            script.onload = function() { initScanner(); };
+            script.onerror = function() {
+                reader.innerHTML = '<div class="text-center text-danger p-4"><i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Failed to load scanner library.<br>Please type the Part Number manually.</div>';
+            };
+            document.head.appendChild(script);
+        } else {
+            initScanner();
+        }
+    }
+
+    function initScanner() {
+        const reader = document.getElementById('scannerViewport');
+        reader.innerHTML = '';
+
+        barcodeScanner = new Html5Qrcode('scannerViewport');
+
+        Html5Qrcode.getCameras().then(cameras => {
+            if (cameras && cameras.length > 0) {
+                // Prefer back camera on mobile
+                var cameraId = cameras[0].id;
+                for (var i = 0; i < cameras.length; i++) {
+                    if (cameras[i].label.toLowerCase().indexOf('back') !== -1 ||
+                        cameras[i].label.toLowerCase().indexOf('rear') !== -1 ||
+                        cameras[i].label.toLowerCase().indexOf('environment') !== -1) {
+                        cameraId = cameras[i].id;
+                        break;
+                    }
+                }
+
+                barcodeScanner.start(
+                    cameraId,
+                    { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
+                    function(decodedText, decodedResult) {
+                        // Barcode scanned successfully
+                        onBarcodeScanned(decodedText);
+                    },
+                    function(errorMessage) {
+                        // Scanning in progress, ignore errors
+                    }
+                ).catch(err => {
+                    reader.innerHTML = '<div class="text-center text-danger p-4"><i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Camera error: ' + escHtml(err.message || err) + '<br>Please check camera permissions.</div>';
+                });
+            } else {
+                reader.innerHTML = '<div class="text-center text-warning p-4"><i class="fas fa-video-slash fa-2x mb-2"></i><br>No cameras found.<br>Please type the Part Number manually.</div>';
+            }
+        }).catch(err => {
+            reader.innerHTML = '<div class="text-center text-danger p-4"><i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Camera access denied.<br>Please allow camera permissions and try again.</div>';
+        });
+    }
+
+    function stopBarcodeScanner() {
+        if (barcodeScanner) {
+            barcodeScanner.stop().then(() => {
+                barcodeScanner = null;
+            }).catch(() => {
+                barcodeScanner = null;
+            });
+        }
+    }
+
+    function onBarcodeScanned(barcodeText) {
+        // Stop scanner
+        stopBarcodeScanner();
+        // Hide modal
+        document.getElementById('barcodeScannerModal').classList.add('d-none');
+        // Fill search input and trigger search
+        var searchInput = document.getElementById('searchInput');
+        searchInput.value = barcodeText.trim();
+        filterMasterTable();
+        showToast('Scanned: ' + barcodeText, 'success');
+    }
+
+    // ===== v2.6.1: LOG EDITING =====
+    let editingLogIndex = null;
+
+    function openLogEditModal(timestamp) {
+        // v2.6.2 FIX: Find log by timestamp instead of array index (fixes wrong entry after filtering)
+        var tsStr = timestamp;
+        // Handle if timestamp comes in as a JSON-stringified string (with quotes)
+        if (tsStr.charAt(0) === '"' && tsStr.charAt(tsStr.length - 1) === '"') {
+            tsStr = tsStr.slice(1, -1);
+        }
+        var targetTs = new Date(tsStr).getTime();
+        if (isNaN(targetTs)) return;
+
+        var foundIndex = -1;
+        var log = null;
+        for (var i = 0; i < logsCache.length; i++) {
+            var entryTs = new Date(logsCache[i].timestamp || 0).getTime();
+            if (Math.abs(entryTs - targetTs) < 2000) { // 2 second tolerance
+                foundIndex = i;
+                log = logsCache[i];
+                break;
+            }
+        }
+        if (!log) return;
+        editingLogIndex = foundIndex;
+
+        document.getElementById('editLogTimestamp').value = log.timestamp || '';
+        document.getElementById('editLogPI').innerText = log.piNo || '-';
+        document.getElementById('editLogPart').innerText = log.partNo || '-';
+        document.getElementById('editLogDept').innerText = log.dept || '-';
+
+        // Set dept badge color
+        var deptBadge = document.getElementById('editLogDept');
+        var deptColors = { 'Store': 'bg-info text-dark', 'Laser': 'bg-primary', 'Packing': 'bg-success', 'QC': 'bg-warning text-dark' };
+        deptBadge.className = 'badge ' + (deptColors[log.dept] || 'bg-secondary');
+
+        document.getElementById('editLogBox').value = log.boxId || '';
+        document.getElementById('editLogPallet').value = log.palletNo || '';
+        document.getElementById('editLogRcvdDate').value = convertDDMMMYYYYToDateInput(log.receivedDate) || '';
+        document.getElementById('editLogSupplier').value = log.supplierName || '';
+        document.getElementById('editLogRemark').value = log.remark || '';
+
+        document.getElementById('logEditModal').classList.remove('d-none');
+    }
+
+    function closeLogEditModal() {
+        document.getElementById('logEditModal').classList.add('d-none');
+        editingLogIndex = null;
+    }
+
+    function saveLogEdit() {
+        if (editingLogIndex === null) return;
+
+        var btn = document.getElementById('btnSaveLogEdit');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+
+        var payload = {
+            action: 'updateLog',
+            data: {
+                timestamp: document.getElementById('editLogTimestamp').value,
+                boxId: document.getElementById('editLogBox').value.trim(),
+                palletNo: document.getElementById('editLogPallet').value.trim(),
+                receivedDate: convertDateInputToDDMMMYYYY(document.getElementById('editLogRcvdDate').value),
+                supplierName: document.getElementById('editLogSupplier').value.trim(),
+                remark: document.getElementById('editLogRemark').value.trim()
+            }
+        };
+
+        fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
+            if (res.status === 'success') {
+                // Update local cache
+                var log = logsCache[editingLogIndex];
+                if (log) {
+                    log.boxId = payload.data.boxId;
+                    log.palletNo = payload.data.palletNo;
+                    log.receivedDate = payload.data.receivedDate;
+                    log.supplierName = payload.data.supplierName;
+                    log.remark = payload.data.remark;
+                }
+                closeLogEditModal();
+                populateLedgerTable(logsCache);
+                showToast('Log entry updated', 'success');
+            } else {
+                showToast('Update failed: ' + (res.message || 'Unknown error'), 'error');
+            }
+        })
+        .catch(function(err) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
+            showToast('Error: ' + err.message, 'error');
+        });
+    }
+
+    // ===== v2.6.2: PERFORMANCE - Cache-First Loading =====
+    function loadCachedData() {
+        try {
+            var cached = localStorage.getItem('mg-orders-cache');
+            var cachedLogs = localStorage.getItem('mg-logs-cache');
+            if (cached) {
+                ordersCache = JSON.parse(cached);
+                renderMasterTable(ordersCache);
+                updateDeptQueueCounts();
+                renderDeptQueues();
+                document.getElementById('matchCount').innerText = ordersCache.length;
+                document.getElementById('lastSyncTime').innerHTML =
+                    '<i class="fas fa-database me-1 text-warning"></i> Cached';
+            }
+            if (cachedLogs) {
+                logsCache = JSON.parse(cachedLogs);
+            }
+        } catch(e) { /* ignore cache errors */ }
+    }
+
+    function saveCache() {
+        try {
+            localStorage.setItem('mg-orders-cache', JSON.stringify(ordersCache));
+            localStorage.setItem('mg-logs-cache', JSON.stringify(logsCache));
+            localStorage.setItem('mg-cache-time', Date.now().toString());
+        } catch(e) { /* ignore quota errors */ }
+    }
+
+    // ===== v2.6.2: PERFORMANCE - Debounced Search =====
+    var _searchDebounceTimer = null;
+    function setupDebouncedSearch() {
+        var input = document.getElementById('searchInput');
+        if (!input) return;
+        input.addEventListener('input', function() {
+            if (_searchDebounceTimer) clearTimeout(_searchDebounceTimer);
+            _searchDebounceTimer = setTimeout(function() {
+                filterMasterTable();
+            }, 300); // 300ms debounce
+        });
+    }
+
+    // ===== INIT =====
+    window.onload = function() {
+        initTheme();
+        setupDebouncedSearch();
+        loadCachedData(); // Show cached data instantly
+        fetchData(); // Sync fresh data in background
+    };
 </script>
 </body>
 </html>
