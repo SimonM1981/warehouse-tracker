@@ -2051,7 +2051,7 @@
                 '<td><small style="color:var(--text-secondary);">' + escHtml(formatAnyDateToDDMMYYYY(log.receivedDate) || '-') + '</small></td>' +
                 '<td><small style="color:var(--text-secondary);">' + escHtml((dept === 'Store' || dept === 'QC') ? (log.supplierName || '-') : '-') + '</small></td>' +
                 '<td><small style="color:var(--text-secondary);">' + escHtml(log.remark || '-') + '</small></td>' +
-                '<td class="text-center"><button class="btn-log-edit" onclick="openLogEditModal(' + escHtml(JSON.stringify(log.timestamp || '')) + ')" title="Edit"><i class="fas fa-pen"></i></button></td>';
+                '<td class="text-center"><button class="btn-log-edit" onclick="openLogEditModal(' + "'" + (log.timestamp || '').replace(/'/g, "\\'") + "'" + ')" title="Edit"><i class="fas fa-pen"></i></button></td>';
 
             tbody.appendChild(tr);
         });
